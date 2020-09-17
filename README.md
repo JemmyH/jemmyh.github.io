@@ -23,4 +23,5 @@ npm install hexo-renderer-pug hexo-renderer-stylus --save
 npm i --save hexo-wordcount
 npm un hexo-renderer-marked --save
 npm i hexo-renderer-markdown-it-plus --save
+npm install hexo-deployer-git --save
 ```
