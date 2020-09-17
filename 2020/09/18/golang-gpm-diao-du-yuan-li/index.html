@@ -1,0 +1,251 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Golang-GPM调度原理 | Jemmy's Blog</title><meta name="description" content="一、概述  1. 为什么在内核的线程调度器之外，Go 还需要实现一个自己的调度器 主要解决系统线程太重的问题：  创建与切换线程 太重：都需要在用户态和内核态之间切换，开销较大； 系统线程内存使用 太重：一方面，创建系统线程时会分配一段大部分情况下都用不完的栈内存，造成浪费；另一方面，栈内存空间创建后其大小不会再变化，有溢出的风险。  goroutine 是 Go 语言实现的用户态的线程，可以看"><meta name="keywords" content="Golang,GPM调度原理"><meta name="author" content="Jemmy"><meta name="copyright" content="Jemmy"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://blog.hujm.net/2020/09/18/golang-gpm-diao-du-yuan-li/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Golang-GPM调度原理"><meta property="og:url" content="http://blog.hujm.net/2020/09/18/golang-gpm-diao-du-yuan-li/"><meta property="og:site_name" content="Jemmy's Blog"><meta property="og:description" content="一、概述  1. 为什么在内核的线程调度器之外，Go 还需要实现一个自己的调度器 主要解决系统线程太重的问题：  创建与切换线程 太重：都需要在用户态和内核态之间切换，开销较大； 系统线程内存使用 太重：一方面，创建系统线程时会分配一段大部分情况下都用不完的栈内存，造成浪费；另一方面，栈内存空间创建后其大小不会再变化，有溢出的风险。  goroutine 是 Go 语言实现的用户态的线程，可以看"><meta property="og:image" content="https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg2.png"><meta property="article:published_time" content="2020-09-17T17:53:29.000Z"><meta property="article:modified_time" content="2020-09-17T18:23:33.952Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-18 02:23:33'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.2.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="https://avatars1.githubusercontent.com/u/38834787?s=460&amp;u=86d024163fa24335179b43e01806edb2baba6ddc&amp;v=4" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">6</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">11</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">5</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text"> 一、概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9C%A8%E5%86%85%E6%A0%B8%E7%9A%84%E7%BA%BF%E7%A8%8B%E8%B0%83%E5%BA%A6%E5%99%A8%E4%B9%8B%E5%A4%96go-%E8%BF%98%E9%9C%80%E8%A6%81%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84%E8%B0%83%E5%BA%A6%E5%99%A8"><span class="toc-number">1.1.</span> <span class="toc-text"> 1. 为什么在内核的线程调度器之外，Go 还需要实现一个自己的调度器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-go-scheduler"><span class="toc-number">1.2.</span> <span class="toc-text"> 2. Go scheduler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-mn-%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.</span> <span class="toc-text"> 3. M:N 模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-gpm-%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.4.</span> <span class="toc-text"> 4. GPM 模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-goroutine-%E7%9A%84%E7%8A%B6%E6%80%81"><span class="toc-number">1.5.</span> <span class="toc-text"> 5. goroutine 的状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-go-scheduler-%E7%9A%84%E8%B0%83%E5%BA%A6%E6%97%B6%E6%9C%BA"><span class="toc-number">1.6.</span> <span class="toc-text"> 6. Go scheduler 的调度时机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%A6%82%E8%A7%88"><span class="toc-number">1.7.</span> <span class="toc-text"> 7. 同步&#x2F;异步系统调用概览</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text"> 二、具体实现</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg2.png)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Jemmy's Blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Golang-GPM调度原理</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-09-17T17:53:29.000Z" title="发表于 2020-09-18 01:53:29">2020-09-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-17T18:23:33.952Z" title="更新于 2020-09-18 02:23:33">2020-09-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/">技术博客</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/">技术细节</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/Golang/">Golang</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="一-概述"><a class="markdownIt-Anchor" href="#一-概述"></a> 一、概述</h2>
+<h3 id="1-为什么在内核的线程调度器之外go-还需要实现一个自己的调度器"><a class="markdownIt-Anchor" href="#1-为什么在内核的线程调度器之外go-还需要实现一个自己的调度器"></a> 1. 为什么在内核的线程调度器之外，Go 还需要实现一个自己的调度器</h3>
+<p>主要解决<strong>系统线程太重</strong>的问题：</p>
+<ol>
+<li>创建与切换线程 太重：都需要在用户态和内核态之间切换，开销较大；</li>
+<li>系统线程内存使用 太重：一方面，创建系统线程时会分配一段大部分情况下都用不完的栈内存，造成浪费；另一方面，栈内存空间创建后其大小不会再变化，有溢出的风险。</li>
+</ol>
+<p>goroutine 是 Go 语言实现的用户态的线程，可以看做是对系统线程进行的一层抽象。有了这层抽象，Golang 程序员不会直接面对系统线程，直接使用 goroutine 就可以了，而操作系统不会 care 什么 goroutine，只是执行设定好的系统线程就好了。这层抽象，就是 Go 的调度器，后面会详细说明。Go 很精巧地解决了上述两个问题：</p>
+<ol>
+<li>goroutine 是用户态线程，其创建和切换等，都是在用户态完成而无需进入操作系统内核，其开销相比系统线程要小很多；</li>
+<li>goroutine 启动时默认栈大小只有 2k，可以根据实际情况进行自动伸缩。</li>
+</ol>
+<h3 id="2-go-scheduler"><a class="markdownIt-Anchor" href="#2-go-scheduler"></a> 2. Go scheduler</h3>
+<p>Go 程序的执行由两部分组成：<code>Go Program</code> 和 <code>runtime</code>，即 <code>用户代码</code> 和 <code>运行时</code>。这里的 runtime 和 Java、Python 中的不一样，Java 的是虚拟机，而<strong>Go 的 runtime 和用户代码一起编译到一个可执行文件中</strong>。用户代码和 runtime 除了代码组织上有界限之外，运行的时候并没有明显的界限，<strong>用户代码中，一些常用的关键字(如 go, new 等)被编译成 runtime 包下的一些函数调用</strong>。<strong>用户程序进行的系统调用都会被 runtime 拦截</strong>，以此来帮助 runtime 进行调度方面以及垃圾回收其他方面的工作。</p>
+<p>一张关系图如下：</p>
+<p><img src="https://pic.downk.cc/item/5f5f3897160a154a67e17110.png" alt="用户代码和runtime的关系" /></p>
+<p>为什么需要 scheduler 呢？runtime 维护所有的 goroutine，就是通过 scheduler 来进行调度。goroutine 和系统线程是独立的，但是 goroutine 需要依赖系统线程才能执行。</p>
+<p>可以用一句话概括 Go scheduler 的目标：</p>
+<blockquote>
+<p>For scheduling goroutines onto kernel threads.</p>
+</blockquote>
+<p>Go scheduler 的核心思想是：</p>
+<ol>
+<li>reuser 系统线程，限制同时运行(不包括阻塞的)的线程数为 N，其中 N 为 CPU 的核心数；</li>
+<li>线程使用私有的本地运行队列，并且为了更高地使用 CPU，某个线程可以从其他线程偷 goroutine 来帮助运行，也可以在 goroutine 阻塞的时候将其传递给其他线程。</li>
+</ol>
+<h3 id="3-mn-模型"><a class="markdownIt-Anchor" href="#3-mn-模型"></a> 3. M:N 模型</h3>
+<p>goroutine 建立在操作系统线程之上，它与操作系统线程之间实现了一个多对多(M:N)的两级线程模型。M:N 是指 M 的 goroutine 运行在 N 的操作系统线程上，内核负责对这 N 的操作系统线程进行调度，而 Go runtime 则负责将这 M 个 goroutine 调度运用在这 N 个操作系统线程上。</p>
+<p>简单理解，对 goroutine 的调度，是指程序代码按照一定的算法，在适当的时候挑选出合适的 goroutine 然后放到真正的线程上去执行的过程。其实<strong>并没有一个调度器实体，它只是一段代码的抽象化表示</strong>，具体来说是 需要发生调度时由操作系统线程执行<code>runtime.schedule</code>方法进行的。</p>
+<p>Go runtime 负责 goroutine 的生老病死，从创建、切换、销毁都一手包办。runtime 在启动的时候，会创建 M 个操作系统线程(CPU 内核执行调度的基本单位)，之后创建的 N 个 goroutine 都会依附在这 M 个线程上执行。在同一时刻，一个系统线程上只能执行一个 goroutine，当 goroutine 发生阻塞时，runtime 会将当前 goroutine 调走，让其他的 goroutine 继续执行。这样做的目的是尽量提升性能，尽量让所有的系统线程上面都有代码在执行。</p>
+<h3 id="4-gpm-模型"><a class="markdownIt-Anchor" href="#4-gpm-模型"></a> 4. GPM 模型</h3>
+<p>我们观察调度过程的进化，从进程到线程再到协程，其实是一个不断共享、不断<strong>减少切换成本</strong>的过程。</p>
+<p>要理解调度，需要理解两个概念：<strong>运行</strong>和<strong>阻塞</strong>。这里提供两个角度：我们觉得自己就是线程或者协程，运行就是在低头不断做事，阻塞就是我们目前做的事需要等待别人，然后就一直等着，等其他人做完了，我们接着做，这里我们是站在线程或者协程的角度去看的；另一个角度是，我们站在 CPU 的角度看，我正在敲代码写需求(一个线程或者协程)，发现依赖别人的函数还没有提交，那就把敲代码这事放在一边，最小化 IDE 然后点开钉钉沟通下一个需求，等依赖的函数提交了，又打开 IDE 继续敲代码——在 Linux 中，线程对应的是一个叫做<code>task_struct</code>的结构体，从本质上来说，线程并不是一个实体，<strong>线程只是代表一个执行流和其状态</strong>。真正驱动流程的是 CPU，CPU 根据 PC 寄存器从程序中取指令和操作数，从 RAM 中取数据,，进行计算、 处理、 跳转、 驱动执行流往前。 CPU 并不关注处理的是线程还是协程,，只需要设置 PC 寄存器， 设置栈指针等(这些称为上下文),，那么 CPU 就可以运行这个线程或者协程了。</p>
+<p>所以，线程的运行，其实是被运行；线程的阻塞，其实是换出调度队列，不再去执行这个执行流。协程同理，协程也是一个类似于<code>task_struct</code>数据结构，其作用也是一个执行流或者状态，记录运行什么函数，运行到什么程度，也就是上下文。</p>
+<p>Go 在用户态实现调度，所以 Go 也需要有代表协程这种执行体的数据结构，也要有保存和恢复上下文的处理过程以及调度队列。</p>
+<p>在这些数据结果中，最主要的是一下几个(以下结构体均位于<code>runtime</code>包的<code>runtime.go</code>文件中)：</p>
+<ul>
+<li><code>g</code>: 它保存了 goroutine 的所有信息，该结构体的每一个实例对象都代表了一个<strong>goroutine</strong>。调度器代码会通过 g 对象来对 goroutine 进行调度——当 goroutine 被调离系统线程时，调度器负责把 CPU 相关寄存器值等上下文信息保存在 g 对象的成员变量中；当 goroutine 被重新拉起运行时，调度器又负责把 g 对象成员变量中所保存的上下文信息恢复到相关寄存器，也就是恢复了执行上下文。</li>
+<li><code>schedt</code>：一方面保存调度器本身的状态信息，另一方面它拥有一个用来保存 goroutine 的运行队列。因为每个 Go 程序只有一个调度器，所以在每个 Go 程序中 schedt 结构体只有一个实例对象，该实例对象在源代码中被定义成了一个共享的全局变量，这样每个工作线程都可以访问它以及它所拥有的 goroutine 运行队列，我们称这个运行队列为<strong>全局运行队列(GRQ)</strong>。</li>
+<li><code>p</code>：表示执行所需要的资源，其最大数量同时也是 Go 代码的最大并行度。每一个运行着 go 代码的工作线程都会与一个 p 结构体的实例对象关联在一起。全局运行队列是每一个工作线程都可以读写的，因此为了并发安全，访问时需要加锁，但加锁势必耗费性能进而称为瓶颈。于是调度器为每一个工作线程引入了一个 <strong>私有的 goroutine 运行队列</strong>，我们称之为“<strong>局部队列(LRQ)</strong>”，工作线程优先使用局部队列的 goroutine，只有必要时才会去访问全局队列(后面还会了解到，当一个 p 的局部队列使用完时，还会去别的 p 偷几个 g 过来运行)，这大大减少了锁冲突，提高了工作线程的并发性。</li>
+<li><code>m</code>：代表实际工作线程，每一个<strong>工作线程</strong>都有唯一的<code>m</code>与之对应。m 结构体对象除了记录着工作线程的诸如栈的起止位置、当前正在执行的 goroutine 以及是否空闲等等状态信息之外，还通过指针维持着与 p 结构体的实例对象之间的绑定关系。于是，通过 m 既可以找到与之对应的工作线程正在运行的 goroutine，又可以找到工作线程的局部运行队列等资源。</li>
+</ul>
+<p>他们之间的关系，可以使用下图表示：</p>
+<p><img src="https://pic.downk.cc/item/5f5f38b3160a154a67e1771f.png" alt="GPM关系" /></p>
+<p>另有一张图可能更清晰形象：</p>
+<p><img src="https://pic.downk.cc/item/5f5f38c0160a154a67e179c8.jpg" alt="GPM关系" /></p>
+<p>Go scheduler 的职责就是将所有处于 可运行状态 的 goroutines 均匀分布到在 P 上运行的 M。</p>
+<p>当一个 P 发现自己的 LRQ 已经没有 G 时，会从其他 P “偷” 一些 G 来运行。这被称为 <code>Work-stealing</code>，Go 从 1.1 开始实现。</p>
+<p>Go scheduler 使用 M:N 模型，在任一时刻，M 个 goroutines（G） 要分配到 N 个内核线程（M），这些 M 跑在个数最多为 GOMAXPROCS 的逻辑处理器（P）上。每个 M 必须依附于一个 P，每个 P 在同一时刻只能运行一个 M。如果 P 上的 M 阻塞了，那它就需要其他的 M 来运行 P 的 LRQ 里的 goroutines。</p>
+<p>实际上，Go scheduler 每一轮调度要做的工作就是找到处于 runnable 的 goroutines，并执行它。寻找的顺序如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">runtime.schedule() &#123;</span><br><span class="line">    <span class="comment">// 检查全局队列，防止全局队列中的G被饿死</span></span><br><span class="line">    <span class="comment">// if not found, 检查局部队列</span></span><br><span class="line">    <span class="comment">// if not found,</span></span><br><span class="line">    <span class="comment">//   尝试从其他的P偷一些G过来</span></span><br><span class="line">    <span class="comment">//   if not found, 从全局队列中去一些</span></span><br><span class="line">    <span class="comment">//      if not found, poll network</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述任何一步找到一个可执行的 goroutine 后，就会一直执行下去，直到被阻塞。当 P2 上的一个 G 执行结束，它就会去 LRQ 获取下一个 G 来执行。如果 LRQ 已经空了，就是说本地可运行队列已经没有 G 需要执行，并且这时 GRQ 也没有 G 了。这时，P2 会随机选择一个 P（称为 P1），P2 会从 P1 的 LRQ “偷”过来<strong>一半</strong>的 G。</p>
+<p>这样做的好处是，有更多的 P 可以一起工作，加速执行完所有的 G。</p>
+<h3 id="5-goroutine-的状态"><a class="markdownIt-Anchor" href="#5-goroutine-的状态"></a> 5. goroutine 的状态</h3>
+<p>如下图：</p>
+<p><img src="https://pic.downk.cc/item/5f5f38d1160a154a67e17e44.jpg" alt="goroutine状态转移" /></p>
+<h3 id="6-go-scheduler-的调度时机"><a class="markdownIt-Anchor" href="#6-go-scheduler-的调度时机"></a> 6. Go scheduler 的调度时机</h3>
+<p>在以下四种情况下，scheduler 可能会发生调度——“可能”意味着，scheduler 只是有机会调度，但并不一定会发生。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">情形</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">使用关键字 <code>go</code></td>
+<td style="text-align:left">创建一个新的 goroutine，scheduler 会考虑调度</td>
+</tr>
+<tr>
+<td style="text-align:center">GC</td>
+<td style="text-align:left">肯定会发生调度，因为 GC 必须要在 M 上运行。</td>
+</tr>
+<tr>
+<td style="text-align:center">发生系统调用</td>
+<td style="text-align:left">当一个 goroutine 发生系统调用时，会阻塞 M，此时它会被调走，同时调用新的 goroutine 在 M 上运行</td>
+</tr>
+<tr>
+<td style="text-align:center">内存同步访问</td>
+<td style="text-align:left">atomic，mutex，channel 操作等会使 goroutine 阻塞，因此会被调度走。等条件满足后（例如其他 goroutine 解锁了）还会被调度上来继续运行</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-同步异步系统调用概览"><a class="markdownIt-Anchor" href="#7-同步异步系统调用概览"></a> 7. 同步/异步系统调用概览</h3>
+<p>当一个正在执行的 G(goroutine)需要进行系统调用时，根据调用类型，它所依附的 M 有两种情况：<strong>同步(系统调用等)</strong> 和 <strong>异步(网络请求等)</strong>。</p>
+<p><img src="https://pic.downk.cc/item/5f5f38ec160a154a67e18425.jpg" alt="同步系统调用" /></p>
+<blockquote>
+<p><strong>同步</strong>情况下，M1 会被阻塞，进而从 P 上调度下来，此时 G1 依然依附在 M1 上执行，之后会有一个新的 M2 被调用到 P 上，接着执行 P 的本地运行队列 LRQ 中的 G。一旦系统调用完成，G1 会再次加入 P 的 LRQ 等待被调度，而之前的 M1 则会被隐藏，等到需要的时候再次被使用。</p>
+</blockquote>
+<p><img src="https://pic.downk.cc/item/5f5f3904160a154a67e18d56.jpg" alt="异步系统调用" /></p>
+<blockquote>
+<p><strong>异步</strong>情况下，M1 不会被阻塞，G1 的异步请求会被另一个组件<code>Network Poller</code>接手，而 G1 本身也会被绑定到<code>Network Poller</code>上，等到系统调用结束，G1 会再次回到 P 上。由于 M 没有被阻塞，它可以继续执行当前被绑定的 P 的 LRQ 里面的 G。</p>
+<p>可以看到，在异步情况下，通过调度，Go scheduler 成功地将 IO 任务转变成了 CPU 任务，或者说将内核级别的线程切换转变成了用户级别的 goroutine 切换，极大地提高了效率。</p>
+</blockquote>
+<h2 id="二-具体实现"><a class="markdownIt-Anchor" href="#二-具体实现"></a> 二、具体实现</h2>
+<p>有时间再细究。</p>
+<p>未完，待续…</p>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Jemmy</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://blog.hujm.net/2020/09/18/golang-gpm-diao-du-yuan-li/">http://blog.hujm.net/2020/09/18/golang-gpm-diao-du-yuan-li/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://blog.hujm.net" target="_blank">Jemmy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Golang/">Golang</a><a class="post-meta__tags" href="/tags/GPM%E8%B0%83%E5%BA%A6%E5%8E%9F%E7%90%86/">GPM调度原理</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg2.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2020/09/17/golang-unsafe-bao-xiang-jie/"><img class="next-cover" src="https://pic.downk.cc/item/5f5f5567160a154a67e8ec80.png" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Golang-unsafe包详解</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/09/17/golang-unsafe-bao-xiang-jie/" title="Golang-unsafe包详解"><img class="cover" src="https://pic.downk.cc/item/5f5f5567160a154a67e8ec80.png"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-17</div><div class="title">Golang-unsafe包详解</div></div></a></div><div><a href="/2020/09/15/golang-guan-yu-han-shu-diao-yong/" title="Golang-关于函数调用"><img class="cover" src="https://pic.downk.cc/item/5f5f333b160a154a67dff3a1.png"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-15</div><div class="title">Golang-关于函数调用</div></div></a></div><div><a href="/2020/09/16/golang-shu-zu-qie-pian-he-zi-fu-chuan/" title="Golang-数组,切片和字符串"><img class="cover" src="https://pic.downk.cc/item/5f5fa4a5160a154a67fdbc36.png"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-16</div><div class="title">Golang-数组,切片和字符串</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By Jemmy</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    window.valine = new Valine({
+      el: '#vcomment',
+      appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+      appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+      placeholder: '欢迎评论~',
+      avatar: 'monsterid',
+      meta: 'nick,mail'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      path: window.location.pathname,
+    });
+    if ('nick,mail') { valine.config.requiredFields= 'nick,mail'.split(',') }
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else $.getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
+}
+
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.querySelector('#vcomment'),loadValine)
+  else setTimeout(() => loadValine(), 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
