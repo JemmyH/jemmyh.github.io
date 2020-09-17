@@ -121,6 +121,11 @@ markdown_it_plus:
     - plugin:
         name: markdown-it-mark
         enable: false
+    - plugin:
+        name: "@neilsustc/markdown-it-katex"
+        enable: true
+        options:
+          strict: false
 # TOC
 toc:
   maxdepth: 3
@@ -206,13 +211,13 @@ jsonContent:
     categories: false
     tags: true
 
-# menu 菜单配置
-menu:
-  首页: / || fas fa-home
-  归档: /archives/ || fas fa-archive
-  分类: /categories/ || fas fa-folder-open
-  关于我: /about/ || fas fa-heart
-  enabled: true
+# # menu 菜单配置
+# menu:
+#   首页: / || fas fa-home
+#   归档: /archives/ || fas fa-archive
+#   分类: /categories/ || fas fa-folder-open
+#   关于我: /about/ || fas fa-heart
+#   enabled: true
 
 # 搜索
 search:

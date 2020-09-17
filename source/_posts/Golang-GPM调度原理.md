@@ -8,7 +8,7 @@ categories: [技术博客, 技术细节, Golang]
 tags: [Golang, GPM调度原理]
 comment: true
 date: 2020-09-18 01:53:29
-cover:
+cover: https://pic.downk.cc/item/5f5f38b3160a154a67e1771f.png
 ---
 
 ## 一、概述

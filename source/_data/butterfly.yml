@@ -16,6 +16,15 @@
 #     - Movie || /movies/ || fas fa-video
 #   Link: /link/ || fas fa-link
 #   About: /about/ || fas fa-heart
+desc: 今日事，今日毕
+title: Jemmy's Blog
+# subtitle: 保持专注
+description: 今日事，今日毕
+keywords: Golang,Python,blog
+author: Jemmy
+language: zh-CN
+timezone: "Asia/Shanghai"
+
 menu:
   首页: / || fas fa-home
   时间线: /archives/ || fas fa-archive
@@ -578,8 +587,8 @@ font:
 # Font settings for the site title and site subtitle
 # 左上角網站名字 主頁居中網站名字
 # blog_title_font:
-# font_link: https://fonts.googleapis.com/css?family=Titillium+Web&display=swap
-# font-family: Titillium Web, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif
+#   font_link: https://fonts.googleapis.com/css?family=Titillium+Web&display=swap
+#   font-family: Titillium Web, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif
 
 # The setting of divider icon (水平分隔線圖標設置)
 hr_icon:
@@ -589,11 +598,11 @@ hr_icon:
 
 # the subtitle on homepage (主頁subtitle)
 subtitle:
-  enable: false
+  enable: true
   # Typewriter Effect (打字效果)
-  effect: true
+  effect: false
   # loop (循環打字)
-  loop: true
+  loop: false
   # source調用第三方服務
   # source: false 關閉調用
   # source: 1  調用搏天api的隨機語錄（簡體） https://api.btstu.cn/
@@ -607,6 +616,7 @@ subtitle:
   # 開頭不允許轉義字元，如需要，請把整個句子用雙引號包住
   # 如果關閉打字效果，subtitle只會顯示sub的第一行文字
   sub:
+    - 今日事，今日毕
 
 # Loading Animation (加載動畫)
 preloader: false
