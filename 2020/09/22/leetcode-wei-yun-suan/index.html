@@ -1,0 +1,253 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LeetCode-位运算 | Jemmy's Blog</title><meta name="description" content="位运算讲究技巧，需要多积累经验。  一、背景知识 Go 语言支持的 位运算符 如下：    运算符 描述 规则     &amp; 按位 与 二者同为 1 时结果才为 1，否则为 0   | 按位 或 二者同为 0 时结果才为 0，否则是 1   ^ 按位 异或 相同为 0，相异为 1   &lt;&lt; 左移 n 位，相当于乘以 2 的 n 次方 后面补 0   &gt;&gt; 右移一位，相"><meta name="keywords" content="LeetCode,数组,位运算"><meta name="author" content="Jemmy"><meta name="copyright" content="Jemmy"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://blog.hujm.net/2020/09/22/leetcode-wei-yun-suan/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="LeetCode-位运算"><meta property="og:url" content="http://blog.hujm.net/2020/09/22/leetcode-wei-yun-suan/"><meta property="og:site_name" content="Jemmy's Blog"><meta property="og:description" content="位运算讲究技巧，需要多积累经验。  一、背景知识 Go 语言支持的 位运算符 如下：    运算符 描述 规则     &amp; 按位 与 二者同为 1 时结果才为 1，否则为 0   | 按位 或 二者同为 0 时结果才为 0，否则是 1   ^ 按位 异或 相同为 0，相异为 1   &lt;&lt; 左移 n 位，相当于乘以 2 的 n 次方 后面补 0   &gt;&gt; 右移一位，相"><meta property="og:image" content="https://pic.downk.cc/item/5f68d466160a154a67c8ff74.jpg"><meta property="article:published_time" content="2020-09-21T16:25:09.000Z"><meta property="article:modified_time" content="2020-09-21T16:27:40.182Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-22 00:27:40'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.2.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="https://avatars1.githubusercontent.com/u/38834787?s=460&amp;u=86d024163fa24335179b43e01806edb2baba6ddc&amp;v=4" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">10</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">17</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">8</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="toc-number">1.</span> <span class="toc-text"> 一、背景知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%8E"><span class="toc-number">1.1.</span> <span class="toc-text"> 1. 与</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E6%88%96"><span class="toc-number">1.2.</span> <span class="toc-text"> 2.或</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%BC%82%E6%88%96"><span class="toc-number">1.3.</span> <span class="toc-text"> 3. 异或</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E7%BB%8F%E5%85%B8%E9%A2%98%E7%9B%AE"><span class="toc-number">2.</span> <span class="toc-text"> 二、经典题目</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%B8%AD-1-%E7%9A%84%E4%B8%AA%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text"> 1. 二进制中 1 的个数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#11-%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="toc-number">2.1.1.</span> <span class="toc-text"> 1.1 题目描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-%E6%80%9D%E8%B7%AF"><span class="toc-number">2.1.2.</span> <span class="toc-text"> 1.2 思路</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF-1"><span class="toc-number">2.1.2.1.</span> <span class="toc-text"> 思路 1</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF-2"><span class="toc-number">2.1.2.2.</span> <span class="toc-text"> 思路 2</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF-3"><span class="toc-number">2.1.2.3.</span> <span class="toc-text"> 思路 3</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E6%95%B0%E6%98%AF%E5%90%A6%E4%B8%BA-2-%E7%9A%84%E5%B9%82"><span class="toc-number">2.2.</span> <span class="toc-text"> 2. 判断一个数是否为 2 的幂</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#21-%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="toc-number">2.2.1.</span> <span class="toc-text"> 2.1 题目描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#22-%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">2.2.2.</span> <span class="toc-text"> 2.2 解题思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3"><span class="toc-number">2.3.</span> <span class="toc-text"> 3</span></a></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(https://pic.downk.cc/item/5f68d466160a154a67c8ff74.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Jemmy's Blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">LeetCode-位运算</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-09-21T16:25:09.000Z" title="发表于 2020-09-22 00:25:09">2020-09-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-21T16:27:40.182Z" title="更新于 2020-09-22 00:27:40">2020-09-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/">技术博客</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/">算法题解</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>位运算讲究技巧，需要多积累经验。</p>
+<h2 id="一-背景知识"><a class="markdownIt-Anchor" href="#一-背景知识"></a> 一、背景知识</h2>
+<p>Go 语言支持的 <strong>位运算符</strong> 如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">运算符</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">&amp;</td>
+<td style="text-align:center">按位 <strong>与</strong></td>
+<td style="text-align:center">二者同为 1 时结果才为 1，否则为 0</td>
+</tr>
+<tr>
+<td style="text-align:center">|</td>
+<td style="text-align:center">按位 <strong>或</strong></td>
+<td style="text-align:center">二者同为 0 时结果才为 0，否则是 1</td>
+</tr>
+<tr>
+<td style="text-align:center">^</td>
+<td style="text-align:center">按位 <strong>异或</strong></td>
+<td style="text-align:center">相同为 0，相异为 1</td>
+</tr>
+<tr>
+<td style="text-align:center">&lt;&lt;</td>
+<td style="text-align:center"><strong>左移 n 位，相当于乘以 2 的 n 次方</strong></td>
+<td style="text-align:center">后面补 0</td>
+</tr>
+<tr>
+<td style="text-align:center">&gt;&gt;</td>
+<td style="text-align:center"><strong>右移一位，相当于除以 2 的 n 次方</strong></td>
+<td style="text-align:center">截掉最后一位</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-与"><a class="markdownIt-Anchor" href="#1-与"></a> 1. 与</h3>
+<p>将参与运算的两个数 各对应的二进制位 相与。只有当二者参与运算的<strong>对应位同为 1 时，该位才为 1，否则为 0</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a := <span class="number">60</span>  <span class="comment">// 0011 1100</span></span><br><span class="line">b := <span class="number">23</span>  <span class="comment">// 0001 0111</span></span><br><span class="line"></span><br><span class="line">fmt.Println(a &amp; b)  <span class="comment">// 0001 0100</span></span><br></pre></td></tr></table></figure>
+<p>上述例子中，我们从最后一位开始，逐位运算。可以看到只有 <code>倒数第3位</code> 和 <code>倒数第5位</code> 都是 1，结果中也只有倒数第 3 位和倒数第 5 位是 1。</p>
+<p><strong>规律：</strong></p>
+<ul>
+<li><strong><code>任何数 &amp; 0 = 0</code></strong>；</li>
+<li><strong><code>任何数 &amp; 任何数 = 任何数</code></strong>；</li>
+</ul>
+<h3 id="2或"><a class="markdownIt-Anchor" href="#2或"></a> 2.或</h3>
+<p>将参与运算的两个数 各对应的二进制位 相或。只有当二者<strong>对应位全部是 0 时，该位结果才是 0，其他情况结果全为 1</strong>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a := <span class="number">60</span>  <span class="comment">// 0011 1100</span></span><br><span class="line">b := <span class="number">23</span>  <span class="comment">// 0001 0111</span></span><br><span class="line"></span><br><span class="line">fmt.Println(a | b)  <span class="comment">// 0001 11111</span></span><br></pre></td></tr></table></figure>
+<p><strong>规律：</strong></p>
+<ul>
+<li><strong><code>任何数 | 0 = 任何数</code></strong></li>
+<li><strong><code>任何数 | 任何数 = 任何数</code></strong></li>
+</ul>
+<h3 id="3-异或"><a class="markdownIt-Anchor" href="#3-异或"></a> 3. 异或</h3>
+<p>逐位异或，<strong>对应位相同，结果为 0，否则为 1</strong>——可以理解为 <strong>“抵消”</strong> 效果。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a := <span class="number">60</span>  <span class="comment">// 0011 1100</span></span><br><span class="line">b := <span class="number">23</span>  <span class="comment">// 0001 0111</span></span><br><span class="line"></span><br><span class="line">fmt.Println(a | b)  <span class="comment">// 0010 1011</span></span><br></pre></td></tr></table></figure>
+<p><strong>规律：</strong></p>
+<ul>
+<li><strong><code>任何数 ^ 任何数 = 0</code></strong></li>
+<li><strong><code>任何数 ^ 0 = 任何数</code></strong></li>
+<li><strong><code>任何数 ^ 1 = ~任何数</code></strong>(按位取反)</li>
+</ul>
+<h2 id="二-经典题目"><a class="markdownIt-Anchor" href="#二-经典题目"></a> 二、经典题目</h2>
+<h3 id="1-二进制中-1-的个数"><a class="markdownIt-Anchor" href="#1-二进制中-1-的个数"></a> 1. 二进制中 1 的个数</h3>
+<ul>
+<li>LeetCode 题目： <a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/number-of-1-bits/">191. 位 1 的个数</a></li>
+</ul>
+<h4 id="11-题目描述"><a class="markdownIt-Anchor" href="#11-题目描述"></a> 1.1 题目描述</h4>
+<blockquote>
+<p>请实现一个函数，输入一个整数，输出该数二进制表示中 1 的个数。例如，把 9 表示成二进制是 1001，有 2 位是 1。因此，如果输入 9，则该函数输出 2。</p>
+<p>举例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：00000000000000000000000000001011</span><br><span class="line">输出：3</span><br><span class="line">解释：输入的二进制串 00000000000000000000000000001011 中，共有三位为 <span class="string">&#x27;1&#x27;</span>。</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="12-思路"><a class="markdownIt-Anchor" href="#12-思路"></a> 1.2 思路</h4>
+<h5 id="思路-1"><a class="markdownIt-Anchor" href="#思路-1"></a> 思路 1</h5>
+<p>最后一位通过和 1 进行 <strong>与运算</strong>，可以判断最后一位是否为 1；然后将要计算的数字向右移动 1 位，再计算是否最后一位是否为 1。逐渐循环，知道直到要计算的数变成 0。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hammingWeight</span><span class="params">(num <span class="keyword">uint32</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    result := <span class="number">0</span>  <span class="comment">// 保存1出现的次数</span></span><br><span class="line">	<span class="keyword">for</span> num &gt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> num&amp;<span class="number">1</span> == <span class="number">1</span> &#123;</span><br><span class="line">			result++  <span class="comment">// 最后一位是 1</span></span><br><span class="line">		&#125;</span><br><span class="line">		num &gt;&gt;= <span class="number">1</span>  <span class="comment">// 将原数右移一位</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="思路-2"><a class="markdownIt-Anchor" href="#思路-2"></a> 思路 2</h5>
+<p>某一位通过和 1 进行 <strong>与运算</strong>，可以判断该位是是否为 1。题目指定了 32 位无符号整数，那么循环 32 次，从最后一位开始逐位判断，如何向前移动？左移一位即可。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hammingWeight</span><span class="params">(num <span class="keyword">uint32</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	result := <span class="number">0</span></span><br><span class="line">	base := <span class="keyword">uint32</span>(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">32</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">if</span> base&amp;num != <span class="number">0</span> &#123;</span><br><span class="line">			result++</span><br><span class="line">		&#125;</span><br><span class="line">		base &lt;&lt;= <span class="number">1</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="思路-3"><a class="markdownIt-Anchor" href="#思路-3"></a> 思路 3</h5>
+<p>出发点：<strong>n &amp; (n-1)</strong>，会消除 n 最后一个 1。因此，<code>n &amp; (n-1)</code> 总是能把 <code>n</code>中最低位的 1 变成 0 ，并保持其他位不变。具体什么原因，暂时不做深究。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hammingWeight</span><span class="params">(num <span class="keyword">uint32</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    result := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> num &gt; <span class="number">0</span> &#123;</span><br><span class="line">		result++</span><br><span class="line">		num &amp;= num - <span class="number">1</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-判断一个数是否为-2-的幂"><a class="markdownIt-Anchor" href="#2-判断一个数是否为-2-的幂"></a> 2. 判断一个数是否为 2 的幂</h3>
+<ul>
+<li>LeetCode 题目：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/power-of-two/">231. 2 的幂</a></li>
+</ul>
+<h4 id="21-题目描述"><a class="markdownIt-Anchor" href="#21-题目描述"></a> 2.1 题目描述</h4>
+<blockquote>
+<p>给定一个整数，编写一个函数来判断它是否是 2 的幂次方。</p>
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入: 1</span><br><span class="line">输出: <span class="literal">true</span></span><br><span class="line">解释: 20 = 1</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="22-解题思路"><a class="markdownIt-Anchor" href="#22-解题思路"></a> 2.2 解题思路</h4>
+<p>如果将 2 的所有次幂的二进制写出来，你会发现这些数的规律：最高位都是 1，其余位全是 0。也就是说，如果一个数为 2 的次幂，那么它只有一个 1，而且是在最高位，同时也是最后一个 1。再回想一下上一题中的思路三，<code>n &amp; (n-1)</code> 会消除最后一个 1，于是乎：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isPowerOfTwo</span><span class="params">(n <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> n &gt; <span class="number">0</span> &amp;&amp; n&amp;(n<span class="number">-1</span>) == <span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3"><a class="markdownIt-Anchor" href="#3"></a> 3</h3>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Jemmy</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://blog.hujm.net/2020/09/22/leetcode-wei-yun-suan/">http://blog.hujm.net/2020/09/22/leetcode-wei-yun-suan/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://blog.hujm.net" target="_blank">Jemmy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/LeetCode/">LeetCode</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E7%BB%84/">数组</a><a class="post-meta__tags" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/">位运算</a></div><div class="post_share"><div class="social-share" data-image="https://pic.downk.cc/item/5f68d466160a154a67c8ff74.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2020/09/19/leetcode-san-shu-zhi-he-wen-ti/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg3.png" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">LeetCode-三数之和问题</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/09/19/leetcode-san-shu-zhi-he-wen-ti/" title="LeetCode-三数之和问题"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg3.png"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-19</div><div class="title">LeetCode-三数之和问题</div></div></a></div><div><a href="/2020/09/19/leetcode-liang-shu-zhi-he-wen-ti/" title="LeetCode-两数之和问题"><img class="cover" src="https://pic.downk.cc/item/5f65a612160a154a6789ec2f.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-19</div><div class="title">LeetCode-两数之和问题</div></div></a></div><div><a href="/2020/09/16/golang-shu-zu-qie-pian-he-zi-fu-chuan/" title="Golang-数组,切片和字符串"><img class="cover" src="https://pic.downk.cc/item/5f5fa4a5160a154a67fdbc36.png"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-16</div><div class="title">Golang-数组,切片和字符串</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By Jemmy</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    window.valine = new Valine({
+      el: '#vcomment',
+      appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+      appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+      placeholder: '欢迎评论~',
+      avatar: 'monsterid',
+      meta: 'nick,mail'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      path: window.location.pathname,
+    });
+    if ('nick,mail') { valine.config.requiredFields= 'nick,mail'.split(',') }
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else $.getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
+}
+
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.querySelector('#vcomment'),loadValine)
+  else setTimeout(() => loadValine(), 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
