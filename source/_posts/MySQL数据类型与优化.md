@@ -3,7 +3,7 @@ title: MySQL数据类型与优化
 author: JemmyHu(hujm20151021@gmail.com)
 toc: true
 mathjax: false
-summary: 这是你自定义的文章摘要内容，如果这个属性有值，文章卡片摘要就显示这段文字，否则程序会自动截取文章的部分内容作为摘要
+summary:
 categories: [技术博客, 技术细节, MySQL]
 tags: [MySQL, MySQL数据类型]
 comment: true
