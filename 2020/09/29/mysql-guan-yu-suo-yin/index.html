@@ -1,0 +1,272 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MySQL关于索引 | Jemmy's Blog</title><meta name="description" content="一、常见的索引类型  1. 哈希索引 哈希索引(Hash Index) 基于哈希表实现，只适合精确匹配，不适合范围查找。对于每一行数据，存储引擎都会使用一个哈希函数，对改行的对应索引列计算哈希code，通过 K-V 的形式保存起来，其中“K”为哈希 code，“V”是指向改行记录的指针。 使用哈希索引，有一点需要注意：如何解决哈希冲突？就目前而言，大多数使用 “链接法”——冲突之后，在原来的位置"><meta name="keywords" content="MySQL,MySQL索引"><meta name="author" content="Jemmy"><meta name="copyright" content="Jemmy"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://blog.hujm.net/2020/09/29/mysql-guan-yu-suo-yin/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="MySQL关于索引"><meta property="og:url" content="http://blog.hujm.net/2020/09/29/mysql-guan-yu-suo-yin/"><meta property="og:site_name" content="Jemmy's Blog"><meta property="og:description" content="一、常见的索引类型  1. 哈希索引 哈希索引(Hash Index) 基于哈希表实现，只适合精确匹配，不适合范围查找。对于每一行数据，存储引擎都会使用一个哈希函数，对改行的对应索引列计算哈希code，通过 K-V 的形式保存起来，其中“K”为哈希 code，“V”是指向改行记录的指针。 使用哈希索引，有一点需要注意：如何解决哈希冲突？就目前而言，大多数使用 “链接法”——冲突之后，在原来的位置"><meta property="og:image" content="https://pic.downk.cc/item/5f73fbb3160a154a67b4ff7e.jpg"><meta property="article:published_time" content="2020-09-29T12:57:29.000Z"><meta property="article:modified_time" content="2020-09-30T03:30:05.527Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-30 11:30:05'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.2.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="https://avatars1.githubusercontent.com/u/38834787?s=460&amp;u=86d024163fa24335179b43e01806edb2baba6ddc&amp;v=4" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">12</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">19</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">9</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E5%B8%B8%E8%A7%81%E7%9A%84%E7%B4%A2%E5%BC%95%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text"> 一、常见的索引类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%93%88%E5%B8%8C%E7%B4%A2%E5%BC%95"><span class="toc-number">1.1.</span> <span class="toc-text"> 1. 哈希索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-b-tree-%E7%B4%A2%E5%BC%95"><span class="toc-number">1.2.</span> <span class="toc-text"> 2. B-Tree 索引</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95%E7%AD%96%E7%95%A5"><span class="toc-number">2.</span> <span class="toc-text"> 二、高性能的索引策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%9F%A5%E8%AF%A2%E6%97%B6%E7%B4%A2%E5%BC%95%E5%88%97%E5%8D%95%E7%8B%AC%E6%94%BE%E5%9C%A8%E6%AF%94%E8%BE%83%E7%AC%A6%E5%8F%B7%E7%9A%84%E4%B8%80%E4%BE%A7"><span class="toc-number">2.1.</span> <span class="toc-text"> 1. 查询时，索引列单独放在比较符号的一侧</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%89%8D%E7%BC%80%E7%B4%A2%E5%BC%95%E5%92%8C%E7%B4%A2%E5%BC%95%E9%80%89%E6%8B%A9%E6%80%A7"><span class="toc-number">2.2.</span> <span class="toc-text"> 2. 前缀索引和索引选择性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%A4%9A%E5%88%97%E7%B4%A2%E5%BC%95"><span class="toc-number">2.3.</span> <span class="toc-text"> 3. 多列索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E5%88%97%E9%A1%BA%E5%BA%8F"><span class="toc-number">2.4.</span> <span class="toc-text"> 4. 选择合适的列顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="toc-number">2.5.</span> <span class="toc-text"> 5. 聚簇索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95"><span class="toc-number">2.6.</span> <span class="toc-text"> 6. 覆盖索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%AD%A6%E4%BC%9A%E4%BD%BF%E7%94%A8-explain"><span class="toc-number">2.7.</span> <span class="toc-text"> 7. 学会使用 EXPLAIN</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#type"><span class="toc-number">2.7.1.</span> <span class="toc-text"> type</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#extra"><span class="toc-number">2.7.2.</span> <span class="toc-text"> extra</span></a></li></ol></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(https://pic.downk.cc/item/5f73fbb3160a154a67b4ff7e.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Jemmy's Blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">MySQL关于索引</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-09-29T12:57:29.000Z" title="发表于 2020-09-29 20:57:29">2020-09-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-30T03:30:05.527Z" title="更新于 2020-09-30 11:30:05">2020-09-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/">技术博客</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/">技术细节</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/MySQL/">MySQL</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="一-常见的索引类型"><a class="markdownIt-Anchor" href="#一-常见的索引类型"></a> 一、常见的索引类型</h2>
+<h3 id="1-哈希索引"><a class="markdownIt-Anchor" href="#1-哈希索引"></a> 1. 哈希索引</h3>
+<p><strong>哈希索引(Hash Index)</strong> 基于哈希表实现，<strong>只适合精确匹配，不适合范围查找</strong>。对于每一行数据，存储引擎都会使用一个哈希函数，对改行的对应索引列计算<code>哈希code</code>，通过 <strong>K-V</strong> 的形式保存起来，其中“K”为哈希 code，“V”是指向改行记录的指针。</p>
+<p>使用哈希索引，有一点需要注意：如何解决哈希冲突？就目前而言，大多数使用 <strong>“链接法”</strong>——冲突之后，在原来的位置添加一个链表结构，多个冲突值通过链表的形式保存；当查询的时候，通过哈希 code 定位到对应的链表，之后遍历链表，直到找到符合条件的。</p>
+<p>借用《高性能 MySQL》中实例：</p>
+<p><img src="https://pic.downk.cc/item/5f732e83160a154a678581e2.png" alt="哈希索引举例" /></p>
+<p><strong>哈希索引的特点</strong>：</p>
+<ul>
+<li><strong>哈希索引只包含哈希值和行指针，不存储字段值</strong>。因此<strong>无法使用覆盖索引</strong>等相关特性；</li>
+<li>哈希索引并不按照索引值顺序存储，因此<strong>不适合排序操作</strong>；</li>
+<li>哈希索引<strong>不支持部分索引列匹配查找</strong>，因为计算哈希时，始终使用的是索引列的全部内容。例如，在数据列&lt;A, B&gt;上建立哈希索引，如果查询的只有<A>，那么无法使用该索引，因为 hash(&lt;A, B&gt;) 和 hash(<A>) 的结果一点关系都没有；</li>
+<li>哈希索引<strong>只支持等值比较</strong>( <strong>=</strong>、**IN()<strong>和 <strong>&lt;=&gt;</strong>(效果等同于等号，不过可以比较 NULL))，<strong>不支持任何的范围查询</strong>(比如 <strong>BETWEEN</strong>、</strong>&lt;**等)；</li>
+<li>访问哈希索引的速度非常快，除非出现很多的哈希冲突，此时的查询会退化成链表的遍历；</li>
+<li>如果哈希冲突很多的话，索引的维护代价将会非常高，此时对索引的增删改，回退化成对链表的增删改，**O(n)**的时间复杂度。</li>
+</ul>
+<p><strong>创建自定义的哈希索引：</strong></p>
+<p>通过一个实例来说明：</p>
+<ul>
+<li>提出问题：假如我们要存储大量的<strong>URL</strong>，同时还有通过 <strong>URL</strong> 查询该条记录的需求，应该如何建立索引？</li>
+<li>调研：如果直接在 URL 上建立索引，那么索引会很长，并且很大</li>
+<li>解决方案：删除原来 URL 上的索引，新增一个被索引的 <strong>url_crc</strong> 列，存储 URL 列被 <strong>CRC32</strong> 之后的值，之后的查询可通过这个索引来查。缺点是还要花时间维护这个索引列。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"># 建表</span><br><span class="line">CREATE TABLE url_demo (</span><br><span class="line">	id int unsigned NOT NULL auto_increment,</span><br><span class="line">    url varchar(255) NOT NULL,</span><br><span class="line">    url_crc int unsigned NOT NULL DEFAULT 0,</span><br><span class="line">    PRIMARY KEY(id)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"># 为了减少维护工作，可以创建一个触发器</span><br><span class="line">DELIMITER &#x2F;&#x2F;</span><br><span class="line">CREATE TRIGGER url_demo_crc_ins BEFORE INSERT ON url_demo FOR EACH ROW BEGIN</span><br><span class="line">SET NEW.url_crc&#x3D;crc32(NEW.url);</span><br><span class="line">END;</span><br><span class="line"></span><br><span class="line">CREATE TRIGGER url_demo_crc_upd BEFORE UPDATE ON url_demo FOR EACH ROW BEGIN</span><br><span class="line">SET NEW.url_crc&#x3D;crc32(NEW.url);</span><br><span class="line">END;</span><br><span class="line">&#x2F;&#x2F;</span><br><span class="line">DELIMITER ;</span><br><span class="line"></span><br><span class="line"># 之后可验证增删改查</span><br><span class="line">INSERT INTO url_deml(url) VALUES(&quot;https:&#x2F;&#x2F;www.baidu.com&quot;);</span><br><span class="line">SELECT * FROM url_demo;</span><br><span class="line">+----+-----------------------+------------+</span><br><span class="line">| id | url                   | url_crc    |</span><br><span class="line">+----+-----------------------+------------+</span><br><span class="line">|  1 | https:&#x2F;&#x2F;www.baidu.com | 3010065587 |</span><br><span class="line">+----+-----------------------+------------+</span><br><span class="line">UPDATE url_demo SET url&#x3D;&quot;https:&#x2F;&#x2F;www.google.com&quot; WHERE id&#x3D;1;</span><br><span class="line">SELECT * FROM url_demo;</span><br><span class="line">+----+------------------------+-----------+</span><br><span class="line">| id | url                    | url_crc   |</span><br><span class="line">+----+------------------------+-----------+</span><br><span class="line">|  1 | https:&#x2F;&#x2F;www.google.com | 857627499 |</span><br><span class="line">+----+------------------------+-----------+</span><br><span class="line"></span><br><span class="line"># 查询某个具体的URL时，必须使用下面的查询方法：</span><br><span class="line">SELECT * FROM url_demo WHERE url_crc&#x3D;CRC32(&quot;https:&#x2F;&#x2F;www.google.com&quot;) AND url&#x3D;&quot;https:&#x2F;&#x2F;www.google.com&quot;;</span><br></pre></td></tr></table></figure>
+<h3 id="2-b-tree-索引"><a class="markdownIt-Anchor" href="#2-b-tree-索引"></a> 2. B-Tree 索引</h3>
+<p>当人们谈论索引时，如果没有特别指明类型，那多半说的是 <strong>B-Tree 索引</strong>。它使用 <strong>B 树</strong>(部分引擎使用 <strong>B+树</strong>)作为底层的数据结构，这通常意味着被索引的值都是按顺序存储的(首先是个 <strong>二叉排序树</strong>)，并且每一个叶子节点到根节点的举例相同(变形的 <strong>多叉排序树</strong>)。树的深度和表的大小直接相关。</p>
+<p>假如我们有如下数据表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE people (</span><br><span class="line">	last_name varchar(64) NOT NULL,</span><br><span class="line">    first_name varchar(64) NOT NULL,</span><br><span class="line">    dob date NOT NULL,</span><br><span class="line">    gender enum(&#39;m&#39;,&#39;f&#39;) NOT NULL,</span><br><span class="line">    key(last_name, first_name, dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>下图显示了该索引时如何组织数据的：</p>
+<p><img src="https://pic.downk.cc/item/5f732e68160a154a6785775e.jpg" alt="B-Tree索引组织数据实例" /></p>
+<p>以下情况，索引(<code>key(last_name, first_name, bob)</code>)是有效的：</p>
+<ul>
+<li><strong>全值匹配</strong>：指查询的列和索引中的列完全匹配(字段以及对应的字段顺序)，例如 <code>SELECT * FROM people WHERE last_name= ‘Allen’ AND first_name = 'Cuba' AND bob = '1960-01-01'</code>；</li>
+<li><strong>最左前缀匹配</strong>：索引的顺序非常重要：
+<ul>
+<li>可以匹配所有<code>last_name = ‘Allen’</code>的人，因为 <code>last_name</code> 是索引列中最左边的；</li>
+<li>可以只匹配某一列的值得开头部分，如 <code>last_name</code> 全部以 <code>K</code> 开头，即 <code>last_name like 'K%’</code>，注意，这里也是针对最左边的列；</li>
+<li>可以匹配 <code>last_name</code> 在 <code>Allen</code> 和 <code>Barrymore</code> 之间的人，即 <code>last_name &gt; ‘Allen’ AND last_name &lt; 'Barrymore’</code>，这里也是针对最左边列；</li>
+<li>精准访问某一列并范围匹配另一列：例如第一列<code>last_name</code>全匹配，第二列<code>first_nbame</code> 范围匹配；或者<code>last_name</code>和<code>first_name</code>全匹配，第三列<code>bob</code>范围匹配。</li>
+</ul>
+</li>
+<li><strong>只访问索引的查询</strong>：即 <strong>覆盖索引</strong>。即<code>select</code>的字段就属于索引列，而不用通过“回表”再拿一次。关于覆盖索引，后面会详细介绍。</li>
+</ul>
+<p>以下情况，索引会失效（即不会使用之前创建的索引 <code>key(last_name, first_name, bob)</code>）：</p>
+<ul>
+<li><strong>单独列非最左列，索引失效</strong>，即 如果不是按照索引的最左列开始查找，无法使用索引。例如：无法查找 <code>WHERE first_name = ‘Bill’</code>；例如 <code>WHERE bob = '1960-01-01’</code>；例如 <code>WHERE first_name like 'K%'</code>。因为查询的列都不是该索引的最左列。同理，<code>WHERE last_name like '%L’</code>也会失效。</li>
+<li><strong>跳过某一列，索引失效</strong>。即 <code>WHERE last_name='Allen' AND bob='1960-01-01’</code>也不会使用该索引，因为跳过了列<code>first_name</code>。</li>
+<li><strong>某列范围查询，右边所有列无法使用索引优化查询</strong>。如 <code>WHERE last_name='Allen' AND first_name like ‘J%’ AND bob='1960-01-01’</code>，那么 <code>bob</code> 列无法使用索引优化查询，因为中间的<code>first_name LIKE</code>是一个范围条件。</li>
+</ul>
+<p><strong>如果使用<code>B-Tree</code>，创建多列索引时，列的顺序非常重要！</strong></p>
+<h2 id="二-高性能的索引策略"><a class="markdownIt-Anchor" href="#二-高性能的索引策略"></a> 二、高性能的索引策略</h2>
+<p>正确地创建和使用索引是实现高性能查询的基础。下面介绍如何正确地运用索引。</p>
+<h3 id="1-查询时索引列单独放在比较符号的一侧"><a class="markdownIt-Anchor" href="#1-查询时索引列单独放在比较符号的一侧"></a> 1. 查询时，索引列单独放在比较符号的一侧</h3>
+<p>如果查询中的列不是独立的，则 MySQL 不会使用索引。 <strong>独立的列</strong> 是指索引列<strong>不能是表达式的一部分</strong>，也<strong>不能是函数的参数</strong>。</p>
+<p>下面这个查询就无法使用<code>score</code>列的索引：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM student WHRER score + 1 &#x3D; 90;</span><br></pre></td></tr></table></figure>
+<p>我们都知道上述查询中表达式的值是 89，但是<strong>MySQL 无法解析这个方程式</strong>。<strong>我们应该养成简化 MySQL<code>WHERE</code>条件的习惯，始终将索引列单独放在比较符号的一侧。</strong></p>
+<h3 id="2-前缀索引和索引选择性"><a class="markdownIt-Anchor" href="#2-前缀索引和索引选择性"></a> 2. 前缀索引和索引选择性</h3>
+<p><strong>索引选择性</strong>是指 不重复的索引数(I) 和 数据表的记录总数(S) 的比值，即 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>I</mi><mi mathvariant="normal">/</mi><mi>S</mi></mrow><annotation encoding="application/x-tex">I/S</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mord">/</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span></span></span></span>，根据其计算方式可知，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>I</mi><mi mathvariant="normal">/</mi><mi>S</mi><mo>&lt;</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">I/S &lt;= 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mord">/</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>，并且索引选择性越高，查询性能越高，因为索引选择性高的索引可以让 MySQL 在查询的时候 过滤掉更多行。单一列的索引的选择性是 1，是最好的。</p>
+<p>既然单一列的索引选择性是最好的，我们为什么还要讨论这个问题？想一下要对 某一些很长的列建立索引，这时索引会变的非常大，有可能出现索引文件远大于数据文件的情况。这个时候对整个字段建立索引就显得不太明智，此时索引选择性可以作为一个辅助工具，帮助我们 <strong>选择足够长的前缀以保持较高的选择性，同时又不能太长</strong>。</p>
+<p>如何选择合适的前缀长度？方法是 计算完整列的选择性，然后逐个计算前缀的选择性，选择最接近完整列的那一个。</p>
+<p>假如完整列的选择性为 <strong>0.0312</strong>，而不同前缀长度对应的选择性结果为：</p>
+<p><img src="https://pic.downk.cc/item/5f732e49160a154a67856be7.png" alt="索引选择性" /></p>
+<p>当长度大于 7 时，再增加前缀长度，性能提升的幅度就已经很小了。于是建立索引：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE demo ADD KEY(city(7));</span><br></pre></td></tr></table></figure>
+<p><strong>优点</strong>：使索引又快又小的这种方法；</p>
+<p><strong>缺点</strong>：无法使用前缀索引进行 <strong>GROUP BY</strong> 和 <strong>ORDER BY</strong>，也无法进行<strong>覆盖扫描(覆盖索引)</strong>。</p>
+<h3 id="3-多列索引"><a class="markdownIt-Anchor" href="#3-多列索引"></a> 3. 多列索引</h3>
+<p>我们经常会听到有人说“把 WHERE 条件里面的列都建上索引”这种模糊的建议，但事实上，如果不从实际出发，大多数情况下，<strong>在多个列上简历单独的索引并不能提高 MySQL 的查询性能</strong>。</p>
+<p>MySQL 5.0 之后引入了一种叫 <strong>索引合并(Index Merge)</strong> 的策略，一定程度上可以提高多个单列索引查询时的性能。</p>
+<blockquote>
+<p>关于 <strong>索引合并</strong> ，看这篇文章：<a target="_blank" rel="noopener" href="https://my.oschina.net/liwanghong/blog/4275172">索引合并</a></p>
+</blockquote>
+<p>在以下情况下，建议使用多列索引而不是在每个单独列上建立索引：</p>
+<ul>
+<li>当出现对多个索引做<strong>相交操作</strong>时(通常是多个 <code>AND</code> 操作)，这通常意味着需要一个包含所有相关列的多列索引，而不是多个独立的单列索引；</li>
+<li>当出现对多个索引做<strong>联合操作</strong>时(通常是多个 <code>OR</code> 操作)，通常需要耗费大量的 CPU 和内存用以对结果的缓存、归并和排序上，特别是某些索引的选择性不高时，需要合并扫描大量的数据。</li>
+</ul>
+<h3 id="4-选择合适的列顺序"><a class="markdownIt-Anchor" href="#4-选择合适的列顺序"></a> 4. 选择合适的列顺序</h3>
+<p>当使用 <strong>B-Tree</strong> 索引时，由于其“最左匹配”的性质，索引列的顺序往往意味着索引首先按照最左列进行排序，然后是第二列。对于如何选择多列索引的顺序，有一个经验法则： <strong>将选择性最高的列放在索引最前列</strong>。</p>
+<h3 id="5-聚簇索引"><a class="markdownIt-Anchor" href="#5-聚簇索引"></a> 5. 聚簇索引</h3>
+<p>MySQL 的 InnoDB 索引数据结构是 B+树，主键索引叶子节点的值存储的就是 MySQL 的数据行，普通索引的叶子节点的值存储的是主键值，这是了解聚簇索引和非聚簇索引的前提。</p>
+<p>首先，用一句话解释什么是聚簇索引：找到了索引就找到了需要的数据，那么这个索引就是聚簇索引。所以主键就是聚簇索引。</p>
+<p>对应地，什么是非聚簇索引？也称二级索引，索引的存储和数据的存储是分离的，在 InnoDB 引擎中，二级索引中存储的是主键值，先通过查找二级索引得到对应的主键值，再通过主键值<strong>回表</strong>查询需要的字段。</p>
+<blockquote>
+<p>二级索引使用主键值当做行的指针，会让二级索引占用更多的空间，换来的好处是，InnoDB 在移动行时无需更新索引中的这个指针——这样的策略减少了当出现行移动或者数据页分裂时二级索引的维护工作。</p>
+</blockquote>
+<p>在 InnoDB 中，主键一定是聚簇索引，InnoDB 一定有主键(如果没有手动设定，InnoDB 会默认创建一个)，并且一张表只允许有一个聚簇索引。</p>
+<p><strong>建议：InnoDB 中应该尽可能按照主键的顺序去插入数据，一般使用一个递增的 bigint 类型 作为主键。最差的情况是使用值完全随机的列如 UUID 作为主键！</strong></p>
+<h3 id="6-覆盖索引"><a class="markdownIt-Anchor" href="#6-覆盖索引"></a> 6. 覆盖索引</h3>
+<p>前面提到过，InnoDB 中，非聚簇索引所存储的值为主键值，要想获得其他列的值，还要进行一个被称为 <strong>“回表”</strong> 的操作——也就是说，使用非聚簇索引查询更多列，要进行两次查询。但是想一想，如果我们差的刚好就是主键 id，如 <code>SELECT id FROM student WHERE name='Tom';</code>，此时我们需要的列就在二级索引中，不需要再执行“回表”操作，这个操作，可以极大地提高性能。</p>
+<p>如果一个索引包含(或者说 覆盖) 所有查询的字段的值，我们就称为**“覆盖索引”**。</p>
+<p><strong>为什么覆盖索引能提高性能？因为减少了“回表”的操作，减少了很多次随机 IO。</strong></p>
+<h3 id="7-学会使用-explain"><a class="markdownIt-Anchor" href="#7-学会使用-explain"></a> 7. 学会使用 EXPLAIN</h3>
+<p>在需要执行的 SQL 语句前面加上<code>EXPLAIN</code>，可以查询和分析这条 SQL 语句的执行记录，对我们优化查询效率有很大的帮助。</p>
+<p>先看一个<code>EXPLAIN</code>的示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysq&gt; explain select * from city\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: city</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: ALL</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: NULL</span><br><span class="line">      key_len: NULL</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 366</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: NULL</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>其他的几个列暂时不考虑，只对 <code>type</code> 和 <code>EXTRA</code> 做记录：</p>
+<h4 id="type"><a class="markdownIt-Anchor" href="#type"></a> type</h4>
+<p>关联类型，或访问类型——MySQL 如何查找表中的行。以下按照从最差到最优的方式介绍：</p>
+<ul>
+<li><strong>ALL</strong>： 全表扫描。</li>
+<li><strong>index</strong>：按照索引次序扫描。跟全表扫描一样，只不过扫描时按照索引顺序进行而不是按照每一行。它的优点是：避免了排序操作。缺点是：要承担按索引次序读取整个表的开销(如果是非聚簇索引，那么索引次序是有序的，但存储的主键不一定是有序的，回表的时候进行的就是随机 IO，此时开销会更大，还不如 ALL)。如果在<code>EXTRA</code>列中看到“<code>Using index</code>”，说明 MySQL 正在使用<strong>覆盖索引</strong>。</li>
+<li><strong>range</strong>：范围扫描，即带有<code>WHERE</code>或<code>BETWEEN</code>或<code>&lt;</code>等比较符号的查询语句。比全表扫描好一些，因为不需要遍历全部索引，只需要从满足条件的行开始计算。开销与<code>index</code>相同。</li>
+<li><strong>ref</strong>：<strong>非主键</strong> <strong>非唯一索引</strong> 等值查找。</li>
+<li><strong>eq_ref</strong>：<strong>主键索引</strong> 或 <strong>非空唯一索引</strong> 进行等值查找。</li>
+<li><strong>cost</strong>：常量连接，表最多只有一行匹配，通常用于 <strong>主键</strong> 或者 <strong>唯一索引</strong> 进行等值比较。</li>
+<li><strong>system</strong>：系统表，少量数据，往往不需要进行磁盘 <code>IO</code> (可以当成 <code>cost</code> 连接的特例)</li>
+</ul>
+<h4 id="extra"><a class="markdownIt-Anchor" href="#extra"></a> extra</h4>
+<p><code>extra</code> 表示 <code>MySQL</code> 如何解析这条查询，参数更多地显示一些关于索引的信息。它的最常用的选值如下：</p>
+<ul>
+<li><strong><code>using index</code></strong>：表示本次查询将使用 <strong>覆盖索引</strong>，避免了 <strong>回表</strong> 的操作，即 <strong><code>where</code> 筛选条件是索引的前导列</strong> 并且 <strong><code>select</code> 选择的列被索引覆盖</strong>，没有 <strong>回表</strong> 操作。</li>
+<li><strong><code>using where</code></strong>：限制了哪一行，也就是说，读取结束之后使用了 <code>Table Filter</code> 进行了过滤。不管查询条件有没有覆盖索引，只要筛选条件没有使用索引，就会有 <code>using where</code>。</li>
+<li><strong><code>using where; using index</code></strong>：查询的列被索引覆盖，但是 <strong>筛选条件不是前导列</strong> 或者 <strong>筛选条件是前导列但是使用了范围查询</strong>。</li>
+<li><strong><code>NULL</code></strong>：查询的列未被索引覆盖，但是筛选条件使用了索引的前导列。这种情况意味着用到了索引，但是 <code>select</code> 的字段没有被索引覆盖，因此还要进行 <strong>回表</strong> 操作，“不是纯粹地使用索引，也没有完全用到索引”，所以为 <code>NULL</code>(没有信息)。</li>
+<li><strong><code>using index condition</code></strong>：查询的列没有被索引全部覆盖，筛选条件使用了索引的前导列的范围查询 或者 查询条件使用到了索引但还有一些别的条件。</li>
+</ul>
+<p>上面的这些情形可以用下面这个表格总结：<br />
+<img src="https://pic.downk.cc/item/5f73fa83160a154a67b4c4b5.png" alt="MySQL extra信息" /></p>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Jemmy</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://blog.hujm.net/2020/09/29/mysql-guan-yu-suo-yin/">http://blog.hujm.net/2020/09/29/mysql-guan-yu-suo-yin/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://blog.hujm.net" target="_blank">Jemmy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/MySQL/">MySQL</a><a class="post-meta__tags" href="/tags/MySQL%E7%B4%A2%E5%BC%95/">MySQL索引</a></div><div class="post_share"><div class="social-share" data-image="https://pic.downk.cc/item/5f73fbb3160a154a67b4ff7e.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2020/09/24/pai-xu-suan-fa/"><img class="next-cover" src="https://pic.downk.cc/item/5f6b97cf160a154a67054cc8.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">排序算法</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/09/14/mysql-shu-ju-lei-xing-yu-you-hua/" title="MySQL数据类型与优化"><img class="cover" src="https://i0.wp.com/blog.toright.com/wp-content/uploads/2016/09/MySQL-Logo.png?fit=213%2C188&ssl=1"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-14</div><div class="title">MySQL数据类型与优化</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By Jemmy</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    window.valine = new Valine({
+      el: '#vcomment',
+      appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+      appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+      placeholder: '欢迎评论~',
+      avatar: 'monsterid',
+      meta: 'nick,mail'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      path: window.location.pathname,
+    });
+    if ('nick,mail') { valine.config.requiredFields= 'nick,mail'.split(',') }
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else $.getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
+}
+
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.querySelector('#vcomment'),loadValine)
+  else setTimeout(() => loadValine(), 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
