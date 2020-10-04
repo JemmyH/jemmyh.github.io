@@ -203,7 +203,7 @@ index_post_content:
 # toc (目錄)
 toc:
   enable: true
-  number: true
+  number: false
   auto_open: true # auto open the sidebar
 
 post_copyright:
