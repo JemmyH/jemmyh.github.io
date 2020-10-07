@@ -992,7 +992,7 @@ static dictEntry *dictGenericDelete(dict *d, const void *key, int nofree)
 
 ### 4. 跳表
 
-会有专门的一篇文章来讲。
+会有专门的一篇文章来讲。看这里：[跳表原理以及 Golang 实现](https://jemmyh.github.io/2020/10/05/tiao-biao/)
 
 ### 5. 整数集合
 
