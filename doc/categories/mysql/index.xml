@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MySQL on Jemmy&#39;s blog</title>
+    <link>http://localhost:1313/categories/mysql/</link>
+    <description>Recent content in MySQL on Jemmy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Tue, 29 Sep 2020 20:57:29 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/mysql/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL关于索引</title>
+      <link>http://localhost:1313/post/mysql%E5%85%B3%E4%BA%8E%E7%B4%A2%E5%BC%95/</link>
+      <pubDate>Tue, 29 Sep 2020 20:57:29 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/mysql%E5%85%B3%E4%BA%8E%E7%B4%A2%E5%BC%95/</guid>
+      <description>一、常见的索引类型 1. 哈希索引 哈希索引(Hash Index) 基于哈希表实现，只适合精确匹配，不适合范围查找。对于每一行数据，存储引擎都会使用一个哈希函数</description>
+    </item>
+    
+    <item>
+      <title>MySQL数据类型与优化</title>
+      <link>http://localhost:1313/post/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%B8%8E%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Mon, 14 Sep 2020 01:37:04 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%B8%8E%E4%BC%98%E5%8C%96/</guid>
+      <description>选择优化的数据类型 MySQL 支持多种数据类型，但是每个类型都有自己适合的场景，选对类型对性能的提高至关重要。以下原则仅供参考： 更小的通常更好 一般情况</description>
+    </item>
+    
+  </channel>
+</rss>

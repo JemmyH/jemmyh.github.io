@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>位运算 on Jemmy&#39;s blog</title>
+    <link>http://localhost:1313/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/</link>
+    <description>Recent content in 位运算 on Jemmy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Tue, 22 Sep 2020 00:25:09 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/%E4%BD%8D%E8%BF%90%E7%AE%97/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LeetCode-位运算</title>
+      <link>http://localhost:1313/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/</link>
+      <pubDate>Tue, 22 Sep 2020 00:25:09 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/</guid>
+      <description>位运算 位运算讲究技巧，需要多积累经验。 一、背景知识 Go 语言支持的 位运算符 如下： 运算符 描述 规则 &amp;amp; 按位 与 二者同为 1 时结果才为 1，否则为 0 | 按位 或 二</description>
+    </item>
+    
+  </channel>
+</rss>

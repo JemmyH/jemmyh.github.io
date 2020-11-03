@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/zsh
 rm -rf public docs
 hugo -t even
 mv public doc
