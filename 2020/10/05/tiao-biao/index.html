@@ -1,0 +1,254 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>跳表原理以及Golang实现 | Jemmy's Blog</title><meta name="description" content="一、前言 大家应该对 二分查找算法 不陌生，二分查找之所以能达到 O(logN) 的时间复杂度，一个重要原因在于它所依赖的数据结构是数组，数组支持随机访问，可通过下标很容易地定位到中间的某个元素。但是链表就没有 随机访问数据 这个特性，要判断是否包含某个元素，只能从头开始遍历对比。但是数组有数组的局限性，比如需要连续的内存空间，插入删除操作会引起数组的扩容和元素移动；链表有链表的优势，链表不需要"><meta name="keywords" content="跳表"><meta name="author" content="Jemmy"><meta name="copyright" content="Jemmy"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://blog.hujm.net/2020/10/05/tiao-biao/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="跳表原理以及Golang实现"><meta property="og:url" content="http://blog.hujm.net/2020/10/05/tiao-biao/"><meta property="og:site_name" content="Jemmy's Blog"><meta property="og:description" content="一、前言 大家应该对 二分查找算法 不陌生，二分查找之所以能达到 O(logN) 的时间复杂度，一个重要原因在于它所依赖的数据结构是数组，数组支持随机访问，可通过下标很容易地定位到中间的某个元素。但是链表就没有 随机访问数据 这个特性，要判断是否包含某个元素，只能从头开始遍历对比。但是数组有数组的局限性，比如需要连续的内存空间，插入删除操作会引起数组的扩容和元素移动；链表有链表的优势，链表不需要"><meta property="og:image" content="https://pic.downk.cc/item/5f77e088160a154a67ede68f.png"><meta property="article:published_time" content="2020-10-04T21:32:24.000Z"><meta property="article:modified_time" content="2020-10-07T07:27:06.103Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-10-07 15:27:06'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.2.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="https://avatars1.githubusercontent.com/u/38834787?s=460&amp;u=86d024163fa24335179b43e01806edb2baba6ddc&amp;v=4" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">16</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">26</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">12</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E5%89%8D%E8%A8%80"><span class="toc-text"> 一、前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E8%B7%B3%E8%A1%A8%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="toc-text"> 二、跳表的性质</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%E8%B7%B3%E8%A1%A8%E7%9A%84-golang-%E5%AE%9E%E7%8E%B0"><span class="toc-text"> 三、跳表的 Golang 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%8F%92%E5%85%A5%E6%96%B0%E5%85%83%E7%B4%A0"><span class="toc-text"> 1. 插入新元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%9F%A5%E6%89%BE%E5%85%83%E7%B4%A0"><span class="toc-text"> 2. 查找元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0"><span class="toc-text"> 3. 删除元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%80%90%E5%B1%82%E6%89%93%E5%8D%B0%E8%B7%B3%E8%A1%A8"><span class="toc-text"> 4. 逐层打印跳表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E6%97%B6%E7%A9%BA%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="toc-text"> 四、时空复杂度分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94-%E6%80%BB%E7%BB%93"><span class="toc-text"> 五、总结</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(https://pic.downk.cc/item/5f77e088160a154a67ede68f.png)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Jemmy's Blog</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">跳表原理以及Golang实现</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-10-04T21:32:24.000Z" title="发表于 2020-10-05 05:32:24">2020-10-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-10-07T07:27:06.103Z" title="更新于 2020-10-07 15:27:06">2020-10-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/">技术博客</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/">技术细节</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/%E4%BC%98%E7%A7%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">优秀数据结构</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="一-前言"><a class="markdownIt-Anchor" href="#一-前言"></a> 一、前言</h2>
+<p>大家应该对 <strong>二分查找算法</strong> 不陌生，二分查找之所以能达到 <code>O(logN)</code> 的时间复杂度，一个重要原因在于它所依赖的数据结构是数组，数组支持随机访问，可通过下标很容易地定位到中间的某个元素。但是链表就没有 <strong>随机访问数据</strong> 这个特性，要判断是否包含某个元素，只能从头开始遍历对比。但是数组有数组的局限性，比如需要连续的内存空间，插入删除操作会引起数组的扩容和元素移动；链表有链表的优势，链表不需要先申请连续的空间，插入删除操作的效率非常高。</p>
+<p>事实上，对于一个有序的链表，我们可以通过建索引的方式，做到类似二分查找的效果。</p>
+<p>假设我们有一个已经排好序的链表(其实是一个双链表，这里为了方便，看待成单链表)：</p>
+<p><img src="https://pic.downk.cc/item/5f77dd21160a154a67ed16de.png" alt="原始链表" /></p>
+<p>如果要对这个链表进行查找，那将是 <code>O(n)</code> 的时间复杂度，我们做一些额外的工作：先对链表中每两个结点建一个索引构成一级索引，再对一级索引进行同样的操作得到二级索引：</p>
+<p><img src="https://pic.downk.cc/item/5f77e088160a154a67ede68f.png" alt="建立二级索引的链表" /></p>
+<p>当我们要查找元素 20 时，从最高层开始查，则查找路线应该是 <code>1(向右)-&gt;8(向右)-&gt;14(向下)-&gt;14(向右)-&gt;20</code>，经过了 5 个结点；如果直接在原始链表中查找，需要经过 11 个结点，速度有很明显的提升。不过你也发现了，这是典型的 <strong>空间换时间</strong> ，虽然查找速度提升了，但是需要花费空间去存储每一层的索引，占用了更大的空间。</p>
+<p>这种带多级索引的链表结构，就是我们今天要详细学习的 <strong>跳表</strong>。许多开源软件中都有使用到 <strong>跳表</strong> 这种数据结构，比如 <code>Redis</code> 中的 <code>zset</code> ，我也是最近看 <code>redis</code> 源码才发现对 <code>skiplist</code> 了解甚少，才决定专门学习一遍。</p>
+<h2 id="二-跳表的性质"><a class="markdownIt-Anchor" href="#二-跳表的性质"></a> 二、跳表的性质</h2>
+<p><strong>跳表</strong> 可以视为一个 水平排列(<code>Level</code>)、垂直排列(<code>Tower</code>) 的位置(<code>position</code>，对具体结点 <code>Entry</code> 访问的抽象) 的二维集合。跳表具有如下性质：</p>
+<ul>
+<li>
+<p><strong>由多层(<code>Level</code>)组成，最底层为第 1 层，向上一层为第 2 层，以此类推。层数不会超过规定的一个最大值 <code>LMAX</code>；</strong></p>
+</li>
+<li>
+<p><strong>每一层都是一个拥有头结点的有序列表，第 1 层的链表包含所有的元素；</strong></p>
+</li>
+<li>
+<p><strong>如果一个元素出现在第 <code>k</code> 层，那么它一定出现在第 <code>1 ~ (k-1)</code> 层；同时会按照一定的概率 <code>p</code> 出现在第 <code>k+1</code> 层。</strong> 这也是 “第 <code>k</code> 层是第 <code>k-1</code> 层的索引” 描述的体现。</p>
+</li>
+</ul>
+<p>为了节省空间，第一层之上都不存储实际数据，只有指针，包含同层下一个元素的指针 和 同列下一个元素的指针。</p>
+<p>当查找元素时，会从最顶层链表的头节点开始遍历。以升序跳表为例，如果当前节点的下一个节点包含的值比目标元素值小，则继续向右查找。如果下一个节点的值比目标值大，就转到当前层的下一层去查找。重复向右和向下的操作，直到找到与目标值相等的元素为止。以下为找到元素 20 的路径：</p>
+<p><img src="https://pic.downk.cc/item/5f77ed0f160a154a67f1543e.png" alt="跳表查找" /></p>
+<h2 id="三-跳表的-golang-实现"><a class="markdownIt-Anchor" href="#三-跳表的-golang-实现"></a> 三、跳表的 Golang 实现</h2>
+<p>跳表首先由 William Pugh 在其 1990 年的论文<a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=ftp%3A%2F%2Fftp.cs.umd.edu%2Fpub%2FskipLists%2Fskiplists.pdf">《Skip lists: A probabilistic alternative to balanced trees》</a>中提出。由该论文的题目可以知道两点：</p>
+<ul>
+<li>跳表是概率型数据结构。</li>
+<li>跳表是用来替代平衡树的数据结构。准确来说，是用来替代自平衡二叉查找树（<code>self-balancing BST</code>）的结构。</li>
+</ul>
+<p>在这里我们用 <code>Golang</code> 具体实现一遍。</p>
+<p>首先定义需要的结构体：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Node <span class="keyword">struct</span> &#123;</span><br><span class="line">    Value <span class="keyword">int</span>            <span class="comment">// 某个结点的值，为了方便理解，这里暂时使用 int</span></span><br><span class="line">    forward  []*Node     <span class="comment">// 存储该节点所有层的下一个节点的信息，纵向观察，数组的长度是固定的，为 maxLevel。</span></span><br><span class="line">    curLevel <span class="keyword">int</span>         <span class="comment">// 本节点最高层</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> SkipList <span class="keyword">struct</span> &#123;</span><br><span class="line">    head     *Node <span class="comment">// 当前结点</span></span><br><span class="line">    length   <span class="keyword">int</span>   <span class="comment">// (最后一层)总结点长度</span></span><br><span class="line">    maxLevel <span class="keyword">int</span>   <span class="comment">// 跳表的最大层</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里最让人疑惑的是 <code>forward []*Node</code> 这个属性，它用来存储该结点所有层的下一个节点。怎么理解呢？看上图，对于结点 <code>8</code> 来说，第一层该结点的下一个节点是 <code>9</code>，第二层该结点的下一个节点是 <code>10</code>，第三层该结点的下一个节点是 <code>14</code>，当 <code>maxLevel = 3</code>(代表<code>forward</code>数组长度为 3) 时，结点 <code>8</code> 的 <code>forward</code> 的应该是 <code>[9, 10, 14]</code>。</p>
+<p>当我们要定位一个元素时，从最顶层 <strong>先行后列、从上到下</strong> 进行对比。怎么个先行后列？从最顶层开始，如上图，这就选定了第一个元素 <code>1</code>，如果当前的元素比要定位的元素小并且后面的元素不为空时，将当前的位置水平向右移动(<code>p = p.forward[i]</code>)，否则，向下移动。重复这个动作，直到找到合适的位置。</p>
+<p>接下来我们还要有一个初始化 <code>SkipList</code> 的操作：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CreateSkipList 初始化一个 SkipList</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreateSkipList</span><span class="params">(base,maxLevel <span class="keyword">int</span>)</span> *<span class="title">SkipList</span></span> &#123;</span><br><span class="line">    s := <span class="built_in">new</span>(SkipList)</span><br><span class="line">    s.head = <span class="built_in">new</span>(Node)</span><br><span class="line">    s.maxLevel = maxlevel</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第一列默认全都为 base ，并且不计算在 length 中</span></span><br><span class="line">    s.head.curLevel = maxlevel - <span class="number">1</span>  <span class="comment">// 计算层数的时候，为了和 forward 数组保持一致，从第 0 层开始计数</span></span><br><span class="line">    s.head.forward = <span class="built_in">make</span>([]*Node, maxlevel)</span><br><span class="line">    s.head.Value = base</span><br><span class="line">    s.length = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们先看插入一个元素：</p>
+<h3 id="1-插入新元素"><a class="markdownIt-Anchor" href="#1-插入新元素"></a> 1. 插入新元素</h3>
+<p>第一步，确定这个元素的位置；第二步，确定这个元素应该有的层数。</p>
+<p>参考之前的性质：<strong>如果一个元素出现在第 <code>k</code> 层，那么它一定出现在第 <code>1 ~ (k-1)</code> 层；同时会按照一定的概率 <code>p</code> 出现在第 <code>k+1</code> 层</strong>。这个概率我们可以通过一个函数来解决：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SkipList)</span> <span class="title">getNodeLevel</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> level <span class="keyword">int</span> = <span class="number">0</span>  <span class="comment">// 根据性质 第1层包含所有的元素，所以第一层肯定包含这个新元素，所以默认在第一层</span></span><br><span class="line"></span><br><span class="line">    rand.Seed(time.Now().UnixNano())</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="comment">// 第 k 层 有 1/2 的概率成为 k-1 层的索引，并且不会超过最大层</span></span><br><span class="line">        <span class="keyword">if</span> rand.Intn(<span class="number">2</span>) == <span class="number">1</span> || level &gt;= s.maxLevel<span class="number">-1</span> &#123;</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">        level++</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> level</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来我们看插入的过程：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SkipList)</span> <span class="title">Insert</span><span class="params">(value <span class="keyword">int</span>)</span> <span class="params">(<span class="keyword">bool</span>, error)</span></span> &#123;</span><br><span class="line">    v, err := checkSkipListValid(s)</span><br><span class="line">    <span class="keyword">if</span> v == <span class="literal">false</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    p := s.head</span><br><span class="line">    newNode := <span class="built_in">new</span>(Node)</span><br><span class="line">    newNode.Value = value</span><br><span class="line">    newNode.forward = <span class="built_in">make</span>([]*Node, s.maxLevel)</span><br><span class="line">    level := s.getNodeLevel() <span class="comment">// 当前节点所包含的层数</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// forward []*Node 存储该节点所有层的下一个节点的信息</span></span><br><span class="line">    <span class="keyword">for</span> i := s.maxLevel - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">        <span class="comment">// 从最高层开始，向下移动</span></span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="comment">// 找到应该插入的位置</span></span><br><span class="line">            <span class="keyword">if</span> p.forward[i] != <span class="literal">nil</span> &amp;&amp; p.forward[i].Value &lt; value &#123;</span><br><span class="line">                p = p.forward[i] <span class="comment">// 不为空且插入的值比当前值大，向右移动</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 当前值的当前行的后继为空或者大于插入值，应该向下走，即 i-1</span></span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//find the last Node which match user defined IsLess() condition in i level</span></span><br><span class="line">        <span class="comment">//insert new Node after the node</span></span><br><span class="line">        <span class="comment">// 在第i层找到应该插入的最佳位置，然后在该位置插入新的节点</span></span><br><span class="line">        <span class="comment">// level层以下都有这个节点</span></span><br><span class="line">        <span class="keyword">if</span> i &lt;= level &#123;</span><br><span class="line">            <span class="comment">// 相当于链表的插入操作，新节点在当前层的下一个节点就是当前节点的后一个节点</span></span><br><span class="line">            newNode.forward[i] = p.forward[i]</span><br><span class="line">            p.forward[i] = newNode  <span class="comment">// 当前节点的后一个节点就是新节点</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    newNode.curLevel = level</span><br><span class="line">    s.length++  <span class="comment">// 更新节点长度加一</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们通过一组图来说明这个情况：</p>
+<p>加入我们设定 <code>maxLevel = 5</code>、插入节点 <code>10</code> 时得到的 <code>level = 1</code>，那么效果如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjex8ppv5uj31ja0u0qlf.jpg" alt="跳表-插入元素10" /></p>
+<p>当我们继续 <strong>插入元素 20</strong> 时，假如计算得到 <code>level = 2</code>，从上述代码第 15 行开始进去循环，从节点 <code>p = base</code> 开始遍历，在第二个 <code>for</code> 循环，也就是第 17 行里面，<code>base</code> 的 <code>forward = [10, 10, nil, nil, nil]</code> ，第 4 层和第 3 层都直接跳过。</p>
+<p>当 <code>i = 2</code> 也就是第 2 层时，<code>base.forward[2] = nil</code>，所以不会走到第 20 行，但是此时 <code>i &lt;= level</code>，于是有 <code>newNode.forward[2] = p.forward[2] = base.forward[2] = nil</code>，也就是第 2 层的下一个结点，<code>p.forward[2] = base.forward[2] = newNode</code>(结点 20)：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjexk54tq4j31es0u0ttj.jpg" alt="跳表-插入20-1" /></p>
+<p>当 <code>i = 1</code> 也就是第 1 层时，在第 19 行处，<code>base.forward[1] = 10 != nil</code>，并且 <code>10 &lt; 20</code>，因此会走到底 20 行，<code>p = p.forward[i] = base.forward[1] = 10</code>，之后跳出内层循环，来到第 30 行，同样执行赋值操作：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjexovnzzmj31es0u01ev.jpg" alt="跳表-插入20-2" /></p>
+<p>同样，当 <code>i = 0</code> 即最底下一层时，操作步骤和 <code>i=1</code> 时一样，最终效果为：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjexrhlv50j31es0u07rk.jpg" alt="跳表-插入20-3" /></p>
+<p>再比如我们 <strong>插入元素 15</strong>。假如得到的 <code>level = 0</code>，即只出现在最底层。<code>i &gt;= 1</code> 这个过程和插入 <code>20</code> 时没多大区别：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjey2df2jvj31cs0u01gv.jpg" alt="跳表-插入15-1" /></p>
+<p>当 <code>i = 0</code> 时，第 19 行代码中，<code>base.forward[0] = 10 != nil</code>，并且 ·<code>10 &lt; 15</code>，因此 <code>p = p.forward[0] = 10</code>，继续内层循环，此时发现虽然 <code>p.forward[0] = 结点10.forward[0] = 20 != nil</code>，但是 <code>20 &gt; 15</code>，因此跳出内层循环，在下面第 30 行，将 结点 15 插在了结点 10 和结点 20 的中间，效果如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjeyc2j0lyj31cs0u0x3z.jpg" alt="跳表-插入15-2" /></p>
+<h3 id="2-查找元素"><a class="markdownIt-Anchor" href="#2-查找元素"></a> 2. 查找元素</h3>
+<p>查找元素 <code>value</code> 是否在跳表中，如果存在返回对应的 <code>Node</code>，否则返回 <code>nil</code>。</p>
+<p>还是固定的遍历策略，先看代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//try to find the first node which not match the user defined IsLess() condition</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SkipList)</span> <span class="title">Search</span><span class="params">(value <span class="keyword">int</span>)</span> *<span class="title">Node</span></span> &#123;</span><br><span class="line">    p := s.head</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从最高层开始</span></span><br><span class="line">    <span class="keyword">for</span> i := s.maxLevel - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">        <span class="comment">// 从左往右</span></span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> p.forward[i] != <span class="literal">nil</span> &amp;&amp; p.forward[i] &lt; value &#123;</span><br><span class="line">                p = p.forward[i]  <span class="comment">// 当前节点的 next 不空，且当前值小于待查找值，则向右移动</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 假如我们需要查找 value=14，此时已经定位到第一层的10</span></span><br><span class="line">    p = p.forward[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 还是要再判断一下p的 value，比如我们要查找14，那 p=15 就不符合，应该返回 nil</span></span><br><span class="line">    <span class="keyword">if</span> p.Value != value &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> p</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-删除元素"><a class="markdownIt-Anchor" href="#3-删除元素"></a> 3. 删除元素</h3>
+<p>假设我们已经有了如下的跳表：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjeys1cppaj31ls0u0b29.jpg" alt="跳表示例" /></p>
+<p>代码如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SkipList)</span> <span class="title">RemoveNode</span><span class="params">(obj <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> update []*Node = <span class="built_in">make</span>([]*Node, s.maxLevel)  <span class="comment">// 用来存储被删除结点每一层的前缀</span></span><br><span class="line">    p := s.head</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := s.maxLevel - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> p.forward[i] != <span class="literal">nil</span> &amp;&amp; p.forward[i].Value &lt; obj &#123;</span><br><span class="line">                p = p.forward[i]</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        update[i] = p</span><br><span class="line">    &#125;</span><br><span class="line">    p = p.forward[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除的节点不存在</span></span><br><span class="line">    <span class="keyword">if</span> p == <span class="literal">nil</span> || p.Value &lt; obj || obj &lt; p.Value &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := p.curLevel; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">        <span class="comment">// 将被删除结点的前缀，指向删除结点的 next</span></span><br><span class="line">        update[i].forward[i] = p.forward[i]</span><br><span class="line">    &#125;</span><br><span class="line">    s.length--</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在我们想 <strong>删除结点 20</strong>。运行到第 16 行时，<code>update = [15, 10, base, base, base]</code>。<code>p = p.forward[0] = 20</code>，即此时 <code>p</code> 指向被删除的节点。在第 23 行，从 结点 <code>20</code> 的最高层开始，逐层替换掉被删除结点的前缀结点的后缀结点。</p>
+<h3 id="4-逐层打印跳表"><a class="markdownIt-Anchor" href="#4-逐层打印跳表"></a> 4. 逐层打印跳表</h3>
+<p>直接看代码：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *SkipList)</span> <span class="title">Traverse</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> p *Node = s.head</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := s.maxLevel - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> p != <span class="literal">nil</span> &#123;</span><br><span class="line">				fmt.Print(<span class="string">&quot;%d&quot;</span>,p.Value)</span><br><span class="line">				<span class="keyword">if</span> p.forward[i] != <span class="literal">nil</span> &#123;</span><br><span class="line">					fmt.Print(<span class="string">&quot;--&gt;&quot;</span>)</span><br><span class="line">				&#125;</span><br><span class="line">				p = p.forward[i]</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		fmt.Println()</span><br><span class="line">		p = s.head</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="四-时空复杂度分析"><a class="markdownIt-Anchor" href="#四-时空复杂度分析"></a> 四、时空复杂度分析</h2>
+<p>都是 <code>O(logn)</code>。具体证明方法请阅读 【参考文献】中 2 跟 3 。</p>
+<h2 id="五-总结"><a class="markdownIt-Anchor" href="#五-总结"></a> 五、总结</h2>
+<p><strong>跳表</strong> 是一个非常优秀的数据结构，在 <code>Redis</code> 中被用来作为 <code>zset</code> 的底层实现，但是 <code>Redis</code> 的实现比上述设计要复杂的多，比如其引入了 <code>span</code> 表示当前节点到下一个 <code>forward</code> 跨过了几个元素，用来快速计算排名等。</p>
+<p>不过有一点，二叉平衡树也能用来做排序查找，为什么 <code>Redis</code> 不采用树形结构呢？其实 <code>Redis</code> 的作者已经在 <a target="_blank" rel="noopener" href="https://news.ycombinator.com/item?id=1171423">这里</a> 说出了原因：</p>
+<blockquote>
+<p>There are a few reasons:</p>
+<ol>
+<li>
+<p>They are not very memory intensive. It’s up to you basically. Changing parameters about the probability of a node to have a given number of levels will make then <em>less</em> memory intensive than btrees.</p>
+</li>
+<li>
+<p>A sorted set is often target of many ZRANGE or ZREVRANGE operations, that is, traversing the skip list as a linked list. With this operation the cache locality of skip lists is at least as good as with other kind of balanced trees.</p>
+</li>
+<li>
+<p>They are simpler to implement, debug, and so forth. For instance thanks to the skip list simplicity I received a patch (already in Redis master) with augmented skip lists implementing ZRANK in O(log(N)). It required little changes to the code.</p>
+</li>
+</ol>
+<p>大致意思就是：</p>
+<p>跳表更加节省内存，并且计算随机层数的函数，可以由自己随意更改来获得更多或者更少的索引；</p>
+<p>zset 经常用来实现整体遍历操作，这一点上二者相差无几；</p>
+<p>跳表在调试的时候更容易操作一些。</p>
+</blockquote>
+<p>【参考文献】</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/GrassInWind2019/skipList/blob/master/src/skipList/skipList.go">1. Golang 跳表的实现 https://github.com/GrassInWind2019/skipList/blob/master/src/skipList/skipList.go</a></li>
+<li><a target="_blank" rel="noopener" href="https://lotabout.me/2018/skip-list/">2. 跳表时空复杂度分析 https://lotabout.me/2018/skip-list/</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/6844903955831619597">3. 一文彻底搞懂跳表的各种时间复杂度、适用场景以及实现原理</a></li>
+</ul>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Jemmy</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://blog.hujm.net/2020/10/05/tiao-biao/">http://blog.hujm.net/2020/10/05/tiao-biao/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://blog.hujm.net" target="_blank">Jemmy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%B7%B3%E8%A1%A8/">跳表</a></div><div class="post_share"><div class="social-share" data-image="https://pic.downk.cc/item/5f77e088160a154a67ede68f.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/10/07/you-xiu-zu-jian-bu-long-guo-lu-qi/"><img class="prev-cover" src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjh2o0noqwj30vp0u0qv5.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">优秀组件-布隆过滤器</div></div></a></div><div class="next-post pull-right"><a href="/2020/10/02/redis-yuan-ma-yue-du-1-ji-chu-shu-ju-jie-gou-yu-dui-xiang/"><img class="next-cover" src="https://pic.downk.cc/item/5f76adca160a154a674bc4da.png" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Redis源码阅读--1.基础数据结构与对象</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By Jemmy</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    window.valine = new Valine({
+      el: '#vcomment',
+      appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+      appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+      placeholder: '欢迎评论~',
+      avatar: 'monsterid',
+      meta: 'nick,mail'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      path: window.location.pathname,
+    });
+    if ('nick,mail') { valine.config.requiredFields= 'nick,mail'.split(',') }
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else $.getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
+}
+
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.querySelector('#vcomment'),loadValine)
+  else setTimeout(() => loadValine(), 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
