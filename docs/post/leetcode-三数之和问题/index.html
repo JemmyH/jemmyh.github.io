@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>LeetCode-三数之和问题 - Jemmy&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="JemmyHu(hujm20151021@gmail.com)" /><meta name="description" content="leetcode 上 三数之和 问题： 15. 三数之和 259. 较小的三数之和 16. 最接近的三数之和 1. 题目描述 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素a，b，" /><meta name="keywords" content="Jemmy, blog" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.5 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/leetcode-%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="LeetCode-三数之和问题" />
+<meta property="og:description" content="leetcode 上 三数之和 问题： 15. 三数之和 259. 较小的三数之和 16. 最接近的三数之和 1. 题目描述 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素a，b，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/leetcode-%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/" />
+<meta property="article:published_time" content="2020-09-19T18:57:30+00:00" />
+<meta property="article:modified_time" content="2020-09-19T18:57:30+00:00" />
+<meta itemprop="name" content="LeetCode-三数之和问题">
+<meta itemprop="description" content="leetcode 上 三数之和 问题： 15. 三数之和 259. 较小的三数之和 16. 最接近的三数之和 1. 题目描述 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素a，b，">
+<meta itemprop="datePublished" content="2020-09-19T18:57:30+00:00" />
+<meta itemprop="dateModified" content="2020-09-19T18:57:30+00:00" />
+<meta itemprop="wordCount" content="1980">
+
+
+
+<meta itemprop="keywords" content="LeetCode,数组,三数之和," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="LeetCode-三数之和问题"/>
+<meta name="twitter:description" content="leetcode 上 三数之和 问题： 15. 三数之和 259. 较小的三数之和 16. 最接近的三数之和 1. 题目描述 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素a，b，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Jemmy&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">时间线</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Jemmy&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">时间线</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">LeetCode-三数之和问题</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-19 18:57 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+            <a href="/categories/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/"> 算法题解 </a>
+            <a href="/categories/%E6%95%B0%E7%BB%84/"> 数组 </a>
+            </div>
+          <span class="more-meta"> 约 1980 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#1-题目描述">1. 题目描述</a></li>
+        <li><a href="#2-解题思路">2. 解题思路</a></li>
+        <li><a href="#3-进阶-1较小的三数之和">3. 进阶 1——较小的三数之和</a></li>
+        <li><a href="#4-进阶-2最接近的三数之和">4. 进阶 2——最接近的三数之和</a></li>
+        <li><a href="#5-总结">5. 总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p><code>leetcode</code> 上 <code>三数之和</code> 问题：</p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/3sum/">15. 三数之和</a></li>
+<li><a href="https://leetcode-cn.com/problems/3sum-smaller/">259. 较小的三数之和</a></li>
+<li><a href="https://leetcode-cn.com/problems/3sum-closest/">16. 最接近的三数之和</a></li>
+</ul>
+<h2 id="1-题目描述">1. 题目描述</h2>
+<blockquote>
+<p>给你一个包含 <code>n</code> 个整数的数组 <code>nums</code>，判断 <code>nums</code> 中是否存在三个元素<code>a，b，c</code> ，使得 <code>a + b + c = 0</code>？请你找出所有满足条件<strong>且不重复</strong>的三元组。</p>
+<p>注意：<strong>答案中不可以包含重复的三元组</strong>。</p>
+<p>示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">给定数组 <span class="nv">nums</span> <span class="o">=</span> <span class="o">[</span>-1, 0, 1, 2, -1, -4<span class="o">]</span>，
+
+满足要求的三元组集合为：
+<span class="o">[</span>
+  <span class="o">[</span>-1, 0, 1<span class="o">]</span>,
+  <span class="o">[</span>-1, -1, 2<span class="o">]</span>
+<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<h2 id="2-解题思路">2. 解题思路</h2>
+<p>直接跳过暴力解法，说说此题的思路。</p>
+<p>首先，对这个数字排一下序；</p>
+<p>之后，采取<strong>固定一个数，同时用双指针来查找另外两个数的方式</strong>求解：</p>
+<ol>
+<li>比如，先固定第一个元素，下一个元素设置为 <code>left</code> 指针，最后一个元素设置为 <code>right</code> 指针；</li>
+<li>计算这三个数之和是否为 0，如果是，这就是一组满足条件的三元组；如果不是，看结果与 0 的关系，如果小于 0，则 <code>left</code> 向右移动，再比较，如果大于 0，则 <code>right</code> 向左移动一位，再比较。</li>
+<li>当然，如果当 固定元素+left &gt; 0 或者 固定元素+right &lt; 0 时，就没必要再去比较了。</li>
+</ol>
+<p>以下是代码实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">threeSum</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="p">[][]</span><span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">result</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([][]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="nx">sort</span><span class="p">.</span><span class="nf">Ints</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span> <span class="c1">// 先给nums排序
+</span><span class="c1"></span>
+    <span class="kd">var</span> <span class="nx">pin</span><span class="p">,</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">right</span> <span class="kt">int</span> <span class="c1">// 固定 左 右指针
+</span><span class="c1"></span>    <span class="nx">l</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span>           <span class="c1">// 数组长度
+</span><span class="c1"></span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">l</span><span class="o">-</span><span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="c1">// 最外层循环为 固定指针
+</span><span class="c1"></span>
+        <span class="nx">pin</span> <span class="p">=</span> <span class="nx">i</span>
+        <span class="nx">left</span> <span class="p">=</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1">// left 为固定指针的下一个元素
+</span><span class="c1"></span>        <span class="nx">right</span> <span class="p">=</span> <span class="nx">l</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1">// right 为最后一个元素
+</span><span class="c1"></span>
+        <span class="c1">// 如果最小的大于0，不用再循环了
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="p">]</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="k">break</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 跳过 pin 相同的
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">i</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+            <span class="k">continue</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="p">{</span>
+            <span class="c1">// 找到一个三元组
+</span><span class="c1"></span>            <span class="k">if</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="p">],</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">],</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]})</span>
+                <span class="c1">// 跳过left相同的
+</span><span class="c1"></span>                <span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+                    <span class="nx">left</span><span class="o">++</span>
+                <span class="p">}</span>
+                <span class="c1">// 跳过 right 相同的
+</span><span class="c1"></span>                <span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+                    <span class="nx">right</span><span class="o">--</span>
+                <span class="p">}</span>
+                <span class="c1">// 找到之后，同时改变
+</span><span class="c1"></span>                <span class="nx">left</span><span class="o">++</span>
+                <span class="nx">right</span><span class="o">--</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+                <span class="c1">// 左指针向右移动
+</span><span class="c1"></span>                <span class="nx">left</span><span class="o">++</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">right</span><span class="o">--</span>
+            <span class="p">}</span>
+
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">result</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="3-进阶-1较小的三数之和">3. 进阶 1——较小的三数之和</h2>
+<blockquote>
+<p>给定一个长度为 n 的整数数组和一个目标值 target，寻找能够使条件 nums[i] + nums[j] + nums[k] &lt; target 成立的三元组 i, j, k 个数（0 &lt;= i &lt; j &lt; k &lt; n）。</p>
+<p>示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="nv">nums</span> <span class="o">=</span> <span class="o">[</span>-2,0,1,3<span class="o">]</span>, <span class="nv">target</span> <span class="o">=</span> <span class="m">2</span>
+输出: <span class="m">2</span>
+解释: 因为一共有两个三元组满足累加和小于 2:
+     <span class="o">[</span>-2,0,1<span class="o">]</span>
+     <span class="o">[</span>-2,0,3<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<p>直接上代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">threeSumSmaller</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">target</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">result</span> <span class="o">:=</span> <span class="mi">0</span>     <span class="c1">// 满足条件的三元组数目
+</span><span class="c1"></span>    <span class="nx">sort</span><span class="p">.</span><span class="nf">Ints</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span> <span class="c1">// 先排序
+</span><span class="c1"></span>
+    <span class="kd">var</span> <span class="nx">pin</span><span class="p">,</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">right</span> <span class="kt">int</span> <span class="c1">// 固定、左、右 指针
+</span><span class="c1"></span>    <span class="nx">l</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span>           <span class="c1">// 数组长度
+</span><span class="c1"></span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">l</span><span class="o">-</span><span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">pin</span> <span class="p">=</span> <span class="nx">i</span>      <span class="c1">// 固定指针
+</span><span class="c1"></span>        <span class="nx">left</span> <span class="p">=</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1">// 左指针指向固定指针的下一个
+</span><span class="c1"></span>        <span class="nx">right</span> <span class="p">=</span> <span class="nx">l</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1">// 右指针指向最后一个元素
+</span><span class="c1"></span>
+        <span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nx">target</span> <span class="p">{</span>
+            <span class="c1">// 说明这个 right 不能出现在三元组中, right 左移一位
+</span><span class="c1"></span>            <span class="nx">right</span><span class="o">--</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="c1">// 从 left 到 right 之间的那几对都符合条件， left 右移一位
+</span><span class="c1"></span>                <span class="nx">result</span> <span class="o">+=</span> <span class="nx">right</span> <span class="o">-</span> <span class="nx">left</span>
+                <span class="nx">left</span><span class="o">++</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">result</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="4-进阶-2最接近的三数之和">4. 进阶 2——最接近的三数之和</h2>
+<blockquote>
+<p>给定一个包括 n 个整数的数组 nums 和 一个目标值 target。找出 nums 中的三个整数，使得它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在唯一答案。</p>
+<p>示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">输入：nums <span class="o">=</span> <span class="o">[</span>-1,2,1,-4<span class="o">]</span>, <span class="nv">target</span> <span class="o">=</span> <span class="m">1</span>
+输出：2
+解释：与 target 最接近的和是 <span class="m">2</span> <span class="o">(</span>-1 + <span class="m">2</span> + <span class="nv">1</span> <span class="o">=</span> 2<span class="o">)</span> 。
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<p>代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">threeSumClosest</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">target</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">result</span> <span class="o">:=</span> <span class="nx">math</span><span class="p">.</span><span class="nx">MaxInt32</span>  <span class="c1">// 结果
+</span><span class="c1"></span>    <span class="nx">sort</span><span class="p">.</span><span class="nf">Ints</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span>          <span class="c1">// 先排序
+</span><span class="c1"></span>    <span class="kd">var</span> <span class="nx">pin</span><span class="p">,</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">right</span> <span class="kt">int</span> <span class="c1">// 固定指针 左指针 右指针
+</span><span class="c1"></span>    <span class="nx">l</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span>           <span class="c1">// 数组长度
+</span><span class="c1"></span>
+        <span class="c1">// 求绝对值
+</span><span class="c1"></span>    <span class="nx">abs</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nx">a</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">a</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 更新 result
+</span><span class="c1"></span>    <span class="nx">updateFunc</span> <span class="o">:=</span> <span class="kd">func</span><span class="p">(</span><span class="nx">sum</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nf">abs</span><span class="p">(</span><span class="nx">sum</span><span class="o">-</span><span class="nx">target</span><span class="p">)</span> <span class="p">&lt;</span> <span class="nf">abs</span><span class="p">(</span><span class="nx">result</span><span class="o">-</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">result</span> <span class="p">=</span> <span class="nx">sum</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">l</span><span class="o">-</span><span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">pin</span> <span class="p">=</span> <span class="nx">i</span>
+        <span class="nx">left</span> <span class="p">=</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="nx">right</span> <span class="p">=</span> <span class="nx">l</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="c1">// 不要重复
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">i</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+            <span class="k">continue</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="p">{</span>
+        <span class="c1">// 如果 right 左移一位，结果离得更远了，说明需要left向右移
+</span><span class="c1"></span>        <span class="c1">//result = min(result, nums[pin]+nums[left]+nums[right])
+</span><span class="c1"></span>            <span class="nx">sum</span> <span class="o">:=</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="o">+</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span> <span class="o">+</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nx">sum</span> <span class="o">==</span> <span class="nx">target</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">target</span>
+            <span class="p">}</span>
+            <span class="nf">updateFunc</span><span class="p">(</span><span class="nx">sum</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nx">sum</span> <span class="p">&gt;</span> <span class="nx">target</span> <span class="p">{</span>
+                <span class="c1">// 此时需要向左移动 right，并且移动到下一个不相等的
+</span><span class="c1"></span>                <span class="nx">tmp</span> <span class="o">:=</span> <span class="nx">right</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">tmp</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">tmp</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="p">{</span>
+                    <span class="nx">tmp</span><span class="o">--</span>
+                <span class="p">}</span>
+                <span class="nx">right</span> <span class="p">=</span> <span class="nx">tmp</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="c1">// 向右移动left
+</span><span class="c1"></span>                <span class="nx">tmp</span> <span class="o">:=</span> <span class="nx">left</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="nx">tmp</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">tmp</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span> <span class="p">{</span>
+                    <span class="nx">tmp</span><span class="o">++</span>
+                <span class="p">}</span>
+                <span class="nx">left</span> <span class="p">=</span> <span class="nx">tmp</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">result</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="5-总结">5. 总结</h2>
+<p>解决此类问题，一般都是 <strong>升序后，外层循环 + 内层双指针</strong> 思路。其中最关键的是 <strong>左右指针移动的条件</strong>，一般都是和 <code>target</code> 比大小，大于 <code>target</code> 就向左移动右指针，小于 <code>target</code> 就向右移动左指针。</p>
+<p>由此延伸到 <strong>四数之和</strong> 问题，解决思路与之类似，设置两个固定指针，即外层两个循环，剩下的处理逻辑与 <strong>三数之和</strong> 一样。
+看一下 <strong>四数之和</strong>：</p>
+<blockquote>
+<p>给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。</p>
+<p>注意：</p>
+<p><strong>答案中不可以包含重复的四元组。</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">示例：
+
+给定数组 <span class="nv">nums</span> <span class="o">=</span> <span class="o">[</span>1, 0, -1, 0, -2, 2<span class="o">]</span>，和 <span class="nv">target</span> <span class="o">=</span> 0。
+
+满足要求的四元组集合为：
+<span class="o">[</span>
+  <span class="o">[</span>-1,  0, 0, 1<span class="o">]</span>,
+  <span class="o">[</span>-2, -1, 1, 2<span class="o">]</span>,
+  <span class="o">[</span>-2,  0, 0, 2<span class="o">]</span>
+<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">fourSum</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">target</span> <span class="kt">int</span><span class="p">)</span> <span class="p">[][]</span><span class="kt">int</span> <span class="p">{</span>
+	<span class="nx">result</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([][]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+	<span class="nx">sort</span><span class="p">.</span><span class="nf">Ints</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span> <span class="c1">// 先给nums排序
+</span><span class="c1"></span>
+	<span class="kd">var</span> <span class="nx">pin1</span><span class="p">,</span> <span class="nx">pin2</span><span class="p">,</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">right</span> <span class="kt">int</span> <span class="c1">// 固定 左 右指针
+</span><span class="c1"></span>	<span class="nx">l</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span>                  <span class="c1">// 数组长度
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">l</span><span class="o">-</span><span class="mi">3</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">pin1</span> <span class="p">=</span> <span class="nx">i</span>
+        <span class="c1">// 不要重复
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">i</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+			<span class="k">continue</span>
+		<span class="p">}</span>
+		<span class="k">for</span> <span class="nx">j</span> <span class="o">:=</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">j</span> <span class="p">&lt;</span> <span class="nx">l</span><span class="o">-</span><span class="mi">2</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">{</span>
+			<span class="nx">pin2</span> <span class="p">=</span> <span class="nx">j</span>
+			<span class="nx">left</span> <span class="p">=</span> <span class="nx">j</span> <span class="o">+</span> <span class="mi">1</span>
+			<span class="nx">right</span> <span class="p">=</span> <span class="nx">l</span> <span class="o">-</span> <span class="mi">1</span>
+
+            <span class="c1">// 不要重复
+</span><span class="c1"></span>			<span class="k">if</span> <span class="nx">j</span> <span class="p">&gt;</span> <span class="nx">i</span><span class="o">+</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+				<span class="k">continue</span>
+			<span class="p">}</span>
+
+			<span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="p">{</span>
+                <span class="c1">// 相等
+</span><span class="c1"></span>				<span class="k">if</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin1</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">pin2</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="o">==</span> <span class="nx">target</span> <span class="p">{</span>
+					<span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="nx">nums</span><span class="p">[</span><span class="nx">pin1</span><span class="p">],</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin2</span><span class="p">],</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">],</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]})</span>
+					<span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">{</span>
+						<span class="nx">left</span><span class="o">++</span>
+					<span class="p">}</span>
+					<span class="k">for</span> <span class="nx">left</span> <span class="p">&lt;</span> <span class="nx">right</span> <span class="o">&amp;&amp;</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="p">{</span>
+						<span class="nx">right</span><span class="o">--</span>
+					<span class="p">}</span>
+					<span class="nx">left</span><span class="o">++</span>
+					<span class="nx">right</span><span class="o">--</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="nx">nums</span><span class="p">[</span><span class="nx">pin1</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">pin2</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">left</span><span class="p">]</span><span class="o">+</span><span class="nx">nums</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span> <span class="p">&gt;</span> <span class="nx">target</span> <span class="p">{</span>
+					<span class="nx">right</span><span class="o">--</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">left</span><span class="o">++</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">result</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">JemmyHu(hujm20151021@gmail.com)</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-09-19 18:57
+        
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/leetcode/">LeetCode</a>
+          <a href="/tags/%E6%95%B0%E7%BB%84/">数组</a>
+          <a href="/tags/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/">三数之和</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">LeetCode-位运算</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/leetcode-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/">
+            <span class="next-text nav-default">LeetCode-两数之和问题</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+        el: '#vcomments' ,
+        appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+        appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+        notify:  true ,
+        verify:  false ,
+        avatar:'monsterid',
+        placeholder: '欢迎留言~',
+        visitor:  false 
+    });
+  </script>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hujm20151021@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/JemmyH" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

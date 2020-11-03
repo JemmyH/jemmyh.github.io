@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Golang-关于函数调用 - Jemmy&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="JemmyHu(hujm20151021@gmail.com)" /><meta name="description" content="一、 前言 我们完成程序的编写之后，经过编译，编译器会将我们的程序编译成一行行机器指令，放到一个可执行文件中；程序执行时，可执行文件被加载到内存" /><meta name="keywords" content="Jemmy, blog" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.5 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/golang-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Golang-关于函数调用" />
+<meta property="og:description" content="一、 前言 我们完成程序的编写之后，经过编译，编译器会将我们的程序编译成一行行机器指令，放到一个可执行文件中；程序执行时，可执行文件被加载到内存" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/golang-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8/" />
+<meta property="article:published_time" content="2020-09-15T02:05:36+00:00" />
+<meta property="article:modified_time" content="2020-09-15T02:05:36+00:00" />
+<meta itemprop="name" content="Golang-关于函数调用">
+<meta itemprop="description" content="一、 前言 我们完成程序的编写之后，经过编译，编译器会将我们的程序编译成一行行机器指令，放到一个可执行文件中；程序执行时，可执行文件被加载到内存">
+<meta itemprop="datePublished" content="2020-09-15T02:05:36+00:00" />
+<meta itemprop="dateModified" content="2020-09-15T02:05:36+00:00" />
+<meta itemprop="wordCount" content="2625">
+
+
+
+<meta itemprop="keywords" content="Golang,函数调用," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Golang-关于函数调用"/>
+<meta name="twitter:description" content="一、 前言 我们完成程序的编写之后，经过编译，编译器会将我们的程序编译成一行行机器指令，放到一个可执行文件中；程序执行时，可执行文件被加载到内存"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Jemmy&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">时间线</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Jemmy&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">时间线</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Golang-关于函数调用</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-15 02:05 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
+            <a href="/categories/golang/"> Golang </a>
+            </div>
+          <span class="more-meta"> 约 2625 字 </span>
+          <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#一-前言">一、 前言</a></li>
+        <li><a href="#二函数栈帧">二、函数栈帧</a></li>
+        <li><a href="#三函数调用过程">三、函数调用过程</a></li>
+        <li><a href="#四传参与返回值">四、传参与返回值</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="一-前言">一、 前言</h2>
+<p>我们完成程序的编写之后，经过编译，编译器会将我们的程序编译成一行行机器指令，放到一个可执行文件中；程序执行时，可执行文件被加载到内存，机器执行被放置到虚拟内存的“代码段”，并分配以及初始化程序运行过程中需要的堆栈。会形成如下的结构：</p>
+<p><img src="https://pic.downk.cc/item/5f5f3367160a154a67e001fe.png" alt="函数调用概览"></p>
+<ul>
+<li>
+<p>最上面为高地址，最下面为低地址，分配时由高地址向低地址增长。函数的地址由低地址向高地址方向存放。</p>
+</li>
+<li>
+<p>从高地址到低地址依次为 栈空间、堆空间、全局静态变量区(数据区)、代码区。</p>
+</li>
+</ul>
+<h2 id="二函数栈帧">二、函数栈帧</h2>
+<p>函数执行时需要由足够的内存空间，用于存放 <strong>局部变量</strong>、<strong>返回值</strong>、<strong>参数</strong>等，这段空间对应内存中的栈。栈最上面是高地址，向下增长。</p>
+<p><img src="https://pic.downk.cc/item/5f5f337e160a154a67e00804.png" alt="函数栈概览"></p>
+<p>分配给函数的栈空间，称为 <strong>函数栈帧(function stack frame)</strong>，栈底称为 <strong>栈基(bp)</strong>，栈顶称为 <strong>栈指针(sp)</strong>。函数调用结束后又会释放这个栈帧。bp 和 sp 始终指向正在执行的函数的栈帧。如果出现 A 调用 B，B 调用 C，C 调用 D，那么会出现由上到下分别为<code>A的栈帧-&gt;B的栈帧-&gt;C的栈帧-&gt;D的栈帧</code>的情况:</p>
+<p><img src="https://pic.downk.cc/item/5f5f33a3160a154a67e013bd.png" alt="函数调用栈帧"></p>
+<p>计算机执行函数时，会有专门的寄存器存放栈基 bp、栈指针 sp 和下一条要执行的指令 ip。</p>
+<p>所有的函数的栈帧布局都遵循统一的约定，所以被调用者是通过栈指针加上偏移量来定位到每个参数和返回值的。</p>
+<p>Go 在分配栈帧时是 <strong>一次性分配</strong>(主要是为了防止栈访问越界) ：(首先函数栈帧的空间在编译时期是可以确定的)确定栈基 bp，然后直接将栈指针 sp 移到所需最大栈空间的位置。之后通过<strong>栈指针 sp+偏移值</strong>这种相对寻址方式来使用函数栈帧。(例如需要将 3 和 4 依次入栈，则对应的指令分别是 sp+16 处存放 3，sp+8 处存放 4)</p>
+<p>由于函数栈帧的大小，可以在编译时期确定，对于栈消耗较大的函数，Go 编译器会在函数头部加上检测代码，如果发现需要进行栈增长，就会另外分配一块足够大的栈空间，并把原来栈上的数据拷过来，同时释放掉原来的栈空间。</p>
+<h2 id="三函数调用过程">三、函数调用过程</h2>
+<p>有两个指令：<code>call</code> 和 <code>ret</code>。函数 call 指令实现跳转，而每个函数开始时都会分配栈帧，结束前又会释放自己的栈帧，ret 指令又会把栈恢复到之前的样子。</p>
+<p><code>call</code>的过程：</p>
+<ol>
+<li>将下一条指令的地址入栈，这就是返回地址，被调用函数执行结束后会回到这里；</li>
+<li>跳转到被调用函数的入口处执行，这后面就是被调用函数的栈帧了。</li>
+</ol>
+<p><code>ret</code>过程：</p>
+<ol>
+<li>弹出返回地址；</li>
+<li>跳转到这个返回地址</li>
+</ol>
+<p>Go 与 C 语言不同的是，C 是通过寄存器和栈传递参数和返回值的，而 Go 是通过栈。下面通过举例说明 Go 中一个栈帧的结构以及函数调用过程中栈帧的变化：</p>
+<p>设有函数 A 和 B，在 A 内部调用了 B：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">A</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">x</span><span class="p">,</span><span class="nx">y</span> <span class="o">:=</span> <span class="mi">2</span><span class="p">,</span><span class="mi">3</span>
+    <span class="nx">z</span> <span class="o">:=</span> <span class="nf">B</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">z</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">B</span><span class="p">(</span><span class="nx">m</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">k</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">m</span> <span class="o">+</span> <span class="nx">n</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>首先需要了解的是，**被调用者的参数和返回值，都在调用者的函数栈帧中。**它们在栈中的顺序由上到下依次是：</p>
+<ol>
+<li>A 的局部变量</li>
+<li>被调用函数 B 的返回值</li>
+<li>传递给被调用函数 B 的参数(注意，参数顺序与实际书写书序相反)</li>
+<li>B 调用结束后的返回地址(A 中调用 B 之后要执行的命令，即 fmt.Println(x, y, z))</li>
+<li>调用者 A 的 bp</li>
+</ol>
+<p>结构如下：</p>
+<p><img src="https://pic.downk.cc/item/5f5f333b160a154a67dff3a1.png" alt="栈帧细节"></p>
+<p>而具体执行上述代码第 3 行也就是函数调用的详细过程如下：</p>
+<ol>
+<li>执行 call 函数：
+a. 将调用者的下一条指令(第 4 行代码)入栈，这就是返回地址，被调用函数执行结束后会回到这里；
+b. 跳转到被调用者处(修改 ip 寄存器的值)</li>
+<li>在被调用函数开始处有三步：
+a. 将 sp 向下移动到足够的空间处(如 sp-24 处)；
+b. 调用者栈基(当前 bp 的值)入栈(调用者栈)(如存放到 sp+16 处)；</li>
+<li>此时 bp 的值是被调用者 B 的栈基</li>
+<li>结果是：bp 和 sp 始终指向正在执行的函数的栈帧；</li>
+<li>接下来执行被调用函数剩下的部分；
+a. 被调用者结束调用时，在 ret 函数前面还有两步：
+​ 1). 恢复调用者的栈基 bp 地址——第 2 步中的第 2 步，将栈该处的值赋给寄存器 bp
+​ 2). 释放自己的栈帧空间——第 2 步中的第 1 步，分配时向下移动了 24，则释放时向上移动多少</li>
+<li>结果是：此时 bp 和 sp 已经恢复到调用者的栈帧了</li>
+<li>执行 ret 步骤：
+a. 弹出 call 指令的返回地址(对应过程 1 中的第 1 步)
+b. 跳转到弹出的这个地址(修改 ip 寄存器)</li>
+<li>结果是：“被调用者”调用完毕，执行的是调用者的下一个指令，即调用完成(执行完被调用者)后，继续执行调用者函数。</li>
+</ol>
+<p>如果在 B 中出现了<code>defer</code>操作，那么应该先执行<code>defer</code>，还是先执行<code>return</code>呢，还是先执行<code>ret</code>过程呢？</p>
+<p>答案是：<strong>Go 中的 return 并不是真正的返回</strong>，真正的返回操作是<code>ret</code>操作，<strong><code>return</code>的作用仅仅是给返回值赋值</strong>，之后再执行<code>defer</code>操作，最后才是<code>ret</code>过程(释放自己的栈帧)。</p>
+<h2 id="四传参与返回值">四、传参与返回值</h2>
+<p>理论部分已经全部说完了，下面通过一些实战来加深理解：</p>
+<ul>
+<li>为何有时通过函数交换变量位置却不成功？</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">swap</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="p">,</span><span class="nx">b</span> <span class="p">=</span> <span class="nx">b</span><span class="p">,</span><span class="nx">a</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="p">,</span><span class="nx">b</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">,</span><span class="mi">2</span>
+    <span class="nf">swap</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span> <span class="c1">// 输出 1 2
+</span><span class="c1"></span>
+    <span class="c1">// 交换失败
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>过程如下：</p>
+<ol>
+<li>函数第 6 行，栈中从上到下为 a=1, b=2（对应<strong>1.A 的局部变量</strong>）</li>
+<li>函数第 7 行，栈中入栈 b=2, a=1(入栈顺序与调用顺序相反)(没有返回值，对应<strong>3.传递给被调用函数 B 的参数</strong>)</li>
+<li>执行 “a,b = b,a”，交换的是第 7 行入栈的两个变量而不是第 6 行入栈的调用者的局部变量</li>
+<li>执行 ret 过程，返回之后，栈中 A 的局部变量并没有被改变，所以还是 a=1, b=2</li>
+</ol>
+<p>再看下面的函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">swap</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="o">*</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+ <span class="o">*</span><span class="nx">a</span><span class="p">,</span> <span class="o">*</span><span class="nx">b</span> <span class="p">=</span> <span class="o">*</span><span class="nx">b</span><span class="p">,</span> <span class="o">*</span><span class="nx">a</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="p">,</span><span class="nx">b</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">,</span><span class="mi">2</span>
+    <span class="nf">swap</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">b</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span> <span class="c1">// 输出 2 1
+</span><span class="c1"></span>
+    <span class="c1">// 交换成功
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>过程如下：</p>
+<ol>
+<li>函数第 6 行，栈中从上到下为 a=1, b=2（对应<strong>1.A 的局部变量</strong>）</li>
+<li>函数第 7 行，栈中入栈 b=2 的地址, a=1 的地址(对应<strong>3.传递给被调用函数 B 的参数</strong>)</li>
+<li>执行 “*a,*b = *b,*a”，传递的是 A 中变量的地址，实际上进行的是 A 中的变量的 b 和 A 中的变量的 a 交换</li>
+<li>执行 ret 过程，返回之后，栈中 A 的局部变量被改变</li>
+</ol>
+<ul>
+<li>有返回值，匿名返回值</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">incr1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+ <span class="kd">var</span> <span class="nx">b</span> <span class="kt">int</span>
+
+ <span class="k">defer</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">a</span><span class="o">++</span>
+  <span class="nx">b</span><span class="o">++</span>
+ <span class="p">}()</span>
+
+ <span class="nx">a</span><span class="o">++</span>
+ <span class="nx">b</span> <span class="p">=</span> <span class="nx">a</span>
+ <span class="k">return</span> <span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span>
+ <span class="nx">b</span> <span class="p">=</span> <span class="nf">incr1</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+ <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="c1">// 输出 0 1
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>过程如下：<strong>前面说过，return 的作用相当于给返回值赋值，之后再执行 defer 函数，之后才是 ret 过程</strong></p>
+<ol>
+<li>第 15 行，栈中从上到下为 a=0, b=0</li>
+<li>第 16 行，<strong>incr1 的返回值，默认 0 值</strong></li>
+<li>第 2 行，incr1 的局部变量 b=0</li>
+<li>第 9 行，incr1 的参数 a=0，自增后变成 2</li>
+<li>第 10 行，incr1 的局部变量 b=1</li>
+<li>第 11 行，<strong>incr1 的返回值被改变为 1</strong></li>
+<li>之后执行 defer 函数，incr1 的局部变量 a=3，incr1 的局部变量 b=1(注意，这里改变的是 incr1 的局部变量，而不是返回值)</li>
+<li>返回，<strong>返回值依旧是 1</strong></li>
+</ol>
+<ul>
+<li>有返回值，非匿名返回值(命名返回值)</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">incr2</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+ <span class="k">defer</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">a</span><span class="o">++</span>
+  <span class="nx">b</span><span class="o">++</span>
+ <span class="p">}()</span>
+
+ <span class="nx">a</span><span class="o">++</span>
+ <span class="k">return</span> <span class="nx">a</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span>
+ <span class="nx">b</span> <span class="p">=</span> <span class="nf">incr1</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+ <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="c1">// 输出 0 2
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>过程与上述类似，只不过返回值变成了 incr1 中的 b，在第 8 步时首先被赋值 1，之后再 defer 中又自增，变成 2，因此返回值变成了 2。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">JemmyHu(hujm20151021@gmail.com)</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-09-15 02:05
+        
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/golang/">Golang</a>
+          <a href="/tags/%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8/">函数调用</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/golang-%E6%95%B0%E7%BB%84-%E5%88%87%E7%89%87%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Golang-数组,切片和字符串</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%B8%8E%E4%BC%98%E5%8C%96/">
+            <span class="next-text nav-default">MySQL数据类型与优化</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+        el: '#vcomments' ,
+        appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+        appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+        notify:  true ,
+        verify:  false ,
+        avatar:'monsterid',
+        placeholder: '欢迎留言~',
+        visitor:  false 
+    });
+  </script>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hujm20151021@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/JemmyH" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
