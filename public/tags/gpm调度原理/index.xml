@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>GPM调度原理 on Even - A super concise theme for Hugo</title>
+    <title>GPM调度原理 on Jemmy&#39;s blog</title>
     <link>http://localhost:1313/tags/gpm%E8%B0%83%E5%BA%A6%E5%8E%9F%E7%90%86/</link>
-    <description>Recent content in GPM调度原理 on Even - A super concise theme for Hugo</description>
+    <description>Recent content in GPM调度原理 on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
+    <language>zh-cn</language>
     <lastBuildDate>Fri, 18 Sep 2020 01:53:29 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/gpm%E8%B0%83%E5%BA%A6%E5%8E%9F%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Golang-GPM调度原理</title>

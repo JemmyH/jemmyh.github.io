@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>两数之和 on Even - A super concise theme for Hugo</title>
+    <title>两数之和 on Jemmy&#39;s blog</title>
     <link>http://localhost:1313/tags/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/</link>
-    <description>Recent content in 两数之和 on Even - A super concise theme for Hugo</description>
+    <description>Recent content in 两数之和 on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
+    <language>zh-cn</language>
     <lastBuildDate>Sat, 19 Sep 2020 13:22:24 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>LeetCode-两数之和问题</title>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>基础数据结构 on Even - A super concise theme for Hugo</title>
+    <title>基础数据结构 on Jemmy&#39;s blog</title>
     <link>http://localhost:1313/tags/%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</link>
-    <description>Recent content in 基础数据结构 on Even - A super concise theme for Hugo</description>
+    <description>Recent content in 基础数据结构 on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
+    <language>zh-cn</language>
     <lastBuildDate>Fri, 02 Oct 2020 12:31:41 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Redis源码阅读--1.基础数据结构与对象</title>

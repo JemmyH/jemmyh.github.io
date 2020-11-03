@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>MySQL数据类型 on Even - A super concise theme for Hugo</title>
+    <title>MySQL数据类型 on Jemmy&#39;s blog</title>
     <link>http://localhost:1313/tags/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</link>
-    <description>Recent content in MySQL数据类型 on Even - A super concise theme for Hugo</description>
+    <description>Recent content in MySQL数据类型 on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
+    <language>zh-cn</language>
     <lastBuildDate>Mon, 14 Sep 2020 01:37:04 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL数据类型与优化</title>
