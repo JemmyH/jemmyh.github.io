@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Golang-unsafe包详解 - Even - A super concise theme for Hugo</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="JemmyHu(hujm20151021@gmail.com)" /><meta name="description" content="1. Go语言指针的限制 go语言中也有指针，但相对C语言的指针来说，有了很多限制，但这也算是go的成功之处：既可以享受指针带来的便利，又避免了指" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.5 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/2020/09/17/golang-unsafe%E5%8C%85%E8%AF%A6%E8%A7%A3/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Golang-unsafe包详解" />
+<meta property="og:description" content="1. Go语言指针的限制 go语言中也有指针，但相对C语言的指针来说，有了很多限制，但这也算是go的成功之处：既可以享受指针带来的便利，又避免了指" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/2020/09/17/golang-unsafe%E5%8C%85%E8%AF%A6%E8%A7%A3/" />
+<meta property="article:published_time" content="2020-09-17T01:53:29+00:00" />
+<meta property="article:modified_time" content="2020-09-17T01:53:29+00:00" />
+<meta itemprop="name" content="Golang-unsafe包详解">
+<meta itemprop="description" content="1. Go语言指针的限制 go语言中也有指针，但相对C语言的指针来说，有了很多限制，但这也算是go的成功之处：既可以享受指针带来的便利，又避免了指">
+<meta itemprop="datePublished" content="2020-09-17T01:53:29+00:00" />
+<meta itemprop="dateModified" content="2020-09-17T01:53:29+00:00" />
+<meta itemprop="wordCount" content="3310">
+
+
+
+<meta itemprop="keywords" content="Golang,unsafe包," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Golang-unsafe包详解"/>
+<meta name="twitter:description" content="1. Go语言指针的限制 go语言中也有指针，但相对C语言的指针来说，有了很多限制，但这也算是go的成功之处：既可以享受指针带来的便利，又避免了指"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Even</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Even</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Golang-unsafe包详解</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-17 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
+            <a href="/categories/golang/"> Golang </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#1-go语言指针的限制">1. <code>Go</code>语言指针的限制</a></li>
+        <li><a href="#2-unsafe包介绍">2. <code>unsafe</code>包介绍</a></li>
+        <li><a href="#3-unsafe包的使用场景">3. <code>unsafe</code>包的使用场景</a>
+          <ul>
+            <li><a href="#场景一访问并修改-struct-的私有属性">场景一：访问并修改 <code>struct</code> 的私有属性</a></li>
+            <li><a href="#场景二-利用unsafe获取-slice-的长度">场景二： 利用<code>unsafe</code>获取 slice 的长度</a></li>
+            <li><a href="#场景三实现string和byte-的零拷贝转换">场景三：实现<code>string</code>和<code>[]byte</code> 的零拷贝转换</a></li>
+          </ul>
+        </li>
+        <li><a href="#4-unsafesizeofstruct-的本质">4. <code>unsafe.Sizeof(struct) 的本质</code></a></li>
+        <li><a href="#5-参考文献">5. 参考文献</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="1-go语言指针的限制">1. <code>Go</code>语言指针的限制</h2>
+<p><code>go</code>语言中也有指针，但相对<code>C语言</code>的指针来说，有了很多限制，但这也算是<code>go</code>的成功之处：既可以享受指针带来的便利，又避免了指针过度使用带来的危险。主要的限制如下：</p>
+<ol>
+<li><code>go</code>中指针不能进行数学运算;</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">num</span> <span class="o">:=</span> <span class="mi">1</span>
+    <span class="nx">pNum</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">num</span>
+
+    <span class="nx">pNum</span><span class="o">++</span>  <span class="c1">// invalid operation: p++ (non-numeric type *int)
+</span><span class="c1"></span><span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>不同类型的指针不能相互转换</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">a</span> <span class="kt">int</span>
+    <span class="nx">a</span> <span class="p">=</span> <span class="mi">10</span>
+
+    <span class="kd">var</span> <span class="nx">f</span> <span class="o">*</span><span class="kt">float32</span>
+    <span class="nx">f</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">a</span>  <span class="c1">// cannot use &amp;a (type *int) as type *float32 in assignment
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>不同类型的指针之间不能使用<code>==</code>或<code>!=</code>进行比较，也不能相互赋值</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">a</span> <span class="kt">int</span>
+    <span class="kd">var</span> <span class="nx">b</span> <span class="kt">float32</span>
+
+    <span class="nx">a</span> <span class="p">=</span> <span class="mi">1</span>
+    <span class="nx">b</span> <span class="p">=</span> <span class="mf">3.14</span>
+
+    <span class="nx">pa</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">a</span>
+    <span class="nx">pb</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">b</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">pa</span> <span class="o">==</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">pa</span> <span class="o">==</span> <span class="nx">pb</span><span class="p">)</span>  <span class="c1">// invalid operation: pa == pb (mismatched types *int and *float32)
+</span><span class="c1"></span>    <span class="nx">pa</span> <span class="p">=</span> <span class="nx">pb</span>  <span class="c1">// cannot use pb (type *float32) as type *int in assignment
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>只有在两个指针类型相同或者可以相互转换的情况下，才可以对两者进行比较。另外，指针可以通过 <code>==</code> 和 <code>!=</code> 直接和 <code>nil</code> 作比较。</p>
+<h2 id="2-unsafe包介绍">2. <code>unsafe</code>包介绍</h2>
+<p><code>unsafe</code> 包，“不安全”，为何不安全？是因为它可以使得用户绕过 <code>go</code> 的类型规范检查，能够对指针以及其指向的区域进行读写操作，即“允许程序无视 type 体系对任意类型内存进行读写”。因此使用时要格外小心。</p>
+<p><code>unsafe</code>包中只有很简单的几个函数和定义:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">
+<span class="kn">package</span> <span class="nx">unsafe</span>
+
+<span class="c1">// 任意go表达式的类型。只是为了文档而声明的类型，实际上它并不是unsafe包的一部分
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ArbitraryType</span> <span class="kt">int</span>
+
+<span class="c1">// 任意类型代表的指针
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Pointer</span> <span class="o">*</span><span class="nx">ArbitraryType</span>
+
+<span class="c1">// 返回对象x所占有的的内存大小(byte为单位)，不包含x中引用类型所占有的内存大小
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Sizeof</span><span class="p">(</span><span class="nx">x</span> <span class="nx">ArbitraryType</span><span class="p">)</span> <span class="kt">uintptr</span>
+
+<span class="c1">// 返回x所在结构体的起始内存地址到x所对应属性两者距离，单位为byte，参数x的格式应该是structValue.field
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Offsetof</span><span class="p">(</span><span class="nx">x</span> <span class="nx">ArbitraryType</span><span class="p">)</span> <span class="kt">uintptr</span>
+
+<span class="c1">// 内存对齐时使用，这里暂时不研究
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Alignof</span><span class="p">(</span><span class="nx">x</span> <span class="nx">ArbitraryType</span><span class="p">)</span> <span class="kt">uintptr</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>与此同时，<code>unsafe</code>包提供了两个很重要的功能：</p>
+<ol>
+<li><code>任何类型的指针</code> 和 <code>unsafe.Pointer</code> 可以相互转换。</li>
+<li><code>uintptr</code> 类型和 <code>unsafe.Pointer</code> 可以相互转换。</li>
+</ol>
+<p>即 <code>任何数据类型的指针 &lt;----&gt; unsafe.Pointer &lt;----&gt; uintptr</code></p>
+<p>上述的功能有何用途？答： <strong><code>Pointer</code>允许程序无视 type 体系对任意类型内存进行读写</strong>。</p>
+<p>如何理解这句话？因为<code>unsafe.Pointer</code>不能直接进行数学运算，但是我们可以将其转换成<code>uintptr</code>，对<code>uintptr</code>进行对应的数学运算(比如内存复制与内存偏移计算)，计算之后再转换成<code>unsafe.Pointer</code>类型。</p>
+<p>有了这个基础，我们可以干好多“见不得光”的事，比如 底层类型相同的数组之间的转换、使用 sync/atomic 包中的一些函数、访问并修改 <code>Struct</code> 的私有字段等场景。</p>
+<h2 id="3-unsafe包的使用场景">3. <code>unsafe</code>包的使用场景</h2>
+<h3 id="场景一访问并修改-struct-的私有属性">场景一：访问并修改 <code>struct</code> 的私有属性</h3>
+<p>先从一个 demo 开始：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<span class="c1">// unsafe修改struct私有属性
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">user</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">name</span> <span class="kt">string</span>
+    <span class="nx">age</span>  <span class="kt">int</span>
+    <span class="nx">company</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">u</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span>  <span class="c1">// A
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="o">*</span><span class="nx">u</span><span class="p">)</span>  <span class="c1">// { 0}
+</span><span class="c1"></span>
+    <span class="nx">uName</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="kt">string</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">u</span><span class="p">))</span>  <span class="c1">// B
+</span><span class="c1"></span>    <span class="o">*</span><span class="nx">uName</span> <span class="p">=</span> <span class="s">&#34;Jemmy&#34;</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="o">*</span><span class="nx">u</span><span class="p">)</span>  <span class="c1">// {Jemmy 0}
+</span><span class="c1"></span>
+    <span class="nx">uAge</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="kt">int</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nb">uintptr</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">u</span><span class="p">))</span> <span class="o">+</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Offsetof</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">age</span><span class="p">)))</span>  <span class="c1">// C
+</span><span class="c1"></span>    <span class="o">*</span><span class="nx">uAge</span> <span class="p">=</span> <span class="mi">23</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="o">*</span><span class="nx">u</span><span class="p">)</span>  <span class="c1">// {Jemmy 23}
+</span><span class="c1"></span>
+    <span class="nx">uCompany</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="kt">string</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nb">uintptr</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">u</span><span class="p">))</span> <span class="o">+</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Offsetof</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">company</span><span class="p">)))</span>  <span class="c1">// D
+</span><span class="c1"></span>    <span class="o">*</span><span class="nx">uCompany</span> <span class="p">=</span> <span class="s">&#34;吹牛逼技术有限公司&#34;</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="o">*</span><span class="nx">u</span><span class="p">)</span>  <span class="c1">// {Jemmy 23 吹牛逼技术有限公司}
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在 A 处，我们新建一个<code>user</code>对象，使用<code>new</code>直接返回此类对象的指针。在这里要注意，在<code>go</code>中，对一个<code>struct</code>进行内存分配，实际上是分配的一块连续的空间，而<code>new</code>返回的指针，其实是<code>struct</code>中第一个元素的地址。</p>
+<p>通过上面的介绍我们知道，<code>unsafe.Offsetof(x ArbitraryType)</code> <strong>返回 x 所在结构体的起始内存地址到 x 所对应属性两者距离，单位为 <code>byte</code>，参数 x 的格式应该是 <code>structValue.field</code></strong>，那么<code>unsafe.Offsetof(u.name)</code>指的就是 <code>u</code>的起始地址，到属性<code>name</code>之间有多少个<code>byte</code>。</p>
+<p>在 C 处，因为<code>unsafe.Pointer</code>不能直接参与数学运算，所以我们先转换成<code>uintptr</code>类型，然后与<code>unsafe.Offsetof(u.age)</code>相加，就是<code>u</code>的属性<code>age</code>的地址，为<code>uintptr</code>类型，之后再转换为<code>unsafe.Pointer</code>，即可通过强制类型转换，直接去修改该属性的值。</p>
+<p>再来看 B 处，因为<code>u</code>的地址就是其第一个属性<code>name</code>的地址，可以直接获取到。其实我们可以改成和 C 处相似的结构：<code>uName := (*string)(unsafe.Pointer(uintptr(unsafe.Pointer(u)) + unsafe.Offsetof(u.name)))</code>，效果一样。</p>
+<p>**注意!!!**上面 C 处的语句的加号两边的对象不能直接拆开去写，也就是说，不能写成:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">tmp</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">u</span><span class="p">))</span>
+<span class="nx">uAge</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="kt">int</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">tmp</span> <span class="o">+</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Offsetof</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">age</span><span class="p">)))</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>原因是，<code>uintptr</code>这个临时变量，本身就是一个很大的整数，而程序经过一些很大的计算之后，涉及到栈的扩容，扩容之后，原来的对象的内存位置发生了偏移，而 <code>uintptr</code> 所指的整数对应的地址也就发生了变化。这个时候再去使用，由于这个整数指的地址已经不是原来的地址了，会出现意想不到的 bug。</p>
+<h3 id="场景二-利用unsafe获取-slice-的长度">场景二： 利用<code>unsafe</code>获取 slice 的长度</h3>
+<p>通过查看对应的源代码，我们知道<code>slice header</code>的结构体定义为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">slice</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">array</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>    <span class="c1">// 元素指针 1字节
+</span><span class="c1"></span>    <span class="nx">len</span> <span class="kt">int</span>                 <span class="c1">// 长度 1字节
+</span><span class="c1"></span>    <span class="nx">cap</span> <span class="kt">int</span>                 <span class="c1">// 指针 1字节
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当我们调用<code>make</code>函数创建一个新的<code>slice</code>后，底层调用的是<code>makeslice</code>，返回的是<code>slice</code>结构体:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">makeslice</span><span class="p">(</span><span class="nx">et</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">len</span><span class="p">,</span> <span class="nx">cap</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">slice</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>因此，我们可以通过<code>unsafe.Pointer</code>和<code>uintptr</code>进行转换，得到 slice 的字段值：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">s</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+    <span class="c1">// slice结构体中，array类型为pointer，占1个字节8位，uintptr(unsafe.Pointer(&amp;s))表示s的地址也是第一个属性array的地址，那么加上属性array的长度，就是下一个属性len的长度
+</span><span class="c1"></span>    <span class="kd">var</span> <span class="nx">sLen</span> <span class="p">=</span> <span class="p">(</span><span class="o">*</span><span class="kt">int</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nb">uintptr</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">))</span> <span class="o">+</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">8</span><span class="p">)))</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="o">*</span><span class="nx">sLen</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">))</span> <span class="c1">// 10 10
+</span><span class="c1"></span>
+    <span class="c1">// 16的原因同上
+</span><span class="c1"></span>    <span class="kd">var</span> <span class="nx">sCap</span> <span class="p">=</span> <span class="p">(</span><span class="o">*</span><span class="kt">int</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nb">uintptr</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">))</span> <span class="o">+</span> <span class="nb">uintptr</span><span class="p">(</span><span class="mi">16</span><span class="p">)))</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="o">*</span><span class="nx">sCap</span><span class="p">,</span> <span class="nb">cap</span><span class="p">(</span><span class="nx">s</span><span class="p">))</span> <span class="c1">// 20 20
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="场景三实现string和byte-的零拷贝转换">场景三：实现<code>string</code>和<code>[]byte</code> 的零拷贝转换</h3>
+<p>一般的做法，都需要遍历字符串或 bytes 切片，再挨个赋值。</p>
+<p>在反射包<code>src/reflect/value.go</code>中，有下面的结构体定义：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">StringHeader</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Data</span> <span class="kt">uintptr</span>
+    <span class="nx">Len</span>  <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">SliceHeader</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Data</span> <span class="kt">uintptr</span>
+    <span class="nx">Len</span>  <span class="kt">int</span>
+    <span class="nx">Cap</span>  <span class="kt">int</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>因此，只需共享底层的<code>Data</code>和<code>Len</code>即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">stringToBytes</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)[]</span><span class="kt">byte</span><span class="p">{</span>
+    <span class="k">return</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="p">[]</span><span class="kt">byte</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">bytesToString</span><span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span><span class="kt">string</span><span class="p">{</span>
+    <span class="k">return</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="kt">string</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">b</span><span class="p">))</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="4-unsafesizeofstruct-的本质">4. <code>unsafe.Sizeof(struct) 的本质</code></h2>
+<p>先看源码注释：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Sizeof takes an expression x of any type and returns the size in bytes
+</span><span class="c1">// of a hypothetical variable v as if v was declared via var v = x.
+</span><span class="c1">// The size does not include any memory possibly referenced by x.
+</span><span class="c1">// For instance, if x is a slice, Sizeof returns the size of the slice
+</span><span class="c1">// descriptor, not the size of the memory referenced by the slice.
+</span><span class="c1">// The return value of Sizeof is a Go constant.
+</span><span class="c1">// 返回对象x所占有的的内存大小(byte为单位)，不包含x中引用类型所占有的内存大小
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">Sizeof</span><span class="p">(</span><span class="nx">x</span> <span class="nx">ArbitraryType</span><span class="p">)</span> <span class="kt">uintptr</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这其中比较有意思的是 <strong><code>unsafe.Sizeof(a struct)</code>的结果</strong>问题，即一个<code>struct</code>的 size 值为多少的问题。</p>
+<p>我们来观察一个有趣的事实：<strong>一个<code>struct</code>的 size 依赖于它内部的属性的排列顺序</strong>，即两个属性相同但排列顺序不同的<code>struct</code>的 size 值可能不同。</p>
+<p>比如，下面这个结构体 A 的 size 是 32：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="kd">struct</span> <span class="nx">A</span><span class="p">{</span>
+    <span class="nx">a</span> <span class="kt">bool</span>
+    <span class="nx">b</span> <span class="kt">string</span>
+    <span class="nx">c</span> <span class="kt">bool</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>而另一个和它有相同属性的结构体 B 的 size 是 24:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="kd">struct</span> <span class="nx">B</span><span class="p">{</span>
+    <span class="nx">a</span> <span class="kt">bool</span>
+    <span class="nx">c</span> <span class="kt">bool</span>
+    <span class="nx">b</span> <span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这都是 <strong>内存对齐</strong>在捣鬼。我们看一下 A 和 B 的内存位置：
+<img src="https://pic.downk.cc/item/5f5f5567160a154a67e8ec80.png" alt="struct内存位置"></p>
+<p>如上图所示，左边为<code>struct A</code>，右边为<code>struct B</code>。而<code>Aligment</code>可以使 1,2,4 或者 8。对 A 来说，<code>a bool</code>占一个 byte，而下一个属性是<code>b string</code>，占 16 个 byte(后面会说明为什么占 2 个字节)，因此无法进行内存对齐；而对 B 来说，<code>a bool</code>和<code>c bool</code>可以放在同一个 byte 中。</p>
+<p>在<code>Golang</code>中，各类型所占的 byte 如下</p>
+<ul>
+<li>bool,int8,uint8 &ndash;&gt; 1 byte</li>
+<li>int16,uint16 &ndash;&gt; 2 byte</li>
+<li>int32,uint32,float32 &ndash;&gt; 4 byte</li>
+<li>int,int64,uint64,float64,pointer &ndash;&gt; 8 byte</li>
+<li>string &ndash;&gt; 16 byte (两个字节)</li>
+<li>任何 slice &ndash;&gt; 24 byte(3 个字节)</li>
+<li>长度为 n 的 array &ndash;&gt; n*对应的 type 的长度</li>
+</ul>
+<blockquote>
+<p>为什么<code>string</code>占到 2 个字节？因为 <code>string</code> 底层也是一个结构体，该结构体有两个域，第一个域是指向该字符串的指针，第二个域是字符串的长度，每个域占 8 个字节；</p>
+<p>为什么任意类型的<code>slice</code>占到 3 个字节？同理，<code>slice</code>底层也是一个结构体，有三个域：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// runtime/slice.go
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">slice</span> <span class="kd">struct</span> <span class="p">{</span>
+   <span class="nx">array</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="c1">// 元素指针 1个字节
+</span><span class="c1"></span>   <span class="nx">len</span>   <span class="kt">int</span> <span class="c1">// 长度 8个byte 1个字节
+</span><span class="c1"></span>   <span class="nx">cap</span>   <span class="kt">int</span> <span class="c1">// 容量 8个byte 1个字节
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<p>说到这里，你也应该明白了，<code>unsafe.Sizeof</code>总是在编译期就进行求值，而不是在运行时，而且是根据类型来求值，而和具体的值无关。(这意味着，<code>unsafe.Sizeof</code>的返回值可以赋值给<code>const</code>即常量)</p>
+<p>可以通过下面的 demo 输出，判断你的掌握程度：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">
+<span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">type</span> <span class="nx">user</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">name</span>    <span class="kt">string</span> <span class="c1">// 2字节
+</span><span class="c1"></span>    <span class="nx">age</span>     <span class="kt">int</span>    <span class="c1">// 1字节
+</span><span class="c1"></span>    <span class="nx">company</span> <span class="kt">string</span> <span class="c1">// 2字节
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="nx">user</span><span class="p">{}))</span>              <span class="c1">// 输出40，5个字节，看 struct user 注释
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>                  <span class="c1">// 输出8，因为int占1字节
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">([]</span><span class="kt">bool</span><span class="p">{</span><span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">}))</span> <span class="c1">// 输出24，任何slice都输出24
+</span><span class="c1"></span>    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Sizeof</span><span class="p">([][]</span><span class="kt">string</span><span class="p">{}))</span>        <span class="c1">// 输出24，任何slice都输出24，即使是多维数组
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="5-参考文献">5. 参考文献</h2>
+<ul>
+<li><a href="https://qcrao91.gitbook.io/go/biao-zhun-ku/unsafe/go-zhi-zhen-he-unsafe.pointer-you-shi-mo-qu-bie">码农桃花源—标准库&ndash;unsafe</a></li>
+<li><a href="https://stackoverflow.com/questions/2113751/sizeof-struct-in-go">sizeof-struct-in-go</a></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">JemmyHu(hujm20151021@gmail.com)</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-09-17
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/golang/">Golang</a>
+          <a href="/tags/unsafe%E5%8C%85/">unsafe包</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/2020/09/18/golang-gpm%E8%B0%83%E5%BA%A6%E5%8E%9F%E7%90%86/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Golang-GPM调度原理</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/2020/09/16/golang-%E6%95%B0%E7%BB%84%E5%88%87%E7%89%87%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+            <span class="next-text nav-default">Golang-数组,切片和字符串</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>olOwOlo</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

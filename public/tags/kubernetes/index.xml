@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kubernetes on Even - A super concise theme for Hugo</title>
+    <link>http://localhost:1313/tags/kubernetes/</link>
+    <description>Recent content in kubernetes on Even - A super concise theme for Hugo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 13 Sep 2020 01:07:32 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>关于docker</title>
+      <link>http://localhost:1313/2020/09/13/%E5%85%B3%E4%BA%8Edocker/</link>
+      <pubDate>Sun, 13 Sep 2020 01:07:32 +0000</pubDate>
+      
+      <guid>http://localhost:1313/2020/09/13/%E5%85%B3%E4%BA%8Edocker/</guid>
+      <description>这是你自定义的文章摘要内容，如果这个属性有值，文章卡片摘要就显示这段文字，否则程序会自动截取文章的部分内容作为摘要</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>LeetCode-两数之和问题 - Even - A super concise theme for Hugo</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="JemmyHu(hujm20151021@gmail.com)" /><meta name="description" content="leetcode 上 twoSum 相关的问题： 1. 两数之和 167. 两数之和 II - 输入有序数组 170. 两数之和 III .数据结构设计 1. 问题描述 给定一个整数数组 nums 和一个目标值 target，请你在" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.5 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/2020/09/19/leetcode-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="LeetCode-两数之和问题" />
+<meta property="og:description" content="leetcode 上 twoSum 相关的问题： 1. 两数之和 167. 两数之和 II - 输入有序数组 170. 两数之和 III .数据结构设计 1. 问题描述 给定一个整数数组 nums 和一个目标值 target，请你在" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/2020/09/19/leetcode-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/" />
+<meta property="article:published_time" content="2020-09-19T13:22:24+00:00" />
+<meta property="article:modified_time" content="2020-09-19T13:22:24+00:00" />
+<meta itemprop="name" content="LeetCode-两数之和问题">
+<meta itemprop="description" content="leetcode 上 twoSum 相关的问题： 1. 两数之和 167. 两数之和 II - 输入有序数组 170. 两数之和 III .数据结构设计 1. 问题描述 给定一个整数数组 nums 和一个目标值 target，请你在">
+<meta itemprop="datePublished" content="2020-09-19T13:22:24+00:00" />
+<meta itemprop="dateModified" content="2020-09-19T13:22:24+00:00" />
+<meta itemprop="wordCount" content="895">
+
+
+
+<meta itemprop="keywords" content="LeetCode,数组,两数之和," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="LeetCode-两数之和问题"/>
+<meta name="twitter:description" content="leetcode 上 twoSum 相关的问题： 1. 两数之和 167. 两数之和 II - 输入有序数组 170. 两数之和 III .数据结构设计 1. 问题描述 给定一个整数数组 nums 和一个目标值 target，请你在"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Even</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Even</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">LeetCode-两数之和问题</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-19 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+            <a href="/categories/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/"> 算法题解 </a>
+            <a href="/categories/%E6%95%B0%E7%BB%84/"> 数组 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#1-问题描述">1. 问题描述</a></li>
+        <li><a href="#2-解决思路">2. 解决思路</a></li>
+        <li><a href="#3-进阶">3. 进阶</a></li>
+        <li><a href="#4-总结">4. 总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p><code>leetcode</code> 上 <code>twoSum</code> 相关的问题：</p>
+<ul>
+<li><a href="https://leetcode-cn.com/problems/two-sum/">1. 两数之和</a></li>
+<li><a href="https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted/">167. 两数之和 II - 输入有序数组</a></li>
+<li><a href="https://leetcode-cn.com/problems/two-sum-iii-data-structure-design/">170. 两数之和 III .数据结构设计</a></li>
+</ul>
+<h2 id="1-问题描述">1. 问题描述</h2>
+<blockquote>
+<p>给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。</p>
+<p>你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。</p>
+<p>示例:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">给定 <span class="nv">nums</span> <span class="o">=</span> <span class="o">[</span>2, 7, 11, 15<span class="o">]</span>, <span class="nv">target</span> <span class="o">=</span> <span class="m">9</span>
+
+因为 nums<span class="o">[</span>0<span class="o">]</span> + nums<span class="o">[</span>1<span class="o">]</span> <span class="o">=</span> <span class="m">2</span> + <span class="nv">7</span> <span class="o">=</span> <span class="m">9</span>
+所以返回 <span class="o">[</span>0, 1<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<h2 id="2-解决思路">2. 解决思路</h2>
+<p>一般情况下，使用的是暴力穷举法，但是这种情况下时间复杂度为 $O(n^2)$，爆炸，不考虑。</p>
+<p>这里采用 <strong>空间换时间</strong> 的思路：</p>
+<blockquote>
+<p>设置一个 <code>map[int]int</code> ，其中 <code>key</code> 存储数组中的元素，<code>value</code> 为数组中元素的索引值。之后遍历数组，设<code>i,j</code> 为当前索引和元素，如果 <code>target-j</code>在 <code>map</code> 中，则当前的 索引<code>i</code>和 <code>map[target-j]</code> 即为所需要的。</p>
+</blockquote>
+<p>下面通过代码实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">twoSum</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">,</span> <span class="nx">target</span> <span class="kt">int</span><span class="p">)</span> <span class="p">[]</span><span class="kt">int</span> <span class="p">{</span>
+    <span class="nx">result</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nx">m</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">],</span><span class="kt">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span><span class="p">,</span><span class="nx">j</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">nums</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">[</span><span class="nx">target</span><span class="o">-</span><span class="nx">j</span><span class="p">];</span> <span class="nx">ok</span> <span class="p">{</span>
+            <span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">v</span><span class="p">)</span>
+            <span class="nx">result</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nx">m</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">=</span> <span class="nx">i</span>
+    <span class="p">}</span>
+ <span class="k">return</span> <span class="nx">result</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="3-进阶">3. 进阶</h2>
+<p>设计并实现一个 <code>TwoSum</code> 的类，使该类需要支持 <code>add</code> 和 <code>find</code> 的操作。</p>
+<p><code>add</code> 操作 - 对内部数据结构增加一个数。
+<code>find</code> 操作 - 寻找内部数据结构中是否存在一对整数，使得两数之和与给定的数相等。</p>
+<p>示例 1:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">add<span class="o">(</span>1<span class="o">)</span><span class="p">;</span> add<span class="o">(</span>3<span class="o">)</span><span class="p">;</span> add<span class="o">(</span>5<span class="o">)</span><span class="p">;</span>
+find<span class="o">(</span>4<span class="o">)</span> -&gt; <span class="nb">true</span>
+find<span class="o">(</span>7<span class="o">)</span> -&gt; <span class="nb">false</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>示例 2:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">add<span class="o">(</span>3<span class="o">)</span><span class="p">;</span> add<span class="o">(</span>1<span class="o">)</span><span class="p">;</span> add<span class="o">(</span>2<span class="o">)</span><span class="p">;</span>
+find<span class="o">(</span>3<span class="o">)</span> -&gt; <span class="nb">true</span>
+find<span class="o">(</span>6<span class="o">)</span> -&gt; <span class="nb">false</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">TwoSum</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">M</span> <span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="cm">/** Initialize your data structure here. */</span>
+<span class="kd">func</span> <span class="nf">Constructor</span><span class="p">()</span> <span class="nx">TwoSum</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">TwoSum</span><span class="p">{</span><span class="nx">M</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">int</span><span class="p">)}</span>
+<span class="p">}</span>
+
+<span class="cm">/** Add the number to an internal data structure.. */</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">TwoSum</span><span class="p">)</span> <span class="nf">Add</span><span class="p">(</span><span class="nx">number</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">this</span><span class="p">.</span><span class="nx">M</span><span class="p">[</span><span class="nx">number</span><span class="p">]</span><span class="o">++</span>  <span class="c1">// 这里的map中，key保存number，value保存出现的次数
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="cm">/** Find if there exists any pair of numbers which sum is equal to the value. */</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">this</span> <span class="o">*</span><span class="nx">TwoSum</span><span class="p">)</span> <span class="nf">Find</span><span class="p">(</span><span class="nx">value</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">key</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">this</span><span class="p">.</span><span class="nx">M</span> <span class="p">{</span>
+        <span class="nx">other</span> <span class="o">:=</span> <span class="nx">value</span> <span class="o">-</span> <span class="nx">key</span>
+        <span class="c1">// 第一种情况，针对出现了两次的元素、value为其2倍的，比如 [3,3]，value为6
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">other</span> <span class="o">==</span> <span class="nx">key</span> <span class="o">&amp;&amp;</span> <span class="nx">this</span><span class="p">.</span><span class="nx">M</span><span class="p">[</span><span class="nx">other</span><span class="p">]</span> <span class="p">&gt;</span> <span class="mi">1</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">true</span>
+        <span class="p">}</span>
+        <span class="c1">// 第二种情况，针对出现过一次的元素，比如 [2,6], value 为8
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">other</span> <span class="o">!=</span> <span class="nx">key</span> <span class="o">&amp;&amp;</span> <span class="nx">this</span><span class="p">.</span><span class="nx">M</span><span class="p">[</span><span class="nx">other</span><span class="p">]</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">true</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="4-总结">4. 总结</h2>
+<p><strong>对于题目 1 和题目 167：</strong> 设置一个 <code>map[int]int</code> ，其中 <code>key</code> 存储数组中的元素，<code>value</code> 为数组中元素的索引值。之后遍历数组，设<code>i,j</code> 为当前索引和元素，如果 <code>target-j</code>在 <code>map</code> 中，则当前的索引<code>i</code>和 <code>map[target-j]</code> 即为所需。</p>
+<p><strong>对于题目 170：</strong> 设计数据结构时，<code>map</code> 的 <code>key</code> 为元素，<code>value</code> 为该元素出现的此时。查找时，考虑两种情况：一种是 <code>[3,3]--&gt;6</code> 的情况，一种是 <code>[2,5] --&gt; 7</code> 的情况。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">JemmyHu(hujm20151021@gmail.com)</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-09-19
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/leetcode/">LeetCode</a>
+          <a href="/tags/%E6%95%B0%E7%BB%84/">数组</a>
+          <a href="/tags/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/">两数之和</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/2020/09/19/leetcode-%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">LeetCode-三数之和问题</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/2020/09/18/golang-map%E8%AF%A6%E8%A7%A3/">
+            <span class="next-text nav-default">Golang-map详解</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>olOwOlo</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

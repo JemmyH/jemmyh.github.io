@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>优秀数据结构--默克尔树 - Even - A super concise theme for Hugo</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="JemmyHu(hujm20151021@gmail.com)" /><meta name="description" content="一、简介 默克尔树是一种典型的二叉树结构，由一个根节点、一组中间节点 和 一组叶节点 组成。默克尔树最早由 Merkle Ralf 在 1980 年提出，曾广泛用于 文件系统 和 P2P 系统" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.5 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/2020/10/22/%E4%BC%98%E7%A7%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%BB%98%E5%85%8B%E5%B0%94%E6%A0%91/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="优秀数据结构--默克尔树" />
+<meta property="og:description" content="一、简介 默克尔树是一种典型的二叉树结构，由一个根节点、一组中间节点 和 一组叶节点 组成。默克尔树最早由 Merkle Ralf 在 1980 年提出，曾广泛用于 文件系统 和 P2P 系统" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/2020/10/22/%E4%BC%98%E7%A7%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%BB%98%E5%85%8B%E5%B0%94%E6%A0%91/" />
+<meta property="article:published_time" content="2020-10-22T15:21:59+00:00" />
+<meta property="article:modified_time" content="2020-10-22T15:21:59+00:00" />
+<meta itemprop="name" content="优秀数据结构--默克尔树">
+<meta itemprop="description" content="一、简介 默克尔树是一种典型的二叉树结构，由一个根节点、一组中间节点 和 一组叶节点 组成。默克尔树最早由 Merkle Ralf 在 1980 年提出，曾广泛用于 文件系统 和 P2P 系统">
+<meta itemprop="datePublished" content="2020-10-22T15:21:59+00:00" />
+<meta itemprop="dateModified" content="2020-10-22T15:21:59+00:00" />
+<meta itemprop="wordCount" content="3882">
+
+
+
+<meta itemprop="keywords" content="默克尔树,MerkleTree," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="优秀数据结构--默克尔树"/>
+<meta name="twitter:description" content="一、简介 默克尔树是一种典型的二叉树结构，由一个根节点、一组中间节点 和 一组叶节点 组成。默克尔树最早由 Merkle Ralf 在 1980 年提出，曾广泛用于 文件系统 和 P2P 系统"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Even</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Even</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">优秀数据结构--默克尔树</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-10-22 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
+            <a href="/categories/%E4%BC%98%E7%A7%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"> 优秀数据结构 </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#一简介">一、简介</a></li>
+        <li><a href="#二原理与用途">二、原理与用途</a>
+          <ul>
+            <li><a href="#快速比较大量数据">快速比较大量数据</a></li>
+            <li><a href="#快速定位修改">快速定位修改</a></li>
+            <li><a href="#零知识证明">零知识证明</a></li>
+          </ul>
+        </li>
+        <li><a href="#三golang-实现">三、Golang 实现</a>
+          <ul>
+            <li><a href="#创建">创建</a></li>
+            <li><a href="#打印">打印</a></li>
+            <li><a href="#查找">查找</a></li>
+            <li><a href="#验证证明">验证(证明)</a></li>
+            <li><a href="#重建">重建</a></li>
+          </ul>
+        </li>
+        <li><a href="#四参考文档">四、参考文档</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="一简介">一、简介</h2>
+<p><a href="https://en.wikipedia.org/wiki/Merkle_tree">默克尔树</a>是一种典型的二叉树结构，由<strong>一个根节点</strong>、<strong>一组中间节点</strong> 和 <strong>一组叶节点</strong> 组成。默克尔树最早由 <code>Merkle Ralf </code>在 1980 年提出，曾广泛用于 <strong>文件系统</strong> 和 <strong>P2P</strong> 系统中，比如 <code>Git</code>、区块链、<code>IPFS</code> 等大名鼎鼎的项目或技术。</p>
+<p>他又被称为 <strong>哈希树</strong>，即存储哈希值的树。树的叶子结点是 <strong>数据块</strong>(文件或者对象)的哈希值，而非叶子结点保存的是其子节点连接起来后的哈希值。简单来说，它有以下特点：</p>
+<ul>
+<li>最下面的叶节点包含存储数据或其哈希值。</li>
+<li>非叶子节点（包括中间节点和根节点）都是它的两个孩子节点内容的哈希值。</li>
+<li>如果是奇数个叶子结点，那么其父节点保存的哈希值就是它本身或者复制一份自己凑成对再进行哈希的结果(具体实现取决于实际情况)</li>
+</ul>
+<p>当然，默克尔树可以推广到多叉树的情形，此时非叶子节点的内容为它所有的孩子节点的内容的哈希值。</p>
+<h2 id="二原理与用途">二、原理与用途</h2>
+<p>最开始，我们有一组已经准备好的数据块(比如文件)，他们根据某个标准有序(比如根据文件名字典排序)，而每一个文件都有唯一的哈希值与之对应。这是最底层的情况，当我们向上走的时候，每两个当前层的节点(左右孩子结点)的哈希值可以重新组合，形成一个新的节点(父节点)，这个新的结点中不存储数据，其哈希值为左右孩子结点组合后再次使用预设的哈希函数求哈希值。如此以往，直到生成树根，这个树根我们称为 <code>Merkel Root</code>。有一个特殊情况需要注意，有可能某一层的节点数是奇数，这样就会剩下最后一个结点，再没有结点与其组队生成父节点，这种情况下有两种解决方案：一种是复制一份自己；另一种是不复制，让其父节点只有它一个子节点，而且是左孩子结点。</p>
+<p>目前，默克尔树的典型应用场景包括如下几种。</p>
+<h3 id="快速比较大量数据">快速比较大量数据</h3>
+<p>对每组数据排序后构建默克尔树结构。当两个默克尔树根相同时，则意味着所代表的两组数据必然相同。否则，必然不同。</p>
+<p>由于 Hash 计算的过程可以十分快速，预处理可以在短时间内完成。利用默克尔树结构能带来巨大的比较性能优势。</p>
+<h3 id="快速定位修改">快速定位修改</h3>
+<p><img src="https://pic.downk.cc/item/5f9104531cd1bbb86ba7e0ac.png" alt="默克尔树"></p>
+<p>假如我们基于文件 <code>D0~D3</code> 构建如上的默克尔树，如果 <code>D2</code> 被修改，那么会影响到结点 <code>N2</code>、<code>N2</code> 和 <code>Root</code>。此时我们可根据发生变化的节点，沿着 <code>Root -&gt; N5 -&gt; N2</code>， 通过 <code>O(logN)</code> 的时间复杂度快速定位到哪个结点发生了变化。</p>
+<h3 id="零知识证明">零知识证明</h3>
+<p>它指的是证明者能够在不向验证者提供任何有用的信息的情况下(没有泄露信息)，使验证者相信某个论断是正确的。有一个很简单的例子：A 要向 B 证明自己拥有某个房间的钥匙，假设该房间只能用钥匙打开锁，而其他任何方法都打不开。这时有 2 个方法：</p>
+<ol>
+<li>
+<p>A 把钥匙出示给 B，B 用这把钥匙打开该房间的锁，从而证明 A 拥有该房间的正确的钥匙。</p>
+</li>
+<li>
+<p>B 确定该房间内有某一物体，A 用自己拥有的钥匙打开该房间的门，然后把物体拿出来出示给 B，从而证明自己确实拥有该房间的钥匙。</p>
+</li>
+</ol>
+<p>后面的第二种方法属于零知识证明。它的好处在于，在整个证明的过程中，B 始终不能看到钥匙的样子，从而避免了钥匙的泄露。</p>
+<p>在默克尔树中，我们仍旧以上图为例，如何向他人证明我拥有 <code>D0</code> 这个数据，而不用暴露更多系统的信息呢？模仿上面的例子，验证者随机提供数据 <code>D1</code>、<code>D2</code> 和 <code>D3</code>，证明者构造如图的默克尔树，并公布 <code>N1</code> 、<code>N5</code> 和 <code>Root</code>。验证者自行计算 <code>Root</code> 值，看是否一致，从而检验 <code>D0 </code> 是否存在，因为如果存在，<code>N0</code> 一定相同，那么 <code>N4(N0-N1)</code> 也一定相同、<code>Root(N4-N5)</code>也一定相同。整个过程中验证着没有得到任何除了 <code>D0</code> 外的敏感信息(其他的 <code>D</code>)。</p>
+<h2 id="三golang-实现">三、Golang 实现</h2>
+<p>首先，我们定义需要的结构：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Node 表示默克尔树中的 叶结点、非叶结点 或者 Root
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Node</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Tree</span>   <span class="o">*</span><span class="nx">MerkleTree</span> <span class="c1">// 所在的 Merkle Tree
+</span><span class="c1"></span>	<span class="nx">Parent</span> <span class="o">*</span><span class="nx">Node</span>       <span class="c1">// 父节点
+</span><span class="c1"></span>	<span class="nx">Left</span>   <span class="o">*</span><span class="nx">Node</span>       <span class="c1">// 左孩子
+</span><span class="c1"></span>	<span class="nx">Right</span>  <span class="o">*</span><span class="nx">Node</span>       <span class="c1">// 右孩子
+</span><span class="c1"></span>	<span class="nx">leaf</span>   <span class="kt">bool</span>        <span class="c1">// 是否叶子结点
+</span><span class="c1"></span>	<span class="nx">Hash</span>   <span class="p">[]</span><span class="kt">byte</span>      <span class="c1">// 如果是叶子结点，则为叶子结点数据的哈希值；如果是非叶子结点，则为左右孩子哈希值组合后的哈希值
+</span><span class="c1"></span>	<span class="nx">C</span>      <span class="nx">Content</span>     <span class="c1">// 叶子结点存储的数据块
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="c1">// Content 代表一个数据块
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Content</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">CalculateHash</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Equals</span><span class="p">(</span><span class="nx">other</span> <span class="nx">Content</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// MerkleTree 默克尔树
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">MerkleTree</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Root</span>         <span class="o">*</span><span class="nx">Node</span>            <span class="c1">// Merkle Root 树根
+</span><span class="c1"></span>	<span class="nx">merkleRoot</span>   <span class="p">[]</span><span class="kt">byte</span>           <span class="c1">// 树根的哈希值
+</span><span class="c1"></span>	<span class="nx">Leafs</span>        <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span>          <span class="c1">// 所有的叶子结点
+</span><span class="c1"></span>	<span class="nx">hashStrategy</span> <span class="kd">func</span><span class="p">()</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">Hash</span> <span class="c1">// 计算哈希的方法
+</span><span class="c1"></span><span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>需要注意的是，<code>hashStrategy</code> 是一个函数，其返回 <code>type hash.Hash interface</code>，目前最常见的实现是 <code>sha256.New</code> 等，这里为了说明清楚原理，我们自己实现一个，计算 <code>hash</code> 时，只是简单将其转化为 <code>[]byte</code> 即可：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">myHash</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">hash</span>      <span class="p">[]</span><span class="kt">byte</span>
+	<span class="nx">data</span>      <span class="p">[]</span><span class="kt">byte</span>
+	<span class="nx">blockSize</span> <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">newMyHash</span><span class="p">()</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">Hash</span> <span class="p">{</span>
+	<span class="nx">h</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">myHash</span><span class="p">{</span>
+		<span class="nx">data</span><span class="p">:</span>      <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+		<span class="nx">blockSize</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">h</span>
+<span class="p">}</span>
+
+<span class="c1">// Write 将 p 中的数据更新进 m
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">myHash</span><span class="p">)</span> <span class="nf">Write</span><span class="p">(</span><span class="nx">p</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">nn</span> <span class="o">:=</span> <span class="mi">0</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">m</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nx">p</span>
+		<span class="nx">nn</span> <span class="p">=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">m</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="mi">38</span><span class="p">)</span>
+		<span class="nx">m</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nx">p</span><span class="o">...</span><span class="p">)</span>
+		<span class="nx">nn</span> <span class="p">=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">nn</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// Sum 后面追加
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">myHash</span><span class="p">)</span> <span class="nf">Sum</span><span class="p">(</span><span class="nx">b</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">[]</span><span class="kt">byte</span> <span class="p">{</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nx">b</span><span class="o">...</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">m</span><span class="p">.</span><span class="nx">data</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">myHash</span><span class="p">)</span> <span class="nf">Reset</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">blockSize</span> <span class="p">=</span> <span class="mi">64</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">myHash</span><span class="p">)</span> <span class="nf">Size</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">myHash</span><span class="p">)</span> <span class="nf">BlockSize</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">m</span><span class="p">.</span><span class="nx">blockSize</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">newMyHashFunc</span><span class="p">()</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">Hash</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nf">newMyHash</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>另外，对于 <code>type Content interface</code>，我们也简单实现一个：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">myContent</span> <span class="kt">string</span>
+
+<span class="kd">func</span> <span class="nf">newMyContent</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">myContent</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nf">myContent</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="nx">myContent</span><span class="p">)</span> <span class="nf">CalculateHash</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">//hash := md5.New()
+</span><span class="c1"></span>	<span class="c1">//hash.Write(c.ToBytes())
+</span><span class="c1"></span>	<span class="c1">//return hash.Sum(nil), nil
+</span><span class="c1"></span>	<span class="k">return</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">c</span><span class="p">),</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">c</span> <span class="nx">myContent</span><span class="p">)</span> <span class="nf">Equals</span><span class="p">(</span><span class="nx">other</span> <span class="nx">merkletree</span><span class="p">.</span><span class="nx">Content</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">reflect</span><span class="p">.</span><span class="nf">DeepEqual</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">other</span><span class="p">),</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="创建">创建</h3>
+<p>接下来我们提供一个构造方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">//NewTree creates a new Merkle Tree using the content cs.
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">NewTree</span><span class="p">(</span><span class="nx">cs</span> <span class="p">[]</span><span class="nx">Content</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">MerkleTree</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">defaultHashStrategy</span> <span class="p">=</span> <span class="nx">sha256</span><span class="p">.</span><span class="nx">New</span>  <span class="c1">// 默认使用 sha256.New 进行哈希
+</span><span class="c1"></span>	<span class="nx">t</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">MerkleTree</span><span class="p">{</span>
+		<span class="nx">hashStrategy</span><span class="p">:</span> <span class="nx">defaultHashStrategy</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="nx">root</span><span class="p">,</span> <span class="nx">leafs</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildWithContent</span><span class="p">(</span><span class="nx">cs</span><span class="p">,</span> <span class="nx">t</span><span class="p">)</span>  <span class="c1">// 逐层构建结点
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="nx">t</span><span class="p">.</span><span class="nx">Root</span> <span class="p">=</span> <span class="nx">root</span>
+	<span class="nx">t</span><span class="p">.</span><span class="nx">Leafs</span> <span class="p">=</span> <span class="nx">leafs</span>
+	<span class="nx">t</span><span class="p">.</span><span class="nx">merkleRoot</span> <span class="p">=</span> <span class="nx">root</span><span class="p">.</span><span class="nx">Hash</span>
+	<span class="k">return</span> <span class="nx">t</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// NewTreeWithHashStrategy 效果同 NewTree，不过使用自定义的哈希函数
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">NewTreeWithHashStrategy</span><span class="p">(</span><span class="nx">cs</span> <span class="p">[]</span><span class="nx">Content</span><span class="p">,</span> <span class="nx">hashStrategy</span> <span class="kd">func</span><span class="p">()</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">MerkleTree</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">t</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">MerkleTree</span><span class="p">{</span>
+		<span class="nx">hashStrategy</span><span class="p">:</span> <span class="nx">hashStrategy</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="nx">root</span><span class="p">,</span> <span class="nx">leafs</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildWithContent</span><span class="p">(</span><span class="nx">cs</span><span class="p">,</span> <span class="nx">t</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="nx">t</span><span class="p">.</span><span class="nx">Root</span> <span class="p">=</span> <span class="nx">root</span>
+	<span class="nx">t</span><span class="p">.</span><span class="nx">Leafs</span> <span class="p">=</span> <span class="nx">leafs</span>
+	<span class="nx">t</span><span class="p">.</span><span class="nx">merkleRoot</span> <span class="p">=</span> <span class="nx">root</span><span class="p">.</span><span class="nx">Hash</span>
+	<span class="k">return</span> <span class="nx">t</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>接着我们来看 <code>buildWithContent</code> 做了什么：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// buildWithContent 主要将 Content 转变成 Node，为下一步的逐层构建做好准备
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">buildWithContent</span><span class="p">(</span><span class="nx">cs</span> <span class="p">[]</span><span class="nx">Content</span><span class="p">,</span> <span class="nx">t</span> <span class="o">*</span><span class="nx">MerkleTree</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">Node</span><span class="p">,</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">cs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;error: cannot construct tree with no content&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="kd">var</span> <span class="nx">leaves</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span>
+    <span class="c1">// 将当前的所有 Content 转化成 Node，放在数组 leaves 中
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">cs</span> <span class="p">{</span>
+		<span class="nx">hash</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">CalculateHash</span><span class="p">()</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+
+		<span class="nx">leaves</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">leaves</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">Node</span><span class="p">{</span>
+			<span class="nx">Hash</span><span class="p">:</span> <span class="nx">hash</span><span class="p">,</span>
+			<span class="nx">C</span><span class="p">:</span>    <span class="nx">c</span><span class="p">,</span>
+			<span class="nx">leaf</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+			<span class="nx">Tree</span><span class="p">:</span> <span class="nx">t</span><span class="p">,</span>
+		<span class="p">})</span>
+	<span class="p">}</span>
+	<span class="nx">root</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildIntermediate</span><span class="p">(</span><span class="nx">leaves</span><span class="p">,</span> <span class="nx">t</span><span class="p">)</span>  <span class="c1">// 逐层构建默克尔树，最后返回树根
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">root</span><span class="p">,</span> <span class="nx">leaves</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>再看 <code>buildIntermediate</code> 如何逐层构建：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">buildIntermediate</span><span class="p">(</span><span class="nx">nl</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span><span class="p">,</span> <span class="nx">t</span> <span class="o">*</span><span class="nx">MerkleTree</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">Node</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">nodes</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span>
+	<span class="c1">// 如果是单数，不复制自己以凑成对，而是使自己的父节点只有一个左孩子结点(自己)，没有右孩子结点
+</span><span class="c1"></span>	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nl</span><span class="p">);</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">2</span> <span class="p">{</span>
+		<span class="nx">h</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nf">hashStrategy</span><span class="p">()</span>
+		<span class="nx">left</span><span class="p">,</span> <span class="nx">right</span> <span class="o">:=</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">i</span><span class="o">+</span><span class="mi">1</span>
+		<span class="kd">var</span> <span class="nx">chash</span> <span class="p">[]</span><span class="kt">byte</span>
+		<span class="k">if</span> <span class="nx">right</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nl</span><span class="p">)</span> <span class="p">{</span>
+			<span class="c1">// 单数个，父节点计算哈希时只计算左孩子的
+</span><span class="c1"></span>			<span class="nx">chash</span> <span class="p">=</span> <span class="nx">nl</span><span class="p">[</span><span class="nx">left</span><span class="p">].</span><span class="nx">Hash</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="c1">// 双数个，父节点从左右子孩子的哈希计算得到自己的哈希
+</span><span class="c1"></span>			<span class="nx">chash</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">nl</span><span class="p">[</span><span class="nx">left</span><span class="p">].</span><span class="nx">Hash</span><span class="p">,</span> <span class="nx">nl</span><span class="p">[</span><span class="nx">right</span><span class="p">].</span><span class="nx">Hash</span><span class="o">...</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">chash</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+        <span class="c1">// 生成父节点
+</span><span class="c1"></span>		<span class="nx">node</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Node</span><span class="p">{</span>
+			<span class="nx">Left</span><span class="p">:</span> <span class="nx">nl</span><span class="p">[</span><span class="nx">left</span><span class="p">],</span>
+			<span class="nx">Hash</span><span class="p">:</span> <span class="nx">h</span><span class="p">.</span><span class="nf">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">),</span>
+			<span class="nx">Tree</span><span class="p">:</span> <span class="nx">t</span><span class="p">,</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">right</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nl</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">Right</span> <span class="p">=</span> <span class="nx">nl</span><span class="p">[</span><span class="nx">right</span><span class="p">]</span>
+		<span class="p">}</span>
+		<span class="nx">nodes</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">nodes</span><span class="p">,</span> <span class="nx">node</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">right</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nl</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">Right</span><span class="p">.</span><span class="nx">Parent</span> <span class="p">=</span> <span class="nx">node</span>
+		<span class="p">}</span>
+		<span class="nx">nl</span><span class="p">[</span><span class="nx">left</span><span class="p">].</span><span class="nx">Parent</span> <span class="p">=</span> <span class="nx">node</span>
+
+        <span class="c1">// 如果只有两个，说明当前构造的 node 就是根节点，结束递归
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nl</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">node</span><span class="p">,</span> <span class="kc">nil</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+    <span class="c1">// 递归调用
+</span><span class="c1"></span>	<span class="k">return</span> <span class="nf">buildIntermediate</span><span class="p">(</span><span class="nx">nodes</span><span class="p">,</span> <span class="nx">t</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="打印">打印</h3>
+<p>为了方便调试，我们先实现反序列化默克尔树——逐层遍历二叉树。逐层遍历二叉树是数据结构课程中的基础操作，需要用到一个队列，我们先实现一个简单的队列：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">queue</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">data</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">newQueue</span><span class="p">()</span> <span class="nx">queue</span> <span class="p">{</span>
+	<span class="nx">q</span> <span class="o">:=</span> <span class="nx">queue</span><span class="p">{</span><span class="nx">data</span><span class="p">:</span> <span class="nb">make</span><span class="p">([]</span><span class="o">*</span><span class="nx">Node</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+	<span class="k">return</span> <span class="nx">q</span>
+<span class="p">}</span>
+
+<span class="c1">// 入队
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">q</span> <span class="o">*</span><span class="nx">queue</span><span class="p">)</span> <span class="nf">enqueue</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">q</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 出队
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">q</span> <span class="o">*</span><span class="nx">queue</span><span class="p">)</span> <span class="nf">dequeue</span><span class="p">()</span> <span class="o">*</span><span class="nx">Node</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="nx">data</span> <span class="o">:=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="nx">q</span><span class="p">.</span><span class="nx">data</span> <span class="p">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+	<span class="k">return</span> <span class="nx">data</span>
+<span class="p">}</span>
+
+<span class="c1">// 是否为空
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">q</span> <span class="o">*</span><span class="nx">queue</span><span class="p">)</span> <span class="nf">isEmpty</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="p">}</span>
+
+<span class="c1">// 队列中元素个数
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">q</span> <span class="o">*</span><span class="nx">queue</span><span class="p">)</span> <span class="nb">len</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>借助队列实现默克尔树的打印：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Print 打印默克尔树
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">MerkleTree</span><span class="p">)</span> <span class="nf">Print</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">Leafs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;empty tree&#34;</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="nx">q</span> <span class="o">:=</span> <span class="nf">newQueue</span><span class="p">()</span>
+	<span class="nx">q</span><span class="p">.</span><span class="nf">enqueue</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">Root</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">!</span><span class="nx">q</span><span class="p">.</span><span class="nf">isEmpty</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">size</span> <span class="o">:=</span> <span class="nx">q</span><span class="p">.</span><span class="nb">len</span><span class="p">()</span>
+		<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">size</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+			<span class="nx">tmp</span> <span class="o">:=</span> <span class="nx">q</span><span class="p">.</span><span class="nf">dequeue</span><span class="p">()</span>
+			<span class="k">if</span> <span class="nx">tmp</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="k">break</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">!</span><span class="nx">tmp</span><span class="p">.</span><span class="nx">leaf</span> <span class="p">{</span>
+				<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;hash(%s)   &#34;</span><span class="p">,</span> <span class="nx">tmp</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;hash(%s)    &#34;</span><span class="p">,</span> <span class="nx">tmp</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span>
+			<span class="p">}</span>
+
+			<span class="k">if</span> <span class="nx">tmp</span><span class="p">.</span><span class="nx">Left</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="nx">q</span><span class="p">.</span><span class="nf">enqueue</span><span class="p">(</span><span class="nx">tmp</span><span class="p">.</span><span class="nx">Left</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="nx">tmp</span><span class="p">.</span><span class="nx">Right</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="nx">q</span><span class="p">.</span><span class="nf">enqueue</span><span class="p">(</span><span class="nx">tmp</span><span class="p">.</span><span class="nx">Right</span><span class="p">)</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;\n&#34;</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="查找">查找</h3>
+<p>先看实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 查找 content 对应的从上到下的路径，index 表示是否为左孩子
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">MerkleTree</span><span class="p">)</span> <span class="nf">GetMerklePath</span><span class="p">(</span><span class="nx">content</span> <span class="nx">Content</span><span class="p">)</span> <span class="p">([][]</span><span class="kt">byte</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">current</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">m</span><span class="p">.</span><span class="nx">Leafs</span> <span class="p">{</span>
+		<span class="nx">ok</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">C</span><span class="p">.</span><span class="nf">Equals</span><span class="p">(</span><span class="nx">content</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+
+		<span class="k">if</span> <span class="nx">ok</span> <span class="p">{</span>
+			<span class="nx">currentParent</span> <span class="o">:=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">Parent</span>
+			<span class="kd">var</span> <span class="nx">merklePath</span> <span class="p">[][]</span><span class="kt">byte</span>
+			<span class="kd">var</span> <span class="nx">index</span> <span class="p">[]</span><span class="kt">int64</span>
+			<span class="k">for</span> <span class="nx">currentParent</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="c1">// 当前节点是父节点的右孩子
+</span><span class="c1"></span>				<span class="k">if</span> <span class="nx">bytes</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">currentParent</span><span class="p">.</span><span class="nx">Right</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span> <span class="nx">current</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">merklePath</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">merklePath</span><span class="p">,</span> <span class="nx">currentParent</span><span class="p">.</span><span class="nx">Right</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span>
+					<span class="nx">index</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">merklePath</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">merklePath</span><span class="p">,</span> <span class="nx">currentParent</span><span class="p">.</span><span class="nx">Left</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span>
+					<span class="nx">index</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+				<span class="p">}</span>
+				<span class="nx">current</span> <span class="p">=</span> <span class="nx">currentParent</span>
+				<span class="nx">currentParent</span> <span class="p">=</span> <span class="nx">currentParent</span><span class="p">.</span><span class="nx">Parent</span>
+			<span class="p">}</span>
+			<span class="c1">// 添加 root
+</span><span class="c1"></span>			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">merklePath</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="nx">bytes</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">Root</span><span class="p">.</span><span class="nx">Left</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span> <span class="nx">merklePath</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span>
+					<span class="nx">index</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">index</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+				<span class="p">}</span>
+				<span class="nx">merklePath</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">merklePath</span><span class="p">,</span> <span class="nx">m</span><span class="p">.</span><span class="nx">Root</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span>
+			<span class="p">}</span>
+
+			<span class="k">return</span> <span class="nx">merklePath</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="kc">nil</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="验证证明">验证(证明)</h3>
+<p>首先验证一棵默克尔树是否是有效的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">MerkleTree</span><span class="p">)</span> <span class="nf">VerifyTree</span><span class="p">()</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">calculatedMerkleRoot</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nx">Root</span><span class="p">.</span><span class="nf">verifyNode</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+    <span class="c1">// 重新根据各个结点构建一棵默克尔树，并得到其 root，看是否与已存在的相同
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">bytes</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">merkleRoot</span><span class="p">,</span> <span class="nx">calculatedMerkleRoot</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">nil</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="nf">verifyNode</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">n</span><span class="p">.</span><span class="nx">leaf</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">n</span><span class="p">.</span><span class="nx">C</span><span class="p">.</span><span class="nf">CalculateHash</span><span class="p">()</span>
+	<span class="p">}</span>
+	<span class="kd">var</span> <span class="p">(</span>
+		<span class="nx">rightBytes</span> <span class="p">[]</span><span class="kt">byte</span>
+		<span class="nx">leftBytes</span>  <span class="p">[]</span><span class="kt">byte</span>
+		<span class="nx">err</span>        <span class="kt">error</span>
+	<span class="p">)</span>
+    <span class="c1">// 递归处理
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Right</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">rightBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Right</span><span class="p">.</span><span class="nf">verifyNode</span><span class="p">()</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Left</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">leftBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Left</span><span class="p">.</span><span class="nf">verifyNode</span><span class="p">()</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="nx">h</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Tree</span><span class="p">.</span><span class="nf">hashStrategy</span><span class="p">()</span>
+	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nb">append</span><span class="p">(</span><span class="nx">leftBytes</span><span class="p">,</span> <span class="nx">rightBytes</span><span class="o">...</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">h</span><span class="p">.</span><span class="nf">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">),</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>再次验证某个 <code>Content</code> 是否属于这棵树(零知识证明)：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">MerkleTree</span><span class="p">)</span> <span class="nf">VerifyContent</span><span class="p">(</span><span class="nx">content</span> <span class="nx">Content</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">l</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">m</span><span class="p">.</span><span class="nx">Leafs</span> <span class="p">{</span>
+		<span class="nx">ok</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">l</span><span class="p">.</span><span class="nx">C</span><span class="p">.</span><span class="nf">Equals</span><span class="p">(</span><span class="nx">content</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+		<span class="c1">// 存在于已知的节点中
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">ok</span> <span class="p">{</span>
+            <span class="c1">// 逐层计算 hash，并比较
+</span><span class="c1"></span>			<span class="nx">currentParent</span> <span class="o">:=</span> <span class="nx">l</span><span class="p">.</span><span class="nx">Parent</span>
+			<span class="k">for</span> <span class="nx">currentParent</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="nx">h</span> <span class="o">:=</span> <span class="nx">m</span><span class="p">.</span><span class="nf">hashStrategy</span><span class="p">()</span>
+				<span class="kd">var</span> <span class="nx">allBytes</span> <span class="p">[]</span><span class="kt">byte</span>
+
+				<span class="nx">leftBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">currentParent</span><span class="p">.</span><span class="nx">Left</span><span class="p">.</span><span class="nf">calculateNodeHash</span><span class="p">()</span>
+				<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+				<span class="p">}</span>
+				<span class="nx">allBytes</span> <span class="p">=</span> <span class="nx">leftBytes</span>
+				<span class="k">if</span> <span class="nx">currentParent</span><span class="p">.</span><span class="nx">Right</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+					<span class="nx">rightBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">currentParent</span><span class="p">.</span><span class="nx">Right</span><span class="p">.</span><span class="nf">calculateNodeHash</span><span class="p">()</span>
+					<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+					<span class="p">}</span>
+					<span class="nx">allBytes</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">allBytes</span><span class="p">,</span> <span class="nx">rightBytes</span><span class="o">...</span><span class="p">)</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">allBytes</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="nx">bytes</span><span class="p">.</span><span class="nf">Compare</span><span class="p">(</span><span class="nx">h</span><span class="p">.</span><span class="nf">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">),</span> <span class="nx">currentParent</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
+				<span class="p">}</span>
+				<span class="nx">currentParent</span> <span class="p">=</span> <span class="nx">currentParent</span><span class="p">.</span><span class="nx">Parent</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">nil</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// calculateNodeHash 计算当前 node 的哈希(左右孩子哈希值组合后，再求哈希)
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="nf">calculateNodeHash</span><span class="p">()</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="nx">n</span><span class="p">.</span><span class="nx">leaf</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">n</span><span class="p">.</span><span class="nx">C</span><span class="p">.</span><span class="nf">CalculateHash</span><span class="p">()</span>
+	<span class="p">}</span>
+
+	<span class="nx">h</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Tree</span><span class="p">.</span><span class="nf">hashStrategy</span><span class="p">()</span>
+	<span class="kd">var</span> <span class="nx">allBytes</span> <span class="p">[]</span><span class="kt">byte</span>
+	<span class="nx">allBytes</span> <span class="p">=</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Left</span><span class="p">.</span><span class="nx">Hash</span>
+	<span class="k">if</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Right</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">allBytes</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">allBytes</span><span class="p">,</span> <span class="nx">n</span><span class="p">.</span><span class="nx">Right</span><span class="p">.</span><span class="nx">Hash</span><span class="o">...</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">h</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">allBytes</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">h</span><span class="p">.</span><span class="nf">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">),</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="重建">重建</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// RebuildTree 根据保存的文件块(leaves)重新构建默克尔树
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">MerkleTree</span><span class="p">)</span> <span class="nf">RebuildTree</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">cs</span> <span class="p">[]</span><span class="nx">Content</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">m</span><span class="p">.</span><span class="nx">Leafs</span> <span class="p">{</span>
+		<span class="nx">cs</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">cs</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">C</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">root</span><span class="p">,</span> <span class="nx">leafs</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildWithContent</span><span class="p">(</span><span class="nx">cs</span><span class="p">,</span> <span class="nx">m</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">Root</span> <span class="p">=</span> <span class="nx">root</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">Leafs</span> <span class="p">=</span> <span class="nx">leafs</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">merkleRoot</span> <span class="p">=</span> <span class="nx">root</span><span class="p">.</span><span class="nx">Hash</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>也可以根据提供的 <code>[]Content</code> 重新构建：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// RebuildTreeWith 根据提供的 content 完全重建一棵树
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">MerkleTree</span><span class="p">)</span> <span class="nf">RebuildTreeWith</span><span class="p">(</span><span class="nx">cs</span> <span class="p">[]</span><span class="nx">Content</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">root</span><span class="p">,</span> <span class="nx">leafs</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">buildWithContent</span><span class="p">(</span><span class="nx">cs</span><span class="p">,</span> <span class="nx">m</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">Root</span> <span class="p">=</span> <span class="nx">root</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">Leafs</span> <span class="p">=</span> <span class="nx">leafs</span>
+	<span class="nx">m</span><span class="p">.</span><span class="nx">merkleRoot</span> <span class="p">=</span> <span class="nx">root</span><span class="p">.</span><span class="nx">Hash</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="四参考文档">四、参考文档</h2>
+<ul>
+<li><a href="https://github.com/yeasy/blockchain_guide/blob/master/05_crypto/merkle_trie.md">Merkle 树结构</a></li>
+<li><a href="https://blog.csdn.net/wo541075754/article/details/54632929">Merkle Tree（默克尔树）算法解析</a></li>
+<li><a href="https://github.com/cbergoon/merkletree">go 语言实现的 merkle 树 我修改了部分实现</a></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">JemmyHu(hujm20151021@gmail.com)</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-10-22
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E9%BB%98%E5%85%8B%E5%B0%94%E6%A0%91/">默克尔树</a>
+          <a href="/tags/merkletree/">MerkleTree</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/2020/10/07/%E4%BC%98%E7%A7%80%E7%BB%84%E4%BB%B6-%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8/">
+            <span class="next-text nav-default">优秀组件-布隆过滤器</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-stack-overflow" title="stack-overflow"></a>
+      <a href="http://localhost:1313" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="http://localhost:1313" class="iconfont icon-facebook" title="facebook"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-google" title="google"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-weibo" title="weibo"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+      <a href="http://localhost:1313" class="iconfont icon-douban" title="douban"></a>
+      <a href="http://localhost:1313" class="iconfont icon-pocket" title="pocket"></a>
+      <a href="http://localhost:1313" class="iconfont icon-tumblr" title="tumblr"></a>
+      <a href="http://localhost:1313" class="iconfont icon-instagram" title="instagram"></a>
+      <a href="http://localhost:1313" class="iconfont icon-gitlab" title="gitlab"></a>
+      <a href="http://localhost:1313" class="iconfont icon-bilibili" title="bilibili"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>olOwOlo</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
