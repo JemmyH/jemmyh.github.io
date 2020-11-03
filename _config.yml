@@ -173,6 +173,7 @@ disqus_shortname:
 #  - hexo-generator-sitemap
 
 theme: butterfly
+# theme: even
 exclude_generator:
 
 # Deployment
