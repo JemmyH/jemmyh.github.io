@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>算法题解 on Jemmy&#39;s blog</title>
+    <link>http://localhost:1313/categories/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/</link>
+    <description>Recent content in 算法题解 on Jemmy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Thu, 24 Sep 2020 02:36:16 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>排序算法</title>
+      <link>http://localhost:1313/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Thu, 24 Sep 2020 02:36:16 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
+      <description>1. 堆排序 堆 是一种数据结构，它具有如下特征： 是一棵完全二叉树 父节点的值 &amp;gt; 子节点的值 1.1 完全二叉树 若设二叉树的深度为h，除第 h 层外，其它各层 (1～</description>
+    </item>
+    
+    <item>
+      <title>LeetCode-位运算</title>
+      <link>http://localhost:1313/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/</link>
+      <pubDate>Tue, 22 Sep 2020 00:25:09 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/</guid>
+      <description>位运算 位运算讲究技巧，需要多积累经验。 一、背景知识 Go 语言支持的 位运算符 如下： 运算符 描述 规则 &amp;amp; 按位 与 二者同为 1 时结果才为 1，否则为 0 | 按位 或 二</description>
+    </item>
+    
+    <item>
+      <title>LeetCode-三数之和问题</title>
+      <link>http://localhost:1313/post/leetcode-%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 19 Sep 2020 18:57:30 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/leetcode-%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/</guid>
+      <description>leetcode 上 三数之和 问题： 15. 三数之和 259. 较小的三数之和 16. 最接近的三数之和 1. 题目描述 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素a，b，</description>
+    </item>
+    
+    <item>
+      <title>LeetCode-两数之和问题</title>
+      <link>http://localhost:1313/post/leetcode-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 19 Sep 2020 13:22:24 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/leetcode-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/</guid>
+      <description>leetcode 上 twoSum 相关的问题： 1. 两数之和 167. 两数之和 II - 输入有序数组 170. 两数之和 III .数据结构设计 1. 问题描述 给定一个整数数组 nums 和一个目标值 target，请你在</description>
+    </item>
+    
+  </channel>
+</rss>

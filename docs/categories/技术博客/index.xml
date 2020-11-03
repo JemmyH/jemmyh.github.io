@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>技术博客 on Jemmy&#39;s blog</title>
+    <link>http://localhost:1313/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/</link>
+    <description>Recent content in 技术博客 on Jemmy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Thu, 22 Oct 2020 15:21:59 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>优秀数据结构--默克尔树</title>
+      <link>http://localhost:1313/post/%E4%BC%98%E7%A7%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%BB%98%E5%85%8B%E5%B0%94%E6%A0%91/</link>
+      <pubDate>Thu, 22 Oct 2020 15:21:59 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/%E4%BC%98%E7%A7%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E9%BB%98%E5%85%8B%E5%B0%94%E6%A0%91/</guid>
+      <description>一、简介 默克尔树是一种典型的二叉树结构，由一个根节点、一组中间节点 和 一组叶节点 组成。默克尔树最早由 Merkle Ralf 在 1980 年提出，曾广泛用于 文件系统 和 P2P 系统</description>
+    </item>
+    
+    <item>
+      <title>优秀组件-布隆过滤器</title>
+      <link>http://localhost:1313/post/%E4%BC%98%E7%A7%80%E7%BB%84%E4%BB%B6-%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8/</link>
+      <pubDate>Wed, 07 Oct 2020 20:57:20 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/%E4%BC%98%E7%A7%80%E7%BB%84%E4%BB%B6-%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8/</guid>
+      <description>一、前言 前段时间辞职骑完川藏线后回来找工作，面试 贝尔科教后端开发工程师 岗位时，遇到这样一个面试题： 有一个几十亿的白名单，每天白天需要高并发查</description>
+    </item>
+    
+    <item>
+      <title>跳表原理以及Golang实现</title>
+      <link>http://localhost:1313/post/%E8%B7%B3%E8%A1%A8/</link>
+      <pubDate>Mon, 05 Oct 2020 05:32:24 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/%E8%B7%B3%E8%A1%A8/</guid>
+      <description>一、前言 大家应该对 二分查找算法 不陌生，二分查找之所以能达到 O(logN) 的时间复杂度，一个重要原因在于它所依赖的数据结构是数组，数组支持随机访问，可通过</description>
+    </item>
+    
+    <item>
+      <title>Redis源码阅读--1.基础数据结构与对象</title>
+      <link>http://localhost:1313/post/redis%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-1-%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1/</link>
+      <pubDate>Fri, 02 Oct 2020 12:31:41 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/redis%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-1-%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1/</guid>
+      <description>首先明确，Redis 是一个使用 C 语言编写的键值对存储系统。Redis 是众所周知的 “快”，一方面，它是一个内存数据库，所有的操作都是在内存中完</description>
+    </item>
+    
+    <item>
+      <title>MySQL关于索引</title>
+      <link>http://localhost:1313/post/mysql%E5%85%B3%E4%BA%8E%E7%B4%A2%E5%BC%95/</link>
+      <pubDate>Tue, 29 Sep 2020 20:57:29 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/mysql%E5%85%B3%E4%BA%8E%E7%B4%A2%E5%BC%95/</guid>
+      <description>一、常见的索引类型 1. 哈希索引 哈希索引(Hash Index) 基于哈希表实现，只适合精确匹配，不适合范围查找。对于每一行数据，存储引擎都会使用一个哈希函数</description>
+    </item>
+    
+    <item>
+      <title>排序算法</title>
+      <link>http://localhost:1313/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Thu, 24 Sep 2020 02:36:16 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
+      <description>1. 堆排序 堆 是一种数据结构，它具有如下特征： 是一棵完全二叉树 父节点的值 &amp;gt; 子节点的值 1.1 完全二叉树 若设二叉树的深度为h，除第 h 层外，其它各层 (1～</description>
+    </item>
+    
+    <item>
+      <title>LeetCode-位运算</title>
+      <link>http://localhost:1313/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/</link>
+      <pubDate>Tue, 22 Sep 2020 00:25:09 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/</guid>
+      <description>位运算 位运算讲究技巧，需要多积累经验。 一、背景知识 Go 语言支持的 位运算符 如下： 运算符 描述 规则 &amp;amp; 按位 与 二者同为 1 时结果才为 1，否则为 0 | 按位 或 二</description>
+    </item>
+    
+    <item>
+      <title>LeetCode-三数之和问题</title>
+      <link>http://localhost:1313/post/leetcode-%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 19 Sep 2020 18:57:30 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/leetcode-%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/</guid>
+      <description>leetcode 上 三数之和 问题： 15. 三数之和 259. 较小的三数之和 16. 最接近的三数之和 1. 题目描述 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素a，b，</description>
+    </item>
+    
+    <item>
+      <title>LeetCode-两数之和问题</title>
+      <link>http://localhost:1313/post/leetcode-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 19 Sep 2020 13:22:24 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/leetcode-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C%E9%97%AE%E9%A2%98/</guid>
+      <description>leetcode 上 twoSum 相关的问题： 1. 两数之和 167. 两数之和 II - 输入有序数组 170. 两数之和 III .数据结构设计 1. 问题描述 给定一个整数数组 nums 和一个目标值 target，请你在</description>
+    </item>
+    
+    <item>
+      <title>Golang-map详解</title>
+      <link>http://localhost:1313/post/golang-map%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Fri, 18 Sep 2020 23:41:39 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/golang-map%E8%AF%A6%E8%A7%A3/</guid>
+      <description>一、设计原理 哈希表(也就是我们说的map)是计算机应用领域非常重要的数据结构之一，读写的时间复杂度均是O(1)，是典型的 以空间换时间 设计。它</description>
+    </item>
+    
+    <item>
+      <title>Golang-GPM调度原理</title>
+      <link>http://localhost:1313/post/golang-gpm%E8%B0%83%E5%BA%A6%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Fri, 18 Sep 2020 01:53:29 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/golang-gpm%E8%B0%83%E5%BA%A6%E5%8E%9F%E7%90%86/</guid>
+      <description>一、概述 1. 为什么在内核的线程调度器之外，Go 还需要实现一个自己的调度器 主要解决系统线程太重的问题： 创建与切换线程 太重：都需要在用户态和内核态</description>
+    </item>
+    
+    <item>
+      <title>Golang-unsafe包详解</title>
+      <link>http://localhost:1313/post/golang-unsafe%E5%8C%85%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Thu, 17 Sep 2020 01:53:29 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/golang-unsafe%E5%8C%85%E8%AF%A6%E8%A7%A3/</guid>
+      <description>1. Go语言指针的限制 go语言中也有指针，但相对C语言的指针来说，有了很多限制，但这也算是go的成功之处：既可以享受指针带来的便利，又避免了指</description>
+    </item>
+    
+    <item>
+      <title>Golang-数组,切片和字符串</title>
+      <link>http://localhost:1313/post/golang-%E6%95%B0%E7%BB%84-%E5%88%87%E7%89%87%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
+      <pubDate>Wed, 16 Sep 2020 02:15:54 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/golang-%E6%95%B0%E7%BB%84-%E5%88%87%E7%89%87%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
+      <description>在主流的编程语言中数组及其相关的数据结构是使用得最为频繁的，只有在它(们)不能满足时才会考虑链表、hash 表（hash 表可以看作是数组和链表</description>
+    </item>
+    
+    <item>
+      <title>Golang-关于函数调用</title>
+      <link>http://localhost:1313/post/golang-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8/</link>
+      <pubDate>Tue, 15 Sep 2020 02:05:36 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/golang-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8/</guid>
+      <description>一、 前言 我们完成程序的编写之后，经过编译，编译器会将我们的程序编译成一行行机器指令，放到一个可执行文件中；程序执行时，可执行文件被加载到内存</description>
+    </item>
+    
+    <item>
+      <title>MySQL数据类型与优化</title>
+      <link>http://localhost:1313/post/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%B8%8E%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Mon, 14 Sep 2020 01:37:04 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%B8%8E%E4%BC%98%E5%8C%96/</guid>
+      <description>选择优化的数据类型 MySQL 支持多种数据类型，但是每个类型都有自己适合的场景，选对类型对性能的提高至关重要。以下原则仅供参考： 更小的通常更好 一般情况</description>
+    </item>
+    
+    <item>
+      <title>关于docker</title>
+      <link>http://localhost:1313/post/%E5%85%B3%E4%BA%8Edocker/</link>
+      <pubDate>Sun, 13 Sep 2020 01:07:32 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/%E5%85%B3%E4%BA%8Edocker/</guid>
+      <description>这是你自定义的文章摘要内容，如果这个属性有值，文章卡片摘要就显示这段文字，否则程序会自动截取文章的部分内容作为摘要</description>
+    </item>
+    
+  </channel>
+</rss>
