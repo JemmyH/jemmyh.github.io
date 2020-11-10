@@ -11,7 +11,7 @@ draft: false
 ---
 
 
-## 一、背景
+## 一、前言
 
 公司后端服务已经全部微服务化，想要调试某个服务可以使用 [`grpcui`](https://github.com/fullstorydev/grpcui)，但要对某个接口进行压测，`grpcui` 还做不到。诸多努力之后找到本次主角：[https://github.com/bojand/ghz](https://github.com/bojand/ghz)，官网：[ghz.sh](https://ghz.sh)。
 
