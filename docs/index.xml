@@ -6,7 +6,16 @@
     <description>Recent content on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 09 Nov 2020 19:35:34 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 16 Nov 2020 20:25:50 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>虚拟网络设备tuntap</title>
+      <link>http://localhost:1313/post/%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87tuntap/</link>
+      <pubDate>Mon, 16 Nov 2020 20:25:50 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87tuntap/</guid>
+      <description>实验机器：MacBook Pro (Retina, 15-inch, Mid 2015) Golang 版本：go version go1.14.6 darwin/amd64 一、前言 网卡 也称 网络适配器，是电脑与局域网进行相互连接的设备，在 OSI 七层模型中，工作在 物理</description>
+    </item>
+    
     <item>
       <title>使用ghz压测GRPC接口</title>
       <link>http://localhost:1313/post/%E4%BD%BF%E7%94%A8ghz%E5%8E%8B%E6%B5%8Bgrpc%E6%8E%A5%E5%8F%A3/</link>

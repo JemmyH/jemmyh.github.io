@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>虚拟网络设备tuntap - Jemmy&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="JemmyHu(hujm20151021@gmail.com)" /><meta name="description" content="实验机器：MacBook Pro (Retina, 15-inch, Mid 2015) Golang 版本：go version go1.14.6 darwin/amd64 一、前言 网卡 也称 网络适配器，是电脑与局域网进行相互连接的设备，在 OSI 七层模型中，工作在 物理" /><meta name="keywords" content="Jemmy, blog" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.5 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87tuntap/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="虚拟网络设备tuntap" />
+<meta property="og:description" content="实验机器：MacBook Pro (Retina, 15-inch, Mid 2015) Golang 版本：go version go1.14.6 darwin/amd64 一、前言 网卡 也称 网络适配器，是电脑与局域网进行相互连接的设备，在 OSI 七层模型中，工作在 物理" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87tuntap/" />
+<meta property="article:published_time" content="2020-11-16T20:25:50+08:00" />
+<meta property="article:modified_time" content="2020-11-16T20:25:50+08:00" />
+<meta itemprop="name" content="虚拟网络设备tuntap">
+<meta itemprop="description" content="实验机器：MacBook Pro (Retina, 15-inch, Mid 2015) Golang 版本：go version go1.14.6 darwin/amd64 一、前言 网卡 也称 网络适配器，是电脑与局域网进行相互连接的设备，在 OSI 七层模型中，工作在 物理">
+<meta itemprop="datePublished" content="2020-11-16T20:25:50+08:00" />
+<meta itemprop="dateModified" content="2020-11-16T20:25:50+08:00" />
+<meta itemprop="wordCount" content="2740">
+
+
+
+<meta itemprop="keywords" content="底层原理,tun/tap,VPN," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="虚拟网络设备tuntap"/>
+<meta name="twitter:description" content="实验机器：MacBook Pro (Retina, 15-inch, Mid 2015) Golang 版本：go version go1.14.6 darwin/amd64 一、前言 网卡 也称 网络适配器，是电脑与局域网进行相互连接的设备，在 OSI 七层模型中，工作在 物理"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Jemmy&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">时间线</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Jemmy&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">时间线</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">虚拟网络设备tuntap</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-11-16 20:25 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
+            <a href="/categories/%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"> 底层原理 </a>
+            </div>
+          <span class="more-meta"> 约 2740 字 </span>
+          <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#一前言">一、前言</a></li>
+        <li><a href="#二理解-tuntap-数据传输过程">二、理解 <code>tun/tap</code> 数据传输过程</a></li>
+        <li><a href="#三使用-golang-实现一个简易-vpn">三、使用 <code>Golang</code> 实现一个简易 <code>VPN</code></a></li>
+        <li><a href="#四参考">四、参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <blockquote>
+<p>实验机器：<code>MacBook Pro (Retina, 15-inch, Mid 2015)</code></p>
+<p>Golang 版本：<code>go version go1.14.6 darwin/amd64</code></p>
+</blockquote>
+<h2 id="一前言">一、前言</h2>
+<p><strong>网卡</strong> 也称 <strong>网络适配器</strong>，是电脑与局域网进行相互连接的设备，在 <code>OSI</code> 七层模型中，工作在 <strong>物理层</strong> 和 <strong>数据链路层</strong>，其作用可以简单描述为：</p>
+<ol>
+<li>将本机的数据封装成帧，通过网线<strong>发送</strong>到网络上去；</li>
+<li><strong>接收</strong>网络上其他设别传过来的帧，将其重新组合成数据，向上层传输到本机的应用程序中。</li>
+</ol>
+<p>这里的网卡指的是真实的网卡，是一个真实的物理设备。今天我们要了解的是一个叫 <strong>虚拟网卡</strong> 的东西。</p>
+<p>在当前的云计算时代，虚拟机和容器的盛行离不开网络管理设备，即 <strong>虚拟网络设备</strong>，或者说是 <strong>虚拟网卡</strong>。虚拟网卡有以下好处：</p>
+<ol>
+<li>对用户来说，虚拟网卡和真实网卡几乎没有区别。我们对虚拟网卡的操作不会影响到真实的网卡，不会影响到本机网络；</li>
+<li>虚拟网卡的数据可以直接从用户态读取和写入，这样方便我们在用户态进行一些额外的操作(比如截包、修改后再发送出去)</li>
+</ol>
+<p>Linux 系统中有众多的虚拟网络设备，如 <code>TUN/TAP 设备</code>、<code>VETH 设备</code>、<code>Bridge 设备</code>、<code>Bond 设备</code>、<code>VLAN 设备</code>、<code>MACVTAP 设备</code> 等。这里我们只关注 <code>TUN/TAP 设备</code>。</p>
+<p><code>tap/tun</code> 是 <code>Linux</code> 内核 <code>2.4.x</code> 版本之后实现的虚拟网络设备，不同于物理网卡靠硬件网路板卡实现，<strong><code>tap/tun</code> 虚拟网卡完全由软件来实现</strong>，功能和硬件实现完全没有差别，它们都属于网络设备，都可以配置 IP，都归 Linux 网络设备管理模块统一管理。</p>
+<h2 id="二理解-tuntap-数据传输过程">二、理解 <code>tun/tap</code> 数据传输过程</h2>
+<p><strong>TUN</strong> 设备是一种虚拟网络设备，通过此设备，程序可以方便地模拟网络行为。<strong>TUN</strong> 模拟的是一个三层设备(<code>OSI</code> 模型的第三层：网络层，即IP 层),也就是说，通过它可以处理来自网络层的数据，更通俗一点的说，通过它，通过它我们可以处理 <strong>IP</strong> 数据包。</p>
+<p>先看一下正常情况下的物理设备是如何工作的：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwgy1gkp4p8argmj30wl0u01kx.jpg" alt="物理设备"></p>
+<p>这里的 <code>ethx</code> 表示的就是一台主机的真实的网卡接口，一般一台主机只会有一块网卡，像一些特殊的设备，比如路由器，有多少个口就有多少块网卡。</p>
+<p>我们先看一下 <code>ifconfig</code> 命令的输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sh" data-lang="sh">$ ifconfig
+...
+en0: <span class="nv">flags</span><span class="o">=</span>8863&lt;UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST&gt; mtu <span class="m">1500</span>
+	<span class="nv">options</span><span class="o">=</span>400&lt;CHANNEL_IO&gt;
+	ether ac:bc:32:96:86:01
+	inet6 fe80::456:7cb8:3dc5:2722%en0 prefixlen <span class="m">64</span> secured scopeid 0x4
+	inet 10.0.0.176 netmask 0xffffff00 broadcast 10.0.0.255
+	nd6 <span class="nv">options</span><span class="o">=</span>201&lt;PERFORMNUD,DAD&gt;
+	media: autoselect
+	status: active
+...
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到 <code>etho</code> 这个网卡接口分配到的 IP 地址是 <code>10.0.0.176</code>，这是一块物理网卡，它的两端分别是 <strong>内核协议栈</strong> 和 <strong>外面的网络</strong>，从物理层收到的数据，会被转发给内核进而通过某种接口被应用层的用户程序读到；应用程序要想和网络中的另一个进程进行数据通信，会先将数据发送给内核，然后被网卡发送出去。</p>
+<p>接下来我们看一看 <code>tun/tap</code> 设备的工作方式：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwgy1gkp5pk467sj30we0u0h6p.jpg" alt="tun工作方式"></p>
+<p>上图中应用层有两个应用程序，而 <strong>网络协议栈</strong> 和 <strong>网络设备(<code>eth0</code> 和 <code>tun0</code>)</strong> 都位于内核层，对于 <code>socket</code>，可以这么理解：<code>socket</code> 就像是一组 <code>接口(interface)</code>，它将更复杂的 <code>TCP/IP</code> 协议簇隐藏在 <code>socket</code> 接口后面，只对用户暴露更简单的接口，就像操作系统隐藏了底层的硬件操作细节而只对用户程序暴露接口一样，它是 应用层 与 <code>TCP/IP</code>协议簇 通信的中间软件抽象层。</p>
+<p><code>tun0</code> 就是一个 <code>tun/tap</code> 虚拟设备，从上图中就可以看出它和物理设备 <code>eth0</code> 的区别：虽然它们的一端都是连着网络协议栈，但是 <code>eth0</code> 另一端连接的是物理网络，而 <code>tun0</code> 另一端连接的是一个 <strong>应用层程序</strong>，这样协议栈发送给 <code>tun0</code> 的数据包就可以被这个应用程序读取到，此时这个应用程序可以对数据包进行一些自定义的修改(比如封装成 <code>UDP</code>)，然后又通过网络协议栈发送出去——这就是目前大多数 <strong>代理</strong> 的工作原理。</p>
+<p>假如 <code>eth0</code> 的 IP 地址是 <code>10.0.0.176</code>，而 <code>tun0</code> 配的 IP 为 <code>192.168.1.2</code>。上图是一个典型的使用 <code>tun/tap</code> 进行 <code>VPN</code> 工作的原理，发送给 <code>192.168.1.0/24</code> 的数据通过 <code>应用程序 B</code> 这个 <strong>隧道</strong> 处理(隐藏一些信息)之后，利用真实的物理设备 <code>10.0.0.176</code> 转发给目的地址(假如为 <code>49.233.198.76</code>)，从而实现 <code>VPN</code>。我们看下每一个流程：</p>
+<ol>
+<li><code>Application A</code> 是一个普通的应用程序，通过 <code>Socket A</code> 发送了一个数据包，这个数据包的目的地址是 <code>192.168.1.2</code>；</li>
+<li><code>Socket A</code> 将这个数据包丢给网络协议栈；</li>
+<li>协议栈根据数据包的目的地址，匹配本地路由规则，得知这个数据包应该由 <code>tun0</code> 出去，于是将数据包丢给了 <code>tun0</code>；</li>
+<li><code>tun0</code> 收到数据包之后，发现另一端被 <code>Application B</code> 打开，于是又将数据包丢给了 <code>Application B</code>；</li>
+<li><code>Application B</code> 收到数据包之后，解包，做一些特殊的处理，然后构造一个新的数据包，将原来的数据嵌入新的数据包中，最后通过 <code>Socket B</code> 将数据包转发出去，这个时候新数据包的源地址就变成了 <code>eth0</code> 的地址，而目的地址就变成了真正想发送的主机的地址，比如 <code>49.233.198.76</code>；</li>
+<li><code>Socket B</code> 将这个数据包丢给网络协议栈；</li>
+<li>协议栈根据本地路由得知，这个数据包应该从 <code>eth0</code> 发送出去，于是将数据包丢给 <code>eth0</code>；</li>
+<li><code>eth0</code> 通过物理网络将这个数据包发送出去</li>
+</ol>
+<p>简单来说，<code>tun/tap</code> 设备的用处是将协议栈中的部分数据包转发给用户空间的特殊应用程序，给用户空间的程序一个处理数据包的机会，比较常用的场景是 <strong>数据压缩</strong>、<strong>加密</strong>等，比如 <code>VPN</code>。</p>
+<h2 id="三使用-golang-实现一个简易-vpn">三、使用 <code>Golang</code> 实现一个简易 <code>VPN</code></h2>
+<p>先看客户端的实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;encoding/binary&#34;</span>
+	<span class="s">&#34;net&#34;</span>
+	<span class="s">&#34;os&#34;</span>
+	<span class="s">&#34;os/signal&#34;</span>
+	<span class="s">&#34;syscall&#34;</span>
+
+	<span class="s">&#34;github.com/fatih/color&#34;</span>
+	<span class="s">&#34;github.com/songgao/water&#34;</span>
+	<span class="nx">flag</span> <span class="s">&#34;github.com/spf13/pflag&#34;</span>
+<span class="p">)</span>
+
+<span class="cm">/*
+</span><span class="cm">* @CreateTime: 2020/11/16 11:08
+</span><span class="cm">* @Author: hujiaming
+</span><span class="cm">* @Description:
+</span><span class="cm">数据传输过程：
+</span><span class="cm">	用户数据，如ping --&gt; 协议栈conn --&gt; IfaceWrite --&gt; IfaceRead --&gt; 协议栈conn --&gt; 网线
+</span><span class="cm">*/</span>
+
+<span class="kd">var</span> <span class="p">(</span>
+	<span class="nx">serviceAddress</span> <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;addr&#34;</span><span class="p">,</span> <span class="s">&#34;10.0.0.245:9621&#34;</span><span class="p">,</span> <span class="s">&#34;service address&#34;</span><span class="p">)</span>
+	<span class="nx">tunName</span>        <span class="p">=</span> <span class="nx">flag</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="s">&#34;dev&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;local tun device name&#34;</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span>
+
+	<span class="c1">// create tun/tap interface
+</span><span class="c1"></span>	<span class="nx">iface</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">water</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">water</span><span class="p">.</span><span class="nx">Config</span><span class="p">{</span>
+		<span class="nx">DeviceType</span><span class="p">:</span> <span class="nx">water</span><span class="p">.</span><span class="nx">TUN</span><span class="p">,</span>
+		<span class="nx">PlatformSpecificParams</span><span class="p">:</span> <span class="nx">water</span><span class="p">.</span><span class="nx">PlatformSpecificParams</span><span class="p">{</span>
+			<span class="nx">Name</span><span class="p">:</span> <span class="o">*</span><span class="nx">tunName</span><span class="p">,</span>
+		<span class="p">},</span>
+	<span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;create tun device failed,error: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="c1">// connect to server
+</span><span class="c1"></span>	<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nf">Dial</span><span class="p">(</span><span class="s">&#34;tcp&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">serviceAddress</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;connect to server failed,error: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+
+	<span class="c1">//
+</span><span class="c1"></span>	<span class="k">go</span> <span class="nf">IfaceRead</span><span class="p">(</span><span class="nx">iface</span><span class="p">,</span> <span class="nx">conn</span><span class="p">)</span>
+	<span class="k">go</span> <span class="nf">IfaceWrite</span><span class="p">(</span><span class="nx">iface</span><span class="p">,</span> <span class="nx">conn</span><span class="p">)</span>
+
+	<span class="nx">sig</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Signal</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+	<span class="nx">signal</span><span class="p">.</span><span class="nf">Notify</span><span class="p">(</span><span class="nx">sig</span><span class="p">,</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">SIGINT</span><span class="p">,</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">SIGABRT</span><span class="p">,</span> <span class="nx">syscall</span><span class="p">.</span><span class="nx">SIGHUP</span><span class="p">)</span>
+	<span class="o">&lt;-</span><span class="nx">sig</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+</span><span class="cm">	IfaceRead 从 tun 设备读取数据
+</span><span class="cm">*/</span>
+<span class="kd">func</span> <span class="nf">IfaceRead</span><span class="p">(</span><span class="nx">iface</span> <span class="o">*</span><span class="nx">water</span><span class="p">.</span><span class="nx">Interface</span><span class="p">,</span> <span class="nx">conn</span> <span class="nx">net</span><span class="p">.</span><span class="nx">Conn</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">packet</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">2048</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="c1">// 不断从 tun 设备读取数据
+</span><span class="c1"></span>		<span class="nx">n</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">iface</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">packet</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;READ: read from tun failed&#34;</span><span class="p">)</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+		<span class="c1">// 在这里你可以对拿到的数据包做一些数据，比如加密。这里只对其进行简单的打印
+</span><span class="c1"></span>		<span class="nx">color</span><span class="p">.</span><span class="nf">Cyan</span><span class="p">(</span><span class="s">&#34;get data from tun: %v&#34;</span><span class="p">,</span> <span class="nx">packet</span><span class="p">[:</span><span class="nx">n</span><span class="p">])</span>
+
+		<span class="c1">// 通过物理连接，将处理后的数据包发送给目的服务器
+</span><span class="c1"></span>		<span class="nx">err</span> <span class="p">=</span> <span class="nf">forwardServer</span><span class="p">(</span><span class="nx">conn</span><span class="p">,</span> <span class="nx">packet</span><span class="p">[:</span><span class="nx">n</span><span class="p">])</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;forward to server failed&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+</span><span class="cm">	IfaceWrite 从物理连接中读取数据，然后通过 tun 将数据发送给 IfaceRead
+</span><span class="cm">*/</span>
+<span class="kd">func</span> <span class="nf">IfaceWrite</span><span class="p">(</span><span class="nx">iface</span> <span class="o">*</span><span class="nx">water</span><span class="p">.</span><span class="nx">Interface</span><span class="p">,</span> <span class="nx">conn</span> <span class="nx">net</span><span class="p">.</span><span class="nx">Conn</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">packet</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">2048</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="c1">// 从物理请求中读取数据
+</span><span class="c1"></span>		<span class="nx">nr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">packet</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;WRITE: read from tun failed&#34;</span><span class="p">)</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+
+		<span class="c1">// 将处理后的数据通过 tun 发送给 IfaceRead
+</span><span class="c1"></span>		<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">iface</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">packet</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="nx">nr</span><span class="p">])</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;WRITE: write to tun failed&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// forwardServer 通过物理连接发送一个包
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">forwardServer</span><span class="p">(</span><span class="nx">conn</span> <span class="nx">net</span><span class="p">.</span><span class="nx">Conn</span><span class="p">,</span> <span class="nx">buff</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">output</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+	<span class="nx">bsize</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+	<span class="nx">binary</span><span class="p">.</span><span class="nx">BigEndian</span><span class="p">.</span><span class="nf">PutUint32</span><span class="p">(</span><span class="nx">bsize</span><span class="p">,</span> <span class="nb">uint32</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">buff</span><span class="p">)))</span>
+
+	<span class="nx">output</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">output</span><span class="p">,</span> <span class="nx">bsize</span><span class="o">...</span><span class="p">)</span>
+	<span class="nx">output</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">output</span><span class="p">,</span> <span class="nx">buff</span><span class="o">...</span><span class="p">)</span>
+
+	<span class="nx">left</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">output</span><span class="p">)</span>
+	<span class="k">for</span> <span class="nx">left</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">nw</span><span class="p">,</span> <span class="nx">er</span> <span class="o">:=</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">output</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">er</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">err</span> <span class="p">=</span> <span class="nx">er</span>
+		<span class="p">}</span>
+
+		<span class="nx">left</span> <span class="o">-=</span> <span class="nx">nw</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>再看服务端的实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;io&#34;</span>
+	<span class="s">&#34;net&#34;</span>
+
+	<span class="s">&#34;github.com/fatih/color&#34;</span>
+<span class="p">)</span>
+
+<span class="cm">/*
+</span><span class="cm">* @CreateTime: 2020/11/16 11:39
+</span><span class="cm">* @Author: hujiaming
+</span><span class="cm">* @Description:
+</span><span class="cm"> */</span>
+
+<span class="kd">var</span> <span class="nx">clients</span> <span class="p">=</span> <span class="nb">make</span><span class="p">([]</span><span class="nx">net</span><span class="p">.</span><span class="nx">Conn</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">listener</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">net</span><span class="p">.</span><span class="nf">Listen</span><span class="p">(</span><span class="s">&#34;tcp&#34;</span><span class="p">,</span> <span class="s">&#34;:9621&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;listen failed,error: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="nx">color</span><span class="p">.</span><span class="nf">Cyan</span><span class="p">(</span><span class="s">&#34;server start...&#34;</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+        <span class="c1">// 对客户端的每一个连接，都起一个 go 协程去处理
+</span><span class="c1"></span>		<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">listener</span><span class="p">.</span><span class="nf">Accept</span><span class="p">()</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;tcp accept failed,error: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+		<span class="nx">clients</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">clients</span><span class="p">,</span> <span class="nx">conn</span><span class="p">)</span>
+		<span class="nx">color</span><span class="p">.</span><span class="nf">Cyan</span><span class="p">(</span><span class="s">&#34;accept tun client&#34;</span><span class="p">)</span>
+		<span class="k">go</span> <span class="nf">handleClient</span><span class="p">(</span><span class="nx">conn</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">handleClient</span><span class="p">(</span><span class="nx">conn</span> <span class="nx">net</span><span class="p">.</span><span class="nx">Conn</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">defer</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+	<span class="nx">buff</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">65536</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="nx">n</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">buff</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span> <span class="p">{</span>
+				<span class="nx">color</span><span class="p">.</span><span class="nf">Red</span><span class="p">(</span><span class="s">&#34;read from client failed&#34;</span><span class="p">)</span>
+			<span class="p">}</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+		<span class="c1">// broadcast data to all clients
+</span><span class="c1"></span>		<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">clients</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="nx">c</span><span class="p">.</span><span class="nf">RemoteAddr</span><span class="p">().</span><span class="nf">String</span><span class="p">()</span> <span class="o">!=</span> <span class="nx">conn</span><span class="p">.</span><span class="nf">RemoteAddr</span><span class="p">().</span><span class="nf">String</span><span class="p">()</span> <span class="p">{</span>
+				<span class="nx">c</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">buff</span><span class="p">[:</span><span class="nx">n</span><span class="p">])</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="四参考">四、参考</h2>
+<ul>
+<li><a href="https://www.cnblogs.com/bakari/p/10450711.html">原创 详解云计算网络底层技术——虚拟网络设备 tap/tun 原理解析</a></li>
+<li><a href="https://blog.liu-kevin.com/2020/01/06/tun-tapshe-bei-qian-xi/">TUN/TAP概述及操作</a></li>
+<li><a href="https://www.jianshu.com/p/09f9375b7fa7">TUN/TAP设备浅析</a></li>
+<li><a href="https://github.com/ICKelin/article/issues/9">https://github.com/ICKelin/article/issues/9</a></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">JemmyHu(hujm20151021@gmail.com)</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2020-11-16 20:25
+        
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/">底层原理</a>
+          <a href="/tags/tun/tap/">tun/tap</a>
+          <a href="/tags/vpn/">VPN</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/%E4%BD%BF%E7%94%A8ghz%E5%8E%8B%E6%B5%8Bgrpc%E6%8E%A5%E5%8F%A3/">
+            <span class="next-text nav-default">使用ghz压测GRPC接口</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+        el: '#vcomments' ,
+        appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+        appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+        notify:  true ,
+        verify:  false ,
+        avatar:'monsterid',
+        placeholder: '欢迎留言~',
+        visitor:  false 
+    });
+  </script>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hujm20151021@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/JemmyH" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2020<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
