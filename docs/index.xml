@@ -6,7 +6,16 @@
     <description>Recent content on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Mon, 16 Nov 2020 20:25:50 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 05 Jan 2021 16:28:43 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Boltdb使用(一)基本用法</title>
+      <link>http://localhost:1313/post/boltdb%E4%BD%BF%E7%94%A8%E4%B8%80%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</link>
+      <pubDate>Tue, 05 Jan 2021 16:28:43 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/boltdb%E4%BD%BF%E7%94%A8%E4%B8%80%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</guid>
+      <description>介绍 boltdb 是一个使用 Go 编写的键值对数据库，它的目标是 简单、快速和稳定的轻型数据库，适用于那些不需要使用像 MySQL 一样的完整的数据库系统的项目。 使用 1. 安</description>
+    </item>
+    
     <item>
       <title>虚拟网络设备tuntap</title>
       <link>http://localhost:1313/post/%E8%99%9A%E6%8B%9F%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87tuntap/</link>

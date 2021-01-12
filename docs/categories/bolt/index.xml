@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bolt on Jemmy&#39;s blog</title>
+    <link>http://localhost:1313/categories/bolt/</link>
+    <description>Recent content in bolt on Jemmy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Tue, 05 Jan 2021 16:28:43 +0800</lastBuildDate><atom:link href="http://localhost:1313/categories/bolt/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Boltdb使用(一)基本用法</title>
+      <link>http://localhost:1313/post/boltdb%E4%BD%BF%E7%94%A8%E4%B8%80%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</link>
+      <pubDate>Tue, 05 Jan 2021 16:28:43 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/boltdb%E4%BD%BF%E7%94%A8%E4%B8%80%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/</guid>
+      <description>介绍 boltdb 是一个使用 Go 编写的键值对数据库，它的目标是 简单、快速和稳定的轻型数据库，适用于那些不需要使用像 MySQL 一样的完整的数据库系统的项目。 使用 1. 安</description>
+    </item>
+    
+  </channel>
+</rss>

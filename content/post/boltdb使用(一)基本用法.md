@@ -1,7 +1,12 @@
 ---
 title: "Boltdb使用(一)基本用法"
 date: 2021-01-05T16:28:43+08:00
-draft: true
+draft: false
+author: JemmyHu(hujm20151021@gmail.com)
+toc: true
+mathjax: true
+categories: [技术博客, 技术细节, Golang, bolt]
+tags: [Golang, bolt]
 ---
 
 ## 介绍
@@ -271,62 +276,62 @@ func main() {
 
 ```go
 func main() {
-	db, err := bolt.Open("./data.db", os.ModePerm, nil)
-	if err != nil {
-		panic(err)
-	}
+    db, err := bolt.Open("./data.db", os.ModePerm, nil)
+    if err != nil {
+        panic(err)
+    }
 
-	type User struct {
-		ID   uint64
-		Name string
-		Age  int
-	}
+    type User struct {
+        ID   uint64
+        Name string
+        Age  int
+    }
 
-	bucketName := "my-bucket222"
-	err = db.Update(func(tx *bolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists([]byte(bucketName))
-		if err != nil {
-			return err
-		}
-		for i:=0;i<5;i++ {
-			u := &User{
-				Name: "Jemmy",
-				Age:  18,
-			}
+    bucketName := "my-bucket222"
+    err = db.Update(func(tx *bolt.Tx) error {
+        b, err := tx.CreateBucketIfNotExists([]byte(bucketName))
+        if err != nil {
+            return err
+        }
+        for i:=0;i<5;i++ {
+            u := &User{
+                Name: "Jemmy",
+                Age:  18,
+            }
             // 获取一个主键值。只有当 Tx被关闭 或者 b不可写 时，才会返回错误。在 Update() 函数中不可能发生
-			id, err := b.NextSequence()
-			if err != nil {
-				return err
-			}
-			u.ID = id
+            id, err := b.NextSequence()
+            if err != nil {
+                return err
+            }
+            u.ID = id
             // 将 user 序列化成 []byte
-			data, err := json.Marshal(u)
-			if err != nil {
-				return err
-			}
-			key := fmt.Sprintf("%d", u.ID)
+            data, err := json.Marshal(u)
+            if err != nil {
+                return err
+            }
+            key := fmt.Sprintf("%d", u.ID)
             // 使用 Put 保存
-			err = b.Put([]byte(key), data)
-			if err != nil {
-				return err
-			}
-		}
-		
-		return nil
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+            err = b.Put([]byte(key), data)
+            if err != nil {
+                return err
+            }
+        }
+        
+        return nil
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
 
-	_ = db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(bucketName))
+    _ = db.View(func(tx *bolt.Tx) error {
+        b := tx.Bucket([]byte(bucketName))
 
-		c := b.Cursor()
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-			fmt.Printf("key=%s, value=%s\n", k, v)
-		}
-		return nil
-	})
+        c := b.Cursor()
+        for k, v := c.First(); k != nil; k, v = c.Next() {
+            fmt.Printf("key=%s, value=%s\n", k, v)
+        }
+        return nil
+    })
 }
 ```
 
