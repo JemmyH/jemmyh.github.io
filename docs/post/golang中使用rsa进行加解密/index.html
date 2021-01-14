@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Golang中使用RSA进行加解密 - Jemmy&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="JemmyHu(hujm20151021@gmail.com)" /><meta name="description" content="本文对 RSA加密算法 的细节不做深究，仅描述大致用法。具体算法原理请阅读参考文献中的 2 和 4。 一、介绍 当我们谈论加解密方式时，通常有两种情形：对" /><meta name="keywords" content="Jemmy, blog" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.5 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/golang%E4%B8%AD%E4%BD%BF%E7%94%A8rsa%E8%BF%9B%E8%A1%8C%E5%8A%A0%E8%A7%A3%E5%AF%86/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.c7bc1becf36bcf6a9ebd25d2947e43a2eb745ddb0c9a32b43126fd7fa460c351.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Golang中使用RSA进行加解密" />
+<meta property="og:description" content="本文对 RSA加密算法 的细节不做深究，仅描述大致用法。具体算法原理请阅读参考文献中的 2 和 4。 一、介绍 当我们谈论加解密方式时，通常有两种情形：对" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/golang%E4%B8%AD%E4%BD%BF%E7%94%A8rsa%E8%BF%9B%E8%A1%8C%E5%8A%A0%E8%A7%A3%E5%AF%86/" />
+<meta property="article:published_time" content="2021-01-14T11:45:06+08:00" />
+<meta property="article:modified_time" content="2021-01-14T11:45:06+08:00" />
+<meta itemprop="name" content="Golang中使用RSA进行加解密">
+<meta itemprop="description" content="本文对 RSA加密算法 的细节不做深究，仅描述大致用法。具体算法原理请阅读参考文献中的 2 和 4。 一、介绍 当我们谈论加解密方式时，通常有两种情形：对">
+<meta itemprop="datePublished" content="2021-01-14T11:45:06+08:00" />
+<meta itemprop="dateModified" content="2021-01-14T11:45:06+08:00" />
+<meta itemprop="wordCount" content="2078">
+
+
+
+<meta itemprop="keywords" content="Golang,加密算法,RSA," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Golang中使用RSA进行加解密"/>
+<meta name="twitter:description" content="本文对 RSA加密算法 的细节不做深究，仅描述大致用法。具体算法原理请阅读参考文献中的 2 和 4。 一、介绍 当我们谈论加解密方式时，通常有两种情形：对"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Jemmy&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">时间线</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Jemmy&#39;s blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">时间线</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Golang中使用RSA进行加解密</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-01-14 11:45 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
+            <a href="/categories/golang/"> Golang </a>
+            <a href="/categories/%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/"> 加密算法 </a>
+            </div>
+          <span class="more-meta"> 约 2078 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#一介绍">一、介绍</a></li>
+        <li><a href="#二使用">二、使用</a>
+          <ul>
+            <li><a href="#1--rsa-加密的基本用法">1.  RSA 加密的基本用法</a></li>
+            <li><a href="#2-使用自定义密码的-rsa-算法">2. 使用自定义密码的 RSA 算法</a></li>
+          </ul>
+        </li>
+        <li><a href="#参考文章">参考文章：</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>本文对 RSA加密算法 的细节不做深究，仅描述大致用法。具体算法原理请阅读参考文献中的 2 和 4。</p>
+<h2 id="一介绍">一、介绍</h2>
+<p>当我们谈论加解密方式时，通常有两种情形：<strong>对称加密</strong> 和 <strong>非对称加密</strong>。</p>
+<p>对于 <code>对称加密</code>，加密和解密使用同一份秘钥，加密者必须将加密方式告知使用者，否则使用者无法解密，这就面临着 “秘钥配送问题”。</p>
+<p>而在 <code>非对称加密</code> 中，有公钥和私钥加密使用公钥，解密使用私钥；公钥是公开的，任何人都可以获得，私钥则是保密的。只有持有私钥的人才能解开被对应公钥加密的数据。因此非对称加密算法，也称公钥加密算法。</p>
+<p>如果公钥加密的信息只有私钥解得开，那么只要私钥不泄漏，通信就是安全的。</p>
+<p>1977年，三位数学家 Rivest、Shamir 和 Adleman 设计了一种算法，可以实现非对称加密。这种算法用他们三个人的名字命名，叫做 <a href="http://zh.wikipedia.org/zh-cn/RSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95"><code>RSA算法</code></a>。从那时直到现在，RSA算法一直是最广为使用的&quot;非对称加密算法&quot;。毫不夸张地说，<strong>只要有计算机网络的地方，就有 RSA 算法</strong>。</p>
+<p>这种算法非常<a href="http://en.wikipedia.org/wiki/RSA_Factoring_Challenge">可靠</a>，密钥越长，它就越难破解。根据已经披露的文献，目前被破解的最长RSA密钥是768个二进制位。也就是说，长度超过768位的密钥，还无法破解（至少没人公开宣布）。因此可以认为，1024 位的 RSA密钥 基本安全，2048 位的密钥极其安全。</p>
+<h2 id="二使用">二、使用</h2>
+<p>Golang 的标准库中已经对 RSA 相关的加密算法进行了实现，这里展示基本用法 以及 使用自定义密码 的场景。</p>
+<p>对 RSA 的使用大致分为三个步骤：</p>
+<ol>
+<li><code>RSAGenKey</code> 生成公钥和私钥；</li>
+<li><code>RSAEncrypt</code> 加密数据，传入 待加密数据 和 公钥，返回 加密后的数据；</li>
+<li><code>RSADecrypt</code> 解密数据，传入 被加密的数据 和 私钥，返回 解密后的数据。</li>
+</ol>
+<h3 id="1--rsa-加密的基本用法">1.  RSA 加密的基本用法</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// RSAGenKey 生成公私钥
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">RSAGenKey</span><span class="p">(</span><span class="nx">bits</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="nx">pubKey</span><span class="p">,</span> <span class="nx">prvKey</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="cm">/*
+</span><span class="cm">		生成私钥
+</span><span class="cm">	*/</span>
+	<span class="c1">// 1、使用RSA中的GenerateKey方法生成私钥（bits=1024基本安全，2048 极其安全）
+</span><span class="c1"></span>	<span class="nx">privateKey</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rsa</span><span class="p">.</span><span class="nf">GenerateKey</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">bits</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="c1">// 2、通过X509标准将得到的RAS私钥序列化为：ASN.1 的DER编码字符串
+</span><span class="c1"></span>	<span class="nx">privateStream</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">MarshalPKCS1PrivateKey</span><span class="p">(</span><span class="nx">privateKey</span><span class="p">)</span>
+	<span class="c1">// 3、将私钥字符串设置到pem格式块中
+</span><span class="c1"></span>	<span class="nx">block1</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">pem</span><span class="p">.</span><span class="nx">Block</span><span class="p">{</span>
+		<span class="nx">Type</span><span class="p">:</span>  <span class="s">&#34;private key&#34;</span><span class="p">,</span>
+		<span class="nx">Bytes</span><span class="p">:</span> <span class="nx">privateStream</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="c1">// 4、通过pem将设置的数据进行编码，并写入磁盘文件
+</span><span class="c1"></span>	<span class="c1">// fPrivate, err := os.Create(&#34;privateKey.pem&#34;)
+</span><span class="c1"></span>	<span class="c1">// if err != nil {
+</span><span class="c1"></span>	<span class="c1">// 	return err
+</span><span class="c1"></span>	<span class="c1">// }
+</span><span class="c1"></span>	<span class="c1">// defer fPrivate.Close()
+</span><span class="c1"></span>	<span class="c1">// err = pem.Encode(fPrivate, block1)
+</span><span class="c1"></span>	<span class="c1">// if err != nil {
+</span><span class="c1"></span>	<span class="c1">// 	return err
+</span><span class="c1"></span>	<span class="c1">// }
+</span><span class="c1"></span>	<span class="c1">// 4. 有两种方式，一种是将秘钥写入文件，一种是当成返回值返回，由使用者自行决定
+</span><span class="c1"></span>	<span class="nx">prvKey</span> <span class="p">=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">EncodeToMemory</span><span class="p">(</span><span class="nx">block1</span><span class="p">)</span>
+
+	<span class="cm">/*
+</span><span class="cm">		生成公钥
+</span><span class="cm">	*/</span>
+	<span class="nx">publicKey</span> <span class="o">:=</span> <span class="nx">privateKey</span><span class="p">.</span><span class="nx">PublicKey</span>
+	<span class="nx">publicStream</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">MarshalPKIXPublicKey</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">publicKey</span><span class="p">)</span>
+	<span class="nx">block2</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">pem</span><span class="p">.</span><span class="nx">Block</span><span class="p">{</span>
+		<span class="nx">Type</span><span class="p">:</span>  <span class="s">&#34;public key&#34;</span><span class="p">,</span>
+		<span class="nx">Bytes</span><span class="p">:</span> <span class="nx">publicStream</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="c1">// fPublic, err := os.Create(&#34;publicKey.pem&#34;)
+</span><span class="c1"></span>	<span class="c1">// if err != nil {
+</span><span class="c1"></span>	<span class="c1">// 	return err
+</span><span class="c1"></span>	<span class="c1">// }
+</span><span class="c1"></span>	<span class="c1">// defer fPublic.Close()
+</span><span class="c1"></span>	<span class="c1">// pem.Encode(fPublic, &amp;block2)
+</span><span class="c1"></span>	<span class="c1">// 同样，可以将公钥写入文件，也可以直接返回
+</span><span class="c1"></span>	<span class="nx">pubKey</span> <span class="p">=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">EncodeToMemory</span><span class="p">(</span><span class="nx">block2</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">pubKey</span><span class="p">,</span> <span class="nx">prvKey</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// RSAEncrypt 对数据进行加密操作
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">RSAEncrypt</span><span class="p">(</span><span class="nx">src</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">pubKey</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">res</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">block</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">pubKey</span><span class="p">)</span>
+	<span class="c1">// 使用X509将解码之后的数据 解析出来
+</span><span class="c1"></span>	<span class="nx">keyInit</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">ParsePKIXPublicKey</span><span class="p">(</span><span class="nx">block</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="nx">publicKey</span> <span class="o">:=</span> <span class="nx">keyInit</span><span class="p">.(</span><span class="o">*</span><span class="nx">rsa</span><span class="p">.</span><span class="nx">PublicKey</span><span class="p">)</span>
+	<span class="c1">// 使用公钥加密数据
+</span><span class="c1"></span>	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">rsa</span><span class="p">.</span><span class="nf">EncryptPKCS1v15</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">publicKey</span><span class="p">,</span> <span class="nx">src</span><span class="p">)</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+
+<span class="c1">// 对数据进行解密操作
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">RSADecrypt</span><span class="p">(</span><span class="nx">src</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">prvKey</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">res</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// 解码
+</span><span class="c1"></span>	<span class="nx">block</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">prvKey</span><span class="p">)</span> 
+	<span class="nx">blockBytes</span> <span class="o">:=</span> <span class="nx">block</span><span class="p">.</span><span class="nx">Bytes</span>
+	<span class="nx">privateKey</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">ParsePKCS1PrivateKey</span><span class="p">(</span><span class="nx">blockBytes</span><span class="p">)</span>
+	<span class="c1">// 还原数据
+</span><span class="c1"></span>	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">rsa</span><span class="p">.</span><span class="nf">DecryptPKCS1v15</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">privateKey</span><span class="p">,</span> <span class="nx">src</span><span class="p">)</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>看一个 demo:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">sourceData</span> <span class="o">:=</span> <span class="s">&#34;我的头发长，天下我为王&#34;</span>
+	<span class="c1">// 创建公私钥
+</span><span class="c1"></span>	<span class="nx">pubKey</span><span class="p">,</span> <span class="nx">prvKey</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">RSAGenKey</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;gen pubKey and prvKey ok!&#34;</span><span class="p">)</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;before encrypt: %s\n&#34;</span><span class="p">,</span> <span class="nx">sourceData</span><span class="p">)</span>
+	<span class="c1">// 使用公钥加密
+</span><span class="c1"></span>	<span class="nx">encryptData</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">RSAEncrypt</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">sourceData</span><span class="p">),</span> <span class="nx">pubKey</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;after encrypt: %v\n&#34;</span><span class="p">,</span> <span class="nx">encryptData</span><span class="p">)</span>
+	<span class="c1">// 使用私钥解密
+</span><span class="c1"></span>	<span class="nx">decryptData</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">RSADecrypt</span><span class="p">(</span><span class="nx">encryptData</span><span class="p">,</span> <span class="nx">prvKey</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;after decrypt: %s\n&#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">decryptData</span><span class="p">))</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;equal? %v \n&#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">decryptData</span><span class="p">)</span> <span class="o">==</span> <span class="nx">sourceData</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 输出
+</span><span class="c1"></span><span class="nx">gen</span> <span class="nx">pubKey</span> <span class="nx">and</span> <span class="nx">prvKey</span> <span class="nx">ok</span><span class="p">!</span>
+<span class="nx">before</span> <span class="nx">encrypt</span><span class="p">:</span> <span class="nx">我的头发长</span><span class="err">，</span><span class="nx">天下我为王</span>
+<span class="nx">after</span> <span class="nx">encrypt</span><span class="p">:</span> <span class="p">[</span><span class="mi">153</span> <span class="mi">1</span> <span class="mi">185</span> <span class="mi">195</span> <span class="o">...</span><span class="p">(</span><span class="nx">很长的字节数组</span><span class="p">)]</span>
+<span class="nx">after</span> <span class="nx">decrypt</span><span class="p">:</span> <span class="nx">我的头发长</span><span class="err">，</span><span class="nx">天下我为王</span>
+<span class="nx">equal</span><span class="err">?</span> <span class="kc">true</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2-使用自定义密码的-rsa-算法">2. 使用自定义密码的 RSA 算法</h3>
+<p>有时候我们想在随机生成的基础上加上自定义的密码，可以使用下面的方式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// RSAGenKeyWithPwd generate rsa pair key with specified password
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">RSAGenKeyWithPwd</span><span class="p">(</span><span class="nx">bits</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">pwd</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">pubKey</span><span class="p">,</span> <span class="nx">prvKey</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="cm">/*
+</span><span class="cm">		生成私钥
+</span><span class="cm">	*/</span>
+	<span class="c1">// 1、使用RSA中的GenerateKey方法生成私钥
+</span><span class="c1"></span>	<span class="nx">privateKey</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rsa</span><span class="p">.</span><span class="nf">GenerateKey</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">bits</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="c1">// 2、通过X509标准将得到的RAS私钥序列化为：ASN.1 的DER编码字符串
+</span><span class="c1"></span>	<span class="nx">privateStream</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">MarshalPKCS1PrivateKey</span><span class="p">(</span><span class="nx">privateKey</span><span class="p">)</span>
+	<span class="c1">// 3、将私钥字符串设置到pem格式块中
+</span><span class="c1"></span>	<span class="nx">block1</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">pem</span><span class="p">.</span><span class="nx">Block</span><span class="p">{</span>
+		<span class="nx">Type</span><span class="p">:</span>  <span class="s">&#34;private key&#34;</span><span class="p">,</span>
+		<span class="nx">Bytes</span><span class="p">:</span> <span class="nx">privateStream</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="c1">// 通过自定义密码加密
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nx">pwd</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+		<span class="nx">block1</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">EncryptPEMBlock</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">block1</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">block1</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">,</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">pwd</span><span class="p">),</span> <span class="nx">x509</span><span class="p">.</span><span class="nx">PEMCipherAES256</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nx">prvKey</span> <span class="p">=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">EncodeToMemory</span><span class="p">(</span><span class="nx">block1</span><span class="p">)</span>
+
+	<span class="cm">/*
+</span><span class="cm">		生成公钥
+</span><span class="cm">	*/</span>
+	<span class="nx">publicKey</span> <span class="o">:=</span> <span class="nx">privateKey</span><span class="p">.</span><span class="nx">PublicKey</span>
+	<span class="nx">publicStream</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">MarshalPKIXPublicKey</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">publicKey</span><span class="p">)</span>
+	<span class="nx">block2</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">pem</span><span class="p">.</span><span class="nx">Block</span><span class="p">{</span>
+		<span class="nx">Type</span><span class="p">:</span>  <span class="s">&#34;public key&#34;</span><span class="p">,</span>
+		<span class="nx">Bytes</span><span class="p">:</span> <span class="nx">publicStream</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="nx">pubKey</span> <span class="p">=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">EncodeToMemory</span><span class="p">(</span><span class="nx">block2</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">pubKey</span><span class="p">,</span> <span class="nx">prvKey</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// 加密方式与 RSAEncrypt 没有区别，可以共用
+</span><span class="c1"></span>
+<span class="c1">// RSADecryptWithPwd decrypt src with private key and password
+</span><span class="c1"></span><span class="kd">func</span> <span class="nf">RSADecryptWithPwd</span><span class="p">(</span><span class="nx">src</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">prvKey</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">pwd</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">res</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// 解码
+</span><span class="c1"></span>	<span class="nx">block</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">prvKey</span><span class="p">)</span>
+	<span class="nx">blockBytes</span> <span class="o">:=</span> <span class="nx">block</span><span class="p">.</span><span class="nx">Bytes</span>
+	<span class="k">if</span> <span class="nx">pwd</span> <span class="o">!=</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+		<span class="nx">blockBytes</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">DecryptPEMBlock</span><span class="p">(</span><span class="nx">block</span><span class="p">,</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">pwd</span><span class="p">))</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nx">privateKey</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">ParsePKCS1PrivateKey</span><span class="p">(</span><span class="nx">blockBytes</span><span class="p">)</span>
+	<span class="c1">// 还原数据
+</span><span class="c1"></span>	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">rsa</span><span class="p">.</span><span class="nf">DecryptPKCS1v15</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">privateKey</span><span class="p">,</span> <span class="nx">src</span><span class="p">)</span>
+	<span class="k">return</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>看一个 demo：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">sourceData</span> <span class="o">:=</span> <span class="s">&#34;好的代码本身就是最好的说明文档&#34;</span>
+	<span class="nx">pwd</span> <span class="o">:=</span> <span class="s">&#34;123456&#34;</span>
+	<span class="c1">// 创建公私钥
+</span><span class="c1"></span>	<span class="nx">pubKey</span><span class="p">,</span> <span class="nx">prvKey</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">RSAGenKeyWithPwd</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="nx">pwd</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;gen pubKey and prvKey ok!&#34;</span><span class="p">)</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;before encrypt: %s\n&#34;</span><span class="p">,</span> <span class="nx">sourceData</span><span class="p">)</span>
+	<span class="c1">// 使用公钥加密
+</span><span class="c1"></span>	<span class="nx">encryptData</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">RSAEncrypt</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">sourceData</span><span class="p">),</span> <span class="nx">pubKey</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;after encrypt: %v\n&#34;</span><span class="p">,</span> <span class="nx">encryptData</span><span class="p">)</span>
+	<span class="c1">// 使用私钥解密
+</span><span class="c1"></span>	<span class="nx">decryptData</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">RSADecryptWithPwd</span><span class="p">(</span><span class="nx">encryptData</span><span class="p">,</span> <span class="nx">prvKey</span><span class="p">,</span> <span class="nx">pwd</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;after decrypt: %s\n&#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">decryptData</span><span class="p">))</span>
+	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;equal? %v \n&#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">decryptData</span><span class="p">)</span> <span class="o">==</span> <span class="nx">sourceData</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 输出
+</span><span class="c1"></span><span class="nx">gen</span> <span class="nx">pubKey</span> <span class="nx">and</span> <span class="nx">prvKey</span> <span class="nx">ok</span><span class="p">!</span>
+<span class="nx">before</span> <span class="nx">encrypt</span><span class="p">:</span> <span class="nx">好的代码本身就是最好的说明文档</span>
+<span class="nx">after</span> <span class="nx">encrypt</span><span class="p">:</span> <span class="p">[</span><span class="mi">136</span> <span class="mi">134</span> <span class="mi">26</span> <span class="mi">233</span> <span class="o">...</span><span class="p">(</span><span class="nx">很长的字节数组</span><span class="p">)]</span>
+<span class="nx">after</span> <span class="nx">decrypt</span><span class="p">:</span> <span class="nx">好的代码本身就是最好的说明文档</span>
+<span class="nx">equal</span><span class="err">?</span> <span class="kc">true</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="参考文章">参考文章：</h2>
+<ul>
+<li><a href="https://studygolang.com/articles/22530">golang 使用RSA生成公私钥，加密，解密，并使用SHA256进行签名，验证</a></li>
+<li><a href="https://wumansgy.github.io/2018/10/18/GO%E8%AF%AD%E8%A8%80RSA%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/">GO语言RSA加密解密</a></li>
+<li><a href="https://www.coder.work/article/194272">go - 如何在golang中使用密码创建rsa私钥</a></li>
+<li><a href="https://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html">RSA算法原理（一）</a></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">JemmyHu(hujm20151021@gmail.com)</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2021-01-14 11:45
+        
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/golang/">Golang</a>
+          <a href="/tags/%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">加密算法</a>
+          <a href="/tags/rsa/">RSA</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/boltdb%E4%BD%BF%E7%94%A8%E4%B8%80%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/">
+            <span class="next-text nav-default">Boltdb使用(一)基本用法</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+        el: '#vcomments' ,
+        appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+        appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+        notify:  true ,
+        verify:  false ,
+        avatar:'monsterid',
+        placeholder: '欢迎留言~',
+        visitor:  false 
+    });
+  </script>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:hujm20151021@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/JemmyH" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+
+
+
+<script type="text/javascript" src="/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
