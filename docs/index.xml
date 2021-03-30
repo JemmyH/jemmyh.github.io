@@ -6,7 +6,16 @@
     <description>Recent content on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Thu, 14 Jan 2021 11:45:06 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 31 Mar 2021 00:24:19 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>面试题:交替打印数字和字符串</title>
+      <link>http://localhost:1313/post/%E9%9D%A2%E8%AF%95%E9%A2%98%E4%BA%A4%E6%9B%BF%E6%89%93%E5%8D%B0%E6%95%B0%E5%AD%97%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/</link>
+      <pubDate>Wed, 31 Mar 2021 00:24:19 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/%E9%9D%A2%E8%AF%95%E9%A2%98%E4%BA%A4%E6%9B%BF%E6%89%93%E5%8D%B0%E6%95%B0%E5%AD%97%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/</guid>
+      <description>题目描述 使用两个 goroutine 交替打印序列，一个 goroutine 打印数字， 另外一个 goroutine 打印字母， 最终效果如下： 1 1A2B3C4D5E6F7G8H9I10J11K12L13M14N15O16P17Q18R19S20T21U22V23W24X25Y26Z 思路 使用 channel 来控制打印的进度。使用两个 channel，来</description>
+    </item>
+    
     <item>
       <title>Golang中使用RSA进行加解密</title>
       <link>http://localhost:1313/post/golang%E4%B8%AD%E4%BD%BF%E7%94%A8rsa%E8%BF%9B%E8%A1%8C%E5%8A%A0%E8%A7%A3%E5%AF%86/</link>
