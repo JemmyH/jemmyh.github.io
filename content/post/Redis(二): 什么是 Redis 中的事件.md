@@ -1,5 +1,5 @@
 ---
-title: "Redis(二): 什么是 Redis 中的事件"
+title: "Redis(三): 什么是 Redis 中的事件"
 date: 2021-04-8T22:31:17+08:00
 draft: false
 mathjax: true
