@@ -223,49 +223,49 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">printEach</span><span class="p">()</span> <span class="p">{</span>
-	<span class="nx">letter</span><span class="p">,</span> <span class="nx">number</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">)</span>
-	<span class="nx">wait</span> <span class="o">:=</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span><span class="p">{}</span>
+    <span class="nx">letter</span><span class="p">,</span> <span class="nx">number</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">bool</span><span class="p">)</span>
+    <span class="nx">wait</span> <span class="o">:=</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span><span class="p">{}</span>
 
-	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
-		<span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span>
-		<span class="k">for</span> <span class="p">{</span>
-			<span class="k">select</span> <span class="p">{</span>
-			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">number</span><span class="p">:</span>
-				<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
-				<span class="nx">i</span><span class="o">++</span>
-				<span class="nx">letter</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-			<span class="p">}</span>
-		<span class="p">}</span>
-	<span class="p">}()</span>
-	<span class="nx">wait</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-	<span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">wait</span> <span class="o">*</span><span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">str</span> <span class="o">:=</span> <span class="s">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;</span>
-		<span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span>
-		<span class="k">for</span> <span class="p">{</span>
-			<span class="k">select</span> <span class="p">{</span>
-			<span class="k">case</span> <span class="o">&lt;-</span><span class="nx">letter</span><span class="p">:</span>
-				<span class="k">if</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">wait</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
-					<span class="k">return</span>
-				<span class="p">}</span>
-				<span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="nx">str</span><span class="p">[</span><span class="nx">i</span> <span class="p">:</span> <span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
-				<span class="nx">i</span><span class="o">++</span>
-				<span class="k">if</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">wait</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
-					<span class="k">return</span>
-				<span class="p">}</span>
-				<span class="nx">number</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-			<span class="p">}</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">i</span> <span class="o">:=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="k">select</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">number</span><span class="p">:</span>
+                <span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+                <span class="nx">i</span><span class="o">++</span>
+                <span class="nx">letter</span> <span class="o">&lt;-</span> <span class="kc">true</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}()</span>
+    <span class="nx">wait</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">wait</span> <span class="o">*</span><span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">str</span> <span class="o">:=</span> <span class="s">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;</span>
+        <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="k">select</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">letter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">wait</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+                    <span class="k">return</span>
+                <span class="p">}</span>
+                <span class="nx">fmt</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="nx">str</span><span class="p">[</span><span class="nx">i</span> <span class="p">:</span> <span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+                <span class="nx">i</span><span class="o">++</span>
+                <span class="k">if</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">wait</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+                    <span class="k">return</span>
+                <span class="p">}</span>
+                <span class="nx">number</span> <span class="o">&lt;-</span> <span class="kc">true</span>
+            <span class="p">}</span>
 
-		<span class="p">}</span>
-	<span class="p">}(</span><span class="o">&amp;</span><span class="nx">wait</span><span class="p">)</span>
-	<span class="c1">// 让数字先开始打印
-</span><span class="c1"></span>	<span class="nx">number</span> <span class="o">&lt;-</span> <span class="kc">true</span>
-	<span class="c1">// 等待循环结束，表示整个打印可以结束了
-</span><span class="c1"></span>	<span class="nx">wait</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
-	<span class="c1">// 最后关闭 channel，防止内存泄露
-</span><span class="c1"></span>	<span class="nb">close</span><span class="p">(</span><span class="nx">letter</span><span class="p">)</span>
-	<span class="nb">close</span><span class="p">(</span><span class="nx">number</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}(</span><span class="o">&amp;</span><span class="nx">wait</span><span class="p">)</span>
+    <span class="c1">// 让数字先开始打印
+</span><span class="c1"></span>    <span class="nx">number</span> <span class="o">&lt;-</span> <span class="kc">true</span>
+    <span class="c1">// 等待循环结束，表示整个打印可以结束了
+</span><span class="c1"></span>    <span class="nx">wait</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+    <span class="c1">// 最后关闭 channel，防止内存泄露
+</span><span class="c1"></span>    <span class="nb">close</span><span class="p">(</span><span class="nx">letter</span><span class="p">)</span>
+    <span class="nb">close</span><span class="p">(</span><span class="nx">number</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
