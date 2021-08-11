@@ -16,5 +16,14 @@
       <description>一、前言 在关注 redis 单线程/多线程 时，有几个重要的时间节点： Before Redis v4.0，真正的单线程； Redis v4.0，引入多线程处理 AOF 等任务，但核心的网络模型中依</description>
     </item>
     
+    <item>
+      <title>Redis(二): 什么是 Redis 中的事件</title>
+      <link>http://localhost:1313/post/redis%E4%BA%8C-%E4%BB%80%E4%B9%88%E6%98%AF-redis-%E4%B8%AD%E7%9A%84%E4%BA%8B%E4%BB%B6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/post/redis%E4%BA%8C-%E4%BB%80%E4%B9%88%E6%98%AF-redis-%E4%B8%AD%E7%9A%84%E4%BA%8B%E4%BB%B6/</guid>
+      <description>Redis 设计与实现&amp;ndash;事件 中有很清晰的说明。 redis 要处理的事件有两种类型： 文件事件：网络连接套接字。服务器与多个客户端通过网络套接字连接，当</description>
+    </item>
+    
   </channel>
 </rss>

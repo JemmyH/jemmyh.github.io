@@ -4,8 +4,8 @@ author: JemmyHu(hujm20151021@gmail.com)
 date: 2021-04-05T23:08:37+08:00
 draft: false
 mathjax: true
-categories: ["技术博客", "源码解析"]
-tags: ["redis源码", "gogoredis"]
+categories: ["技术博客", "redis","源码解析"]
+tags: ["redis源码", "事件循环"]
 comment: true
 cover: https://pic.downk.cc/item/5f6b97cf160a154a67054cc8.jpg
 summary:
