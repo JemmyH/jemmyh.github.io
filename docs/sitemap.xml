@@ -3,27 +3,76 @@
   
   <url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2021-04-08T22:31:17+08:00</lastmod>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/gogoredis/</loc>
-    <lastmod>2021-04-08T22:31:17+08:00</lastmod>
+    <loc>http://localhost:1313/tags/channel/</loc>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/tags/golang/</loc>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/categories/golang/</loc>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/post/golang-channel%E8%AF%A6%E8%A7%A3/</loc>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2021-04-08T22:31:17+08:00</lastmod>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/post/</loc>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/</loc>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/</loc>
+    <lastmod>2021-04-09T11:57:42+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/tags/gogoredis/</loc>
     <lastmod>2021-04-08T22:31:17+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -51,21 +100,7 @@
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2021-04-08T22:31:17+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>http://localhost:1313/tags/%E4%BA%8B%E4%BB%B6%E5%AE%9A%E4%B9%89/</loc>
-    <lastmod>2021-04-08T22:31:17+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/</loc>
     <lastmod>2021-04-08T22:31:17+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -121,20 +156,6 @@
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/golang/</loc>
-    <lastmod>2021-01-14T11:45:06+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/categories/golang/</loc>
-    <lastmod>2021-01-14T11:45:06+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>http://localhost:1313/post/golang%E4%B8%AD%E4%BD%BF%E7%94%A8rsa%E8%BF%9B%E8%A1%8C%E5%8A%A0%E8%A7%A3%E5%AF%86/</loc>
     <lastmod>2021-01-14T11:45:06+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -157,13 +178,6 @@
   
   <url>
     <loc>http://localhost:1313/categories/%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2021-01-14T11:45:06+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/</loc>
     <lastmod>2021-01-14T11:45:06+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>channel on Jemmy&#39;s blog</title>
+    <link>http://localhost:1313/tags/channel/</link>
+    <description>Recent content in channel on Jemmy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Fri, 09 Apr 2021 11:57:42 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/channel/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang Channel详解</title>
+      <link>http://localhost:1313/post/golang-channel%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Fri, 09 Apr 2021 11:57:42 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/golang-channel%E8%AF%A6%E8%A7%A3/</guid>
+      <description>一、原理 0. 简介 channel 分为有缓冲和无缓冲，或者阻塞和非阻塞，主要区别就在于是否有 容量capacity。 在 runtime 中是通过 hchan 这个结构体来表示的，它里面的主</description>
+    </item>
+    
+  </channel>
+</rss>
