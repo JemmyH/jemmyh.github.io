@@ -1,6 +1,7 @@
 ---
-title: "Redis(三): 什么是 Redis 中的事件"
-date: 2021-04-8T22:31:17+08:00
+title: "Redis(二): 什么是 Redis 中的事件"
+author: JemmyHu(hujm20151021@gmail.com)
+date: 2021-04-08T22:31:17+08:00
 draft: false
 mathjax: true
 categories: ["技术博客", "redis", "源码解析"]
