@@ -49,7 +49,7 @@
 <meta itemprop="name" content="面试题:交替打印数字和字符串">
 <meta itemprop="description" content="题目描述 使用两个 goroutine 交替打印序列，一个 goroutine 打印数字， 另外一个 goroutine 打印字母， 最终效果如下： 1 1A2B3C4D5E6F7G8H9I10J11K12L13M14N15O16P17Q18R19S20T21U22V23W24X25Y26Z 思路 使用 channel 来控制打印的进度。使用两个 channel，来"><meta itemprop="datePublished" content="2021-03-31T00:24:19&#43;08:00" />
 <meta itemprop="dateModified" content="2021-03-31T00:24:19&#43;08:00" />
-<meta itemprop="wordCount" content="616">
+<meta itemprop="wordCount" content="621">
 <meta itemprop="keywords" content="面试题,goroutine," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="面试题:交替打印数字和字符串"/>
 <meta name="twitter:description" content="题目描述 使用两个 goroutine 交替打印序列，一个 goroutine 打印数字， 另外一个 goroutine 打印字母， 最终效果如下： 1 1A2B3C4D5E6F7G8H9I10J11K12L13M14N15O16P17Q18R19S20T21U22V23W24X25Y26Z 思路 使用 channel 来控制打印的进度。使用两个 channel，来"/>
@@ -133,7 +133,7 @@
             <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
             <a href="/categories/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/"> 算法题解 </a>
             </div>
-          <span class="more-meta"> 约 616 字 </span>
+          <span class="more-meta"> 约 621 字 </span>
           <span class="more-meta"> 预计阅读 2 分钟 </span>
         
       </div>
@@ -332,12 +332,15 @@
 </span><span class="lnt">49
 </span><span class="lnt">50
 </span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">cat</span><span class="p">,</span> <span class="nx">dog</span><span class="p">,</span> <span class="nx">fish</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">printCatDogFish</span><span class="p">(){</span>
+    <span class="nx">cat</span><span class="p">,</span> <span class="nx">dog</span><span class="p">,</span> <span class="nx">fish</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{}),</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
     <span class="nx">wg</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span><span class="p">{}</span>
 
-    <span class="nx">target</span> <span class="o">:=</span> <span class="mi">5</span>
+    <span class="nx">target</span> <span class="o">:=</span> <span class="mi">100</span>
 
     <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
         <span class="c1">// cat
@@ -385,6 +388,7 @@
     <span class="nb">close</span><span class="p">(</span><span class="nx">cat</span><span class="p">)</span>
     <span class="nb">close</span><span class="p">(</span><span class="nx">dog</span><span class="p">)</span>
     <span class="nb">close</span><span class="p">(</span><span class="nx">fish</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
 </div>
