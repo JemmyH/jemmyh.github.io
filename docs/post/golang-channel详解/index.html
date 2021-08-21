@@ -49,7 +49,7 @@
 <meta itemprop="name" content="Golang Channel详解">
 <meta itemprop="description" content="一、原理 0. 简介 channel 分为有缓冲和无缓冲，或者阻塞和非阻塞，主要区别就在于是否有 容量capacity。 在 runtime 中是通过 hchan 这个结构体来表示的，它里面的主"><meta itemprop="datePublished" content="2021-04-09T11:57:42&#43;08:00" />
 <meta itemprop="dateModified" content="2021-04-09T11:57:42&#43;08:00" />
-<meta itemprop="wordCount" content="6794">
+<meta itemprop="wordCount" content="6776">
 <meta itemprop="keywords" content="Golang,channel," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Golang Channel详解"/>
 <meta name="twitter:description" content="一、原理 0. 简介 channel 分为有缓冲和无缓冲，或者阻塞和非阻塞，主要区别就在于是否有 容量capacity。 在 runtime 中是通过 hchan 这个结构体来表示的，它里面的主"/>
@@ -134,7 +134,7 @@
             <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
             <a href="/categories/golang/"> Golang </a>
             </div>
-          <span class="more-meta"> 约 6794 字 </span>
+          <span class="more-meta"> 约 6776 字 </span>
           <span class="more-meta"> 预计阅读 14 分钟 </span>
         
       </div>
@@ -209,13 +209,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><blockquote>
-<p>在这里补充我个人的一些疑惑与理解</p>
-<ol>
-<li>如果</li>
-</ol>
-</blockquote>
-<h3 id="1-用法以及常见问题汇总">1. 用法以及常见问题汇总</h3>
+</div><h3 id="1-用法以及常见问题汇总">1. 用法以及常见问题汇总</h3>
 <ul>
 <li>已经关闭的 channel，再次关闭会 panic</li>
 <li>向已经关闭的 channel 发送数据会造成 panic</li>
