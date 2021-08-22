@@ -6,7 +6,16 @@
     <description>Recent content on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Fri, 09 Apr 2021 11:57:42 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 15 Apr 2021 12:11:24 +0800</lastBuildDate><atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis 面试汇总</title>
+      <link>http://localhost:1313/post/redis-%E9%9D%A2%E8%AF%95%E6%B1%87%E6%80%BB/</link>
+      <pubDate>Thu, 15 Apr 2021 12:11:24 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/redis-%E9%9D%A2%E8%AF%95%E6%B1%87%E6%80%BB/</guid>
+      <description>当我们谈论 Redis 时，应该谈论什么？ Redis 基本数据类型有哪些？以及他们各自的使用场景是什么？ 常见的有五种：字符串、哈希、列表、集合、有序集合。5.0 版</description>
+    </item>
+    
     <item>
       <title>Golang Channel详解</title>
       <link>http://localhost:1313/post/golang-channel%E8%AF%A6%E8%A7%A3/</link>
