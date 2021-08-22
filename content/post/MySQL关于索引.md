@@ -28,7 +28,7 @@ summary:
 - **哈希索引只包含哈希值和行指针，不存储字段值**。因此**无法使用覆盖索引**等相关特性；
 - 哈希索引并不按照索引值顺序存储，因此**不适合排序操作**；
 - 哈希索引**不支持部分索引列匹配查找**，因为计算哈希时，始终使用的是索引列的全部内容。例如，在数据列<A, B>上建立哈希索引，如果查询的只有\<A>，那么无法使用该索引，因为 hash(<A, B>) 和 hash(\<A>) 的结果一点关系都没有；
-- 哈希索引**只支持等值比较**( **=**、**IN()**和 **<=>**(效果等同于等号，不过可以比较 NULL))，**不支持任何的范围查询**(比如 **BETWEEN**、**<**等)；
+- 哈希索引**只支持等值比较**( **=**、**IN()**和 **<=>**(效果等同于等号，不过可以比较 NULL))，**不支持任何的范围查询**(比如 **BETWEEN**、**<** 等)；
 - 访问哈希索引的速度非常快，除非出现很多的哈希冲突，此时的查询会退化成链表的遍历；
 - 如果哈希冲突很多的话，索引的维护代价将会非常高，此时对索引的增删改，回退化成对链表的增删改，**O(n)**的时间复杂度。
 
@@ -43,7 +43,7 @@ summary:
 ```mysql
 # 建表
 CREATE TABLE url_demo (
-	id int unsigned NOT NULL auto_increment,
+ id int unsigned NOT NULL auto_increment,
     url varchar(255) NOT NULL,
     url_crc int unsigned NOT NULL DEFAULT 0,
     PRIMARY KEY(id)
@@ -89,7 +89,7 @@ SELECT * FROM url_demo WHERE url_crc=CRC32("https://www.google.com") AND url="ht
 
 ```mysql
 CREATE TABLE people (
-	last_name varchar(64) NOT NULL,
+ last_name varchar(64) NOT NULL,
     first_name varchar(64) NOT NULL,
     dob date NOT NULL,
     gender enum('m','f') NOT NULL,
