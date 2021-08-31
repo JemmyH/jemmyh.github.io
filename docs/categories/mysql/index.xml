@@ -6,7 +6,16 @@
     <description>Recent content in MySQL on Jemmy&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Tue, 29 Sep 2020 20:57:29 +0000</lastBuildDate><atom:link href="http://localhost:1313/categories/mysql/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 16 Apr 2021 19:56:29 +0800</lastBuildDate><atom:link href="http://localhost:1313/categories/mysql/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL面试汇总</title>
+      <link>http://localhost:1313/post/mysql%E9%9D%A2%E8%AF%95%E6%B1%87%E6%80%BB/</link>
+      <pubDate>Fri, 16 Apr 2021 19:56:29 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/mysql%E9%9D%A2%E8%AF%95%E6%B1%87%E6%80%BB/</guid>
+      <description>关于事务 事务的特性 原子性(Atomic, A)：要么全部执行，要么全部不执行； 一致性(Consistent, C)：事务的执行，使得数据库由一种</description>
+    </item>
+    
     <item>
       <title>MySQL关于索引</title>
       <link>http://localhost:1313/post/mysql%E5%85%B3%E4%BA%8E%E7%B4%A2%E5%BC%95/</link>

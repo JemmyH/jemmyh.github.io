@@ -1,7 +1,7 @@
 ---
 title: "MySQL面试汇总"
 date: 2021-04-16T19:56:29+08:00
-draft: true
+draft: false
 author: JemmyHu(hujm20151021@gmail.com)
 toc: true
 mathjax: true
