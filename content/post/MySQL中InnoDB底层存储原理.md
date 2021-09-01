@@ -16,7 +16,7 @@ summary:
 
 下图大致描述了 `InnoDB` 的存储结构：
 
-![InnoDB 底层存储结构](http://image.hujm.net/blog/images/20210829175155.png)
+![InnoDB 底层存储结构](https://image.hujm.net/blog/images/20210829175155.png)
 
 从上图来看，所有的数据都被逻辑地存放到 **表空间(Tablespace)** 中，表空间由 `Segment(段)`、`Block(块)` 和 `Page(页)` 等组成。
 
