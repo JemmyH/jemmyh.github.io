@@ -1,6 +1,6 @@
 ---
 title: "MySQL中InnoDB底层存储原理"
-date: 2021-08-29T16:53:51+08:00
+date: 2021-05-05T16:53:51+08:00
 draft: true
 author: JemmyHu(hujm20151021@gmail.com)
 toc: true
@@ -35,4 +35,3 @@ summary:
 表空间的下一级称为 `Segment(段)`，表空间由很多 `Segment` 组成，常见的段由 **数据段**、**索引段** 和 **回滚段**等。`Segment` 与数据库中的 **索引**相相映射，创建索引很关键的一步便是分配 `Segment`。在 `InnoDB` 中，每个索引对应两个 `Segment`：管理叶子结点的 `Segment`(`B+树` 的 叶子结点，即数据段，`Leaf node segment`) 和 管理非叶子结点的 `Segment`(`B+树` 的非叶子结点，即索引段，`Non-leaf node segment`)。
 
 ### 3. Extent 区
-
