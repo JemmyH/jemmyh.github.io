@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/post/golang-channel%E8%AF%A6%E8%A7%A3/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,12 +43,12 @@
 <meta property="og:description" content="一、原理 0. 简介 channel 分为有缓冲和无缓冲，或者阻塞和非阻塞，主要区别就在于是否有 容量capacity。 在 runtime 中是通过 hchan 这个结构体来表示的，它里面的主" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/golang-channel%E8%AF%A6%E8%A7%A3/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2021-04-09T11:57:42&#43;08:00" />
-<meta property="article:modified_time" content="2021-04-09T11:57:42&#43;08:00" />
+<meta property="article:published_time" content="2021-04-09T11:57:42+08:00" />
+<meta property="article:modified_time" content="2021-04-09T11:57:42+08:00" />
 
 <meta itemprop="name" content="Golang Channel详解">
-<meta itemprop="description" content="一、原理 0. 简介 channel 分为有缓冲和无缓冲，或者阻塞和非阻塞，主要区别就在于是否有 容量capacity。 在 runtime 中是通过 hchan 这个结构体来表示的，它里面的主"><meta itemprop="datePublished" content="2021-04-09T11:57:42&#43;08:00" />
-<meta itemprop="dateModified" content="2021-04-09T11:57:42&#43;08:00" />
+<meta itemprop="description" content="一、原理 0. 简介 channel 分为有缓冲和无缓冲，或者阻塞和非阻塞，主要区别就在于是否有 容量capacity。 在 runtime 中是通过 hchan 这个结构体来表示的，它里面的主"><meta itemprop="datePublished" content="2021-04-09T11:57:42+08:00" />
+<meta itemprop="dateModified" content="2021-04-09T11:57:42+08:00" />
 <meta itemprop="wordCount" content="6776">
 <meta itemprop="keywords" content="Golang,channel," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Golang Channel详解"/>
@@ -177,7 +177,7 @@
 等待队列有发送等待队列和接受等待队列，他们分别在发送时 channel 已满、接收时 channel 为空的情况下，会将当前 goroutine 打包成一个 sudog 结构，添加到对应的队列中，直到条件符合时再被唤醒工作。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -193,7 +193,7 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">hchan</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">hchan</span> <span class="kd">struct</span> <span class="p">{</span>
   <span class="nx">qcount</span>   <span class="kt">uint</span>           <span class="c1">// 环形队列中已经有的元素个数
 </span><span class="c1"></span>  <span class="nx">dataqsiz</span> <span class="kt">uint</span>           <span class="c1">// 环形队列容量，就是用户创建时指定的 capacity
 </span><span class="c1"></span>  <span class="nx">buf</span>      <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="c1">// 环形队列所在的地址
@@ -217,7 +217,7 @@
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -232,7 +232,7 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">ch</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
     <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
         <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
@@ -257,14 +257,14 @@
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">x</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="nx">ch</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">x</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="o">&lt;-</span> <span class="nx">ch</span>
 <span class="k">if</span> <span class="p">!</span><span class="nx">ok</span><span class="p">{</span>
     <span class="c1">// channel 已经被关闭
 </span><span class="c1"></span>    <span class="c1">// .....
@@ -280,7 +280,7 @@
 <h3 id="2-创建-channel">2. 创建 channel</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -344,7 +344,7 @@
 </span><span class="lnt">62
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 初始化 channel    
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 初始化 channel    
 </span><span class="c1"></span><span class="kd">func</span> <span class="nf">makechan</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">chantype</span><span class="p">,</span> <span class="nx">size</span> <span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="nx">hchan</span> <span class="p">{</span>
     <span class="nx">elem</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">elem</span>
 
@@ -411,7 +411,7 @@
 </div><h3 id="3--向-channel-发送">3.  向 channel 发送</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">  1
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
 </span><span class="lnt">  2
 </span><span class="lnt">  3
 </span><span class="lnt">  4
@@ -606,7 +606,7 @@
 </span><span class="lnt">193
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">
 <span class="c1">// select {case &lt;-xxx} 的入口
 </span><span class="c1"></span><span class="kd">func</span> <span class="nf">selectnbsend</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">hchan</span><span class="p">,</span> <span class="nx">elem</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">)</span> <span class="p">(</span><span class="nx">selected</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="nf">chansend</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">elem</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nf">getcallerpc</span><span class="p">())</span>
@@ -804,7 +804,7 @@
 </div><h3 id="4-从-channel-中接收">4. 从 channel 中接收</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">  1
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
 </span><span class="lnt">  2
 </span><span class="lnt">  3
 </span><span class="lnt">  4
@@ -998,7 +998,7 @@
 </span><span class="lnt">192
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">selectnbrecv</span><span class="p">(</span><span class="nx">elem</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">c</span> <span class="o">*</span><span class="nx">hchan</span><span class="p">)</span> <span class="p">(</span><span class="nx">selected</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">selectnbrecv</span><span class="p">(</span><span class="nx">elem</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span><span class="p">,</span> <span class="nx">c</span> <span class="o">*</span><span class="nx">hchan</span><span class="p">)</span> <span class="p">(</span><span class="nx">selected</span> <span class="kt">bool</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">selected</span><span class="p">,</span> <span class="nx">_</span> <span class="p">=</span> <span class="nf">chanrecv</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">elem</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
     <span class="k">return</span>
 <span class="p">}</span>
@@ -1195,7 +1195,7 @@
 </div><h3 id="5-关闭-channel">5. 关闭 channel</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1282,7 +1282,7 @@
 </span><span class="lnt">85
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">closechan</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">hchan</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">closechan</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">hchan</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// close 一个 nil channel 将 panic
 </span><span class="c1"></span>    <span class="k">if</span> <span class="nx">c</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
         <span class="nb">panic</span><span class="p">(</span><span class="nf">plainError</span><span class="p">(</span><span class="s">&#34;close of nil channel&#34;</span><span class="p">))</span>
@@ -1376,7 +1376,7 @@
 <p>一个生产者、多个消费者，由 producer 来关闭 channel，通知数据已经发送完毕。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1402,7 +1402,7 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
     <span class="nx">consumerCnt</span> <span class="o">:=</span> <span class="mi">10</span>
     <span class="c1">// 这里可以是缓冲的，也可以是非缓冲的
 </span><span class="c1"></span>    <span class="nx">taskChan</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">consumerCnt</span><span class="p">)</span>
@@ -1432,7 +1432,7 @@
 <p>一个 consumer、多个 producer 场景，多添加一个用于 <strong>通知</strong> 的 channel，由其中一个消费者告诉生产者“已经够了，不要再发了”。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1485,7 +1485,7 @@
 </span><span class="lnt">51
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
     <span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
     <span class="nx">producerCnt</span> <span class="o">:=</span> <span class="mi">10</span>
     <span class="nx">taskChan</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">)</span>
@@ -1542,7 +1542,7 @@
 <p>多个 producer、多个 consumer 的场景下，当其中任何一个发生异常时，全部退出。这种场景下，不能让任何一个 producer 或者 consumer 来关闭 taskChan，也不能让任何一个 consumer 来关闭 stopChan 进而通知所有的 goroutine 退出。这个时候，我们可以再添加一个类似于主持人角色的 channel，让它来做 <strong>close stopChan</strong> 这个操作。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1629,7 +1629,7 @@
 </span><span class="lnt">85
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">(){</span>
     <span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
 
     <span class="kd">const</span> <span class="nx">producerCnt</span> <span class="p">=</span> <span class="mi">10</span>
@@ -1720,7 +1720,7 @@
 也可以不使用“通过 select 尝试发送”的方式，那就是让 <code>toStop</code> 的容量变成容纳所有可能发送的 goroutine 的数量，这个时候就可以放心直接往 <code>toStop</code> 里灌数据了：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1731,7 +1731,7 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go">    <span class="c1">// ...
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">    <span class="c1">// ...
 </span><span class="c1"></span>    <span class="nx">toStop</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">producerCnt</span> <span class="o">+</span> <span class="nx">consumerCnt</span><span class="p">)</span>
     <span class="c1">// ...
 </span><span class="c1"></span>    <span class="c1">// producer 中达到退出条件
@@ -1746,7 +1746,7 @@
 <p>上面三个 demo 中，我们都没有对 <code>tashChan</code> 进行明确的 close，close 操作交给了 GC。但是有些场景下，会要求没数据时一定要关闭 <code>taskChan</code>，然后通知调用consumer明确告知“数据已经发送完了”。但是当有多个 producer 时，直接关闭肯定行不通。再这样的场景下，可以引入一个 <code>middle channel</code> ，producer 的数据不再直接发给 consumer，而是先发给<code>middle channel</code>，这个 <code>middle channel</code> 只有一个 sender，可以做到 <code>close taskChan</code> 了。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1840,7 +1840,7 @@
 </span><span class="lnt">92
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go">    <span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">    <span class="nx">rand</span><span class="p">.</span><span class="nf">Seed</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">().</span><span class="nf">UnixNano</span><span class="p">())</span>
     <span class="kd">const</span> <span class="nx">producerCnt</span> <span class="p">=</span> <span class="mi">10</span>
     <span class="kd">const</span> <span class="nx">consumerCnt</span> <span class="p">=</span> <span class="mi">100</span>
 
@@ -2006,25 +2006,35 @@
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">

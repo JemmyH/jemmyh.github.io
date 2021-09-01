@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,12 +43,12 @@
 <meta property="og:description" content="位运算 位运算讲究技巧，需要多积累经验。 一、背景知识 Go 语言支持的 位运算符 如下： 运算符 描述 规则 &amp; 按位 与 二者同为 1 时结果才为 1，否则为 0 | 按位 或 二" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/leetcode-%E4%BD%8D%E8%BF%90%E7%AE%97/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2020-09-22T00:25:09&#43;00:00" />
-<meta property="article:modified_time" content="2020-09-22T00:25:09&#43;00:00" />
+<meta property="article:published_time" content="2020-09-22T00:25:09+00:00" />
+<meta property="article:modified_time" content="2020-09-22T00:25:09+00:00" />
 
 <meta itemprop="name" content="LeetCode-位运算">
-<meta itemprop="description" content="位运算 位运算讲究技巧，需要多积累经验。 一、背景知识 Go 语言支持的 位运算符 如下： 运算符 描述 规则 &amp; 按位 与 二者同为 1 时结果才为 1，否则为 0 | 按位 或 二"><meta itemprop="datePublished" content="2020-09-22T00:25:09&#43;00:00" />
-<meta itemprop="dateModified" content="2020-09-22T00:25:09&#43;00:00" />
+<meta itemprop="description" content="位运算 位运算讲究技巧，需要多积累经验。 一、背景知识 Go 语言支持的 位运算符 如下： 运算符 描述 规则 &amp; 按位 与 二者同为 1 时结果才为 1，否则为 0 | 按位 或 二"><meta itemprop="datePublished" content="2020-09-22T00:25:09+00:00" />
+<meta itemprop="dateModified" content="2020-09-22T00:25:09+00:00" />
 <meta itemprop="wordCount" content="2462">
 <meta itemprop="keywords" content="LeetCode,数组,位运算," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="LeetCode-位运算"/>
@@ -213,13 +213,13 @@
 <p>将参与运算的两个数 各对应的二进制位 相与。只有当二者参与运算的<strong>对应位同为 1 时，该位才为 1，否则为 0</strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">a</span> <span class="o">:=</span> <span class="mi">60</span>  <span class="c1">// 0011 1100
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">a</span> <span class="o">:=</span> <span class="mi">60</span>  <span class="c1">// 0011 1100
 </span><span class="c1"></span><span class="nx">b</span> <span class="o">:=</span> <span class="mi">23</span>  <span class="c1">// 0001 0111
 </span><span class="c1"></span>
 <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span> <span class="o">&amp;</span> <span class="nx">b</span><span class="p">)</span>  <span class="c1">// 0001 0100
@@ -235,13 +235,13 @@
 <p>将参与运算的两个数 各对应的二进制位 相或。只有当二者<strong>对应位全部是 0 时，该位结果才是 0，其他情况结果全为 1</strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">a</span> <span class="o">:=</span> <span class="mi">60</span>  <span class="c1">// 0011 1100
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">a</span> <span class="o">:=</span> <span class="mi">60</span>  <span class="c1">// 0011 1100
 </span><span class="c1"></span><span class="nx">b</span> <span class="o">:=</span> <span class="mi">23</span>  <span class="c1">// 0001 0111
 </span><span class="c1"></span>
 <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span> <span class="p">|</span> <span class="nx">b</span><span class="p">)</span>  <span class="c1">// 0011 1111
@@ -256,13 +256,13 @@
 <p>逐位异或，<strong>对应位相同，结果为 0，否则为 1</strong>——可以理解为 <strong>“抵消 1”</strong> 效果。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">a</span> <span class="o">:=</span> <span class="mi">60</span>  <span class="c1">// 0011 1100
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">a</span> <span class="o">:=</span> <span class="mi">60</span>  <span class="c1">// 0011 1100
 </span><span class="c1"></span><span class="nx">b</span> <span class="o">:=</span> <span class="mi">23</span>  <span class="c1">// 0001 0111
 </span><span class="c1"></span>
 <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span> <span class="p">|</span> <span class="nx">b</span><span class="p">)</span>  <span class="c1">// 0010 1011
@@ -285,12 +285,12 @@
 <p>举例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">输入：00000000000000000000000000001011
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">输入：00000000000000000000000000001011
 输出：3
 解释：输入的二进制串 00000000000000000000000000001011 中，共有三位为 <span class="s1">&#39;1&#39;</span>。
 </code></pre></td></tr></table>
@@ -301,7 +301,7 @@
 <p>最后一位通过和 1 进行 <strong>与运算</strong>，可以判断最后一位是否为 1；然后将要计算的数字向右移动 1 位，再计算是否最后一位是否为 1。逐渐循环，知道直到要计算的数变成 0。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -313,7 +313,7 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">hammingWeight</span><span class="p">(</span><span class="nx">num</span> <span class="kt">uint32</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">hammingWeight</span><span class="p">(</span><span class="nx">num</span> <span class="kt">uint32</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
     <span class="nx">result</span> <span class="o">:=</span> <span class="mi">0</span>  <span class="c1">// 保存1出现的次数
 </span><span class="c1"></span>	<span class="k">for</span> <span class="nx">num</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
 		<span class="k">if</span> <span class="nx">num</span><span class="o">&amp;</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
@@ -329,7 +329,7 @@
 <p>某一位通过和 1 进行 <strong>与运算</strong>，可以判断该位是是否为 1。题目指定了 32 位无符号整数，那么循环 32 次，从最后一位开始逐位判断，如何向前移动？左移一位即可。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -344,7 +344,7 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">hammingWeight</span><span class="p">(</span><span class="nx">num</span> <span class="kt">uint32</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">hammingWeight</span><span class="p">(</span><span class="nx">num</span> <span class="kt">uint32</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
 	<span class="nx">result</span> <span class="o">:=</span> <span class="mi">0</span>
 	<span class="nx">base</span> <span class="o">:=</span> <span class="nb">uint32</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
@@ -363,7 +363,7 @@
 <p>出发点：<strong>n &amp; (n-1)</strong>，会消除 n 最后一个 1。因此，<code>n &amp; (n-1)</code> 总是能把 <code>n</code>中最低位的 1 变成 0 ，并保持其他位不变。具体什么原因，暂时不做深究。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -373,7 +373,7 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">hammingWeight</span><span class="p">(</span><span class="nx">num</span> <span class="kt">uint32</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">hammingWeight</span><span class="p">(</span><span class="nx">num</span> <span class="kt">uint32</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
     <span class="nx">result</span> <span class="o">:=</span> <span class="mi">0</span>
 	<span class="k">for</span> <span class="nx">num</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
 		<span class="nx">result</span><span class="o">++</span>
@@ -393,12 +393,12 @@
 <p>示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="m">1</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="m">1</span>
 输出: <span class="nb">true</span>
 解释: <span class="nv">20</span> <span class="o">=</span> <span class="m">1</span>
 </code></pre></td></tr></table>
@@ -408,12 +408,12 @@
 <p>如果将 2 的所有次幂的二进制写出来，你会发现这些数的规律：最高位都是 1，其余位全是 0。也就是说，如果一个数为 2 的次幂，那么它只有一个 1，而且是在最高位，同时也是最后一个 1。再回想一下上一题中的思路三，<code>n &amp; (n-1)</code> 会消除最后一个 1，于是乎：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">isPowerOfTwo</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">isPowerOfTwo</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
 	<span class="k">return</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">n</span><span class="o">&amp;</span><span class="p">(</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
@@ -428,11 +428,11 @@
 <p>举例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="nv">a</span> <span class="o">=</span> 1, <span class="nv">b</span> <span class="o">=</span> <span class="m">1</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="nv">a</span> <span class="o">=</span> 1, <span class="nv">b</span> <span class="o">=</span> <span class="m">1</span>
 输出: <span class="m">2</span>
 </code></pre></td></tr></table>
 </div>
@@ -485,7 +485,7 @@
 <p>但是在 <code>sum = n + c</code> 中还是使用了加法，而这种情况我们依旧可以使用上面的规律。这里可以使用一个循环来解决，需要存储<code>n</code> 和 <code>c</code>，循环直到<code>c = 0</code> 时停止，而此时<code>n</code> 即为结果。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -505,7 +505,7 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
     <span class="cm">/*
 </span><span class="cm">     * 循环解法
 </span><span class="cm">        for b != 0 {
@@ -537,11 +537,11 @@
 <p>示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="o">[</span>2,2,1<span class="o">]</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="o">[</span>2,2,1<span class="o">]</span>
 输出: <span class="m">1</span>
 </code></pre></td></tr></table>
 </div>
@@ -550,7 +550,7 @@
 <p>回想前面背景知识中的 <strong>异或</strong> 的特性：<strong><code>任何数 ^ 任何数 = 0</code></strong>，并且 <strong><code>任何数 ^ 0 = 任何数</code></strong>。所以思路很明显，全部进行 <strong>异或</strong> 操作，出现两次的都会被“抵消”，最后剩下那个“没人要的”，就是我们要找的。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -562,7 +562,7 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">singleNumber</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">singleNumber</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
 	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
 		<span class="k">return</span> <span class="mi">0</span>
 	<span class="p">}</span>
@@ -585,11 +585,11 @@
 <p>示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="o">[</span>2,2,3,2<span class="o">]</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">输入: <span class="o">[</span>2,2,3,2<span class="o">]</span>
 输出: <span class="m">3</span>
 </code></pre></td></tr></table>
 </div>
@@ -599,12 +599,12 @@
 <p>使用数学规律法——<strong>原数组去重、再乘以 3 得到的值，刚好就是要找的元素的 2 倍</strong>。Go 中没有 <code>set</code> 的这种数据结构，这里提供 Python 解法：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">singleNumber</span><span class="p">(</span><span class="n">nums</span><span class="p">){</span>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">singleNumber</span><span class="p">(</span><span class="n">nums</span><span class="p">){</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">nums</span><span class="p">))</span><span class="o">*</span><span class="mi">3</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">nums</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></td></tr></table>
@@ -613,7 +613,7 @@
 <p>回想之前的 <strong>异或</strong>，发现有两个 1，该位结果是 0；二进制加法中，两个 1 相加，产生了进位，抛弃进位，其结果也是 0——这个过程，可以看成是<strong>对应位上 1 的个数对 2 取模的结果</strong>。如果是三个数呢？是不是三个数的对应位都是 1 的时候，该位结果才是 0，否则就是 1——对应位上的 1 的个数对 3 取模即可。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -630,7 +630,7 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">singleNumber</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">singleNumber</span><span class="p">(</span><span class="nx">nums</span> <span class="p">[]</span><span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
     <span class="nx">result</span> <span class="o">:=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">64</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
         <span class="c1">// int至少32位，一般都是64位
@@ -721,25 +721,35 @@
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">

@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/post/golang-unsafe%E5%8C%85%E8%AF%A6%E8%A7%A3/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,12 +43,12 @@
 <meta property="og:description" content="1. Go语言指针的限制 go语言中也有指针，但相对C语言的指针来说，有了很多限制，但这也算是go的成功之处：既可以享受指针带来的便利，又避免了指" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/golang-unsafe%E5%8C%85%E8%AF%A6%E8%A7%A3/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2020-09-17T01:53:29&#43;00:00" />
-<meta property="article:modified_time" content="2020-09-17T01:53:29&#43;00:00" />
+<meta property="article:published_time" content="2020-09-17T01:53:29+00:00" />
+<meta property="article:modified_time" content="2020-09-17T01:53:29+00:00" />
 
 <meta itemprop="name" content="Golang-unsafe包详解">
-<meta itemprop="description" content="1. Go语言指针的限制 go语言中也有指针，但相对C语言的指针来说，有了很多限制，但这也算是go的成功之处：既可以享受指针带来的便利，又避免了指"><meta itemprop="datePublished" content="2020-09-17T01:53:29&#43;00:00" />
-<meta itemprop="dateModified" content="2020-09-17T01:53:29&#43;00:00" />
+<meta itemprop="description" content="1. Go语言指针的限制 go语言中也有指针，但相对C语言的指针来说，有了很多限制，但这也算是go的成功之处：既可以享受指针带来的便利，又避免了指"><meta itemprop="datePublished" content="2020-09-17T01:53:29+00:00" />
+<meta itemprop="dateModified" content="2020-09-17T01:53:29+00:00" />
 <meta itemprop="wordCount" content="3310">
 <meta itemprop="keywords" content="Golang,unsafe包," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Golang-unsafe包详解"/>
@@ -172,7 +172,7 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -181,7 +181,7 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">num</span> <span class="o">:=</span> <span class="mi">1</span>
     <span class="nx">pNum</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">num</span>
 
@@ -195,7 +195,7 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -204,7 +204,7 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">a</span> <span class="kt">int</span>
     <span class="nx">a</span> <span class="p">=</span> <span class="mi">10</span>
 
@@ -218,7 +218,7 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -234,7 +234,7 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">a</span> <span class="kt">int</span>
     <span class="kd">var</span> <span class="nx">b</span> <span class="kt">float32</span>
 
@@ -256,7 +256,7 @@
 <p><code>unsafe</code>包中只有很简单的几个函数和定义:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -275,7 +275,7 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">
 <span class="kn">package</span> <span class="nx">unsafe</span>
 
 <span class="c1">// 任意go表达式的类型。只是为了文档而声明的类型，实际上它并不是unsafe包的一部分
@@ -308,7 +308,7 @@
 <p>先从一个 demo 开始：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -334,7 +334,7 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 <span class="c1">// unsafe修改struct私有属性
 </span><span class="c1"></span><span class="kd">type</span> <span class="nx">user</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">name</span> <span class="kt">string</span>
@@ -367,11 +367,11 @@
 <p>**注意!!!**上面 C 处的语句的加号两边的对象不能直接拆开去写，也就是说，不能写成:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">tmp</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">u</span><span class="p">))</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">tmp</span> <span class="o">:=</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">u</span><span class="p">))</span>
 <span class="nx">uAge</span> <span class="o">:=</span> <span class="p">(</span><span class="o">*</span><span class="kt">int</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="nx">tmp</span> <span class="o">+</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nf">Offsetof</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">age</span><span class="p">)))</span>
 </code></pre></td></tr></table>
 </div>
@@ -380,14 +380,14 @@
 <p>通过查看对应的源代码，我们知道<code>slice header</code>的结构体定义为：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">slice</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">slice</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">array</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>    <span class="c1">// 元素指针 1字节
 </span><span class="c1"></span>    <span class="nx">len</span> <span class="kt">int</span>                 <span class="c1">// 长度 1字节
 </span><span class="c1"></span>    <span class="nx">cap</span> <span class="kt">int</span>                 <span class="c1">// 指针 1字节
@@ -397,16 +397,16 @@
 </div><p>当我们调用<code>make</code>函数创建一个新的<code>slice</code>后，底层调用的是<code>makeslice</code>，返回的是<code>slice</code>结构体:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">makeslice</span><span class="p">(</span><span class="nx">et</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">len</span><span class="p">,</span> <span class="nx">cap</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">slice</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">makeslice</span><span class="p">(</span><span class="nx">et</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">len</span><span class="p">,</span> <span class="nx">cap</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">slice</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>因此，我们可以通过<code>unsafe.Pointer</code>和<code>uintptr</code>进行转换，得到 slice 的字段值：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -419,7 +419,7 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">s</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">int</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
 
     <span class="c1">// slice结构体中，array类型为pointer，占1个字节8位，uintptr(unsafe.Pointer(&amp;s))表示s的地址也是第一个属性array的地址，那么加上属性array的长度，就是下一个属性len的长度
@@ -437,7 +437,7 @@
 <p>在反射包<code>src/reflect/value.go</code>中，有下面的结构体定义：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -449,7 +449,7 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">StringHeader</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">StringHeader</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">Data</span> <span class="kt">uintptr</span>
     <span class="nx">Len</span>  <span class="kt">int</span>
 <span class="p">}</span>
@@ -464,7 +464,7 @@
 </div><p>因此，只需共享底层的<code>Data</code>和<code>Len</code>即可：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -473,7 +473,7 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">stringToBytes</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)[]</span><span class="kt">byte</span><span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">stringToBytes</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)[]</span><span class="kt">byte</span><span class="p">{</span>
     <span class="k">return</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="p">[]</span><span class="kt">byte</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">))</span>
 <span class="p">}</span>
 
@@ -486,7 +486,7 @@
 <p>先看源码注释：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -496,7 +496,7 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Sizeof takes an expression x of any type and returns the size in bytes
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Sizeof takes an expression x of any type and returns the size in bytes
 </span><span class="c1">// of a hypothetical variable v as if v was declared via var v = x.
 </span><span class="c1">// The size does not include any memory possibly referenced by x.
 </span><span class="c1">// For instance, if x is a slice, Sizeof returns the size of the slice
@@ -511,14 +511,14 @@
 <p>比如，下面这个结构体 A 的 size 是 32：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="kd">struct</span> <span class="nx">A</span><span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="kd">struct</span> <span class="nx">A</span><span class="p">{</span>
     <span class="nx">a</span> <span class="kt">bool</span>
     <span class="nx">b</span> <span class="kt">string</span>
     <span class="nx">c</span> <span class="kt">bool</span>
@@ -528,14 +528,14 @@
 </div><p>而另一个和它有相同属性的结构体 B 的 size 是 24:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="kd">struct</span> <span class="nx">B</span><span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="kd">struct</span> <span class="nx">B</span><span class="p">{</span>
     <span class="nx">a</span> <span class="kt">bool</span>
     <span class="nx">c</span> <span class="kt">bool</span>
     <span class="nx">b</span> <span class="kt">string</span>
@@ -560,7 +560,7 @@
 <p>为什么任意类型的<code>slice</code>占到 3 个字节？同理，<code>slice</code>底层也是一个结构体，有三个域：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -568,7 +568,7 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// runtime/slice.go
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// runtime/slice.go
 </span><span class="c1"></span><span class="kd">type</span> <span class="nx">slice</span> <span class="kd">struct</span> <span class="p">{</span>
    <span class="nx">array</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="c1">// 元素指针 1个字节
 </span><span class="c1"></span>   <span class="nx">len</span>   <span class="kt">int</span> <span class="c1">// 长度 8个byte 1个字节
@@ -581,7 +581,7 @@
 <p>可以通过下面的 demo 输出，判断你的掌握程度：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -598,7 +598,7 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go">
 <span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kd">type</span> <span class="nx">user</span> <span class="kd">struct</span> <span class="p">{</span>
@@ -692,25 +692,35 @@
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">

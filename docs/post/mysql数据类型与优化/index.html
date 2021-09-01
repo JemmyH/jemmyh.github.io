@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/post/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%B8%8E%E4%BC%98%E5%8C%96/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,13 +43,13 @@
 <meta property="og:description" content="选择优化的数据类型 MySQL 支持多种数据类型，但是每个类型都有自己适合的场景，选对类型对性能的提高至关重要。以下原则仅供参考： 更小的通常更好 一般情况" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/mysql%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%B8%8E%E4%BC%98%E5%8C%96/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2020-09-14T01:37:04&#43;00:00" />
-<meta property="article:modified_time" content="2020-09-14T01:37:04&#43;00:00" />
+<meta property="article:published_time" content="2020-09-14T01:37:04+00:00" />
+<meta property="article:modified_time" content="2020-09-14T01:37:04+00:00" />
 
 <meta itemprop="name" content="MySQL数据类型与优化">
-<meta itemprop="description" content="选择优化的数据类型 MySQL 支持多种数据类型，但是每个类型都有自己适合的场景，选对类型对性能的提高至关重要。以下原则仅供参考： 更小的通常更好 一般情况"><meta itemprop="datePublished" content="2020-09-14T01:37:04&#43;00:00" />
-<meta itemprop="dateModified" content="2020-09-14T01:37:04&#43;00:00" />
-<meta itemprop="wordCount" content="3491">
+<meta itemprop="description" content="选择优化的数据类型 MySQL 支持多种数据类型，但是每个类型都有自己适合的场景，选对类型对性能的提高至关重要。以下原则仅供参考： 更小的通常更好 一般情况"><meta itemprop="datePublished" content="2020-09-14T01:37:04+00:00" />
+<meta itemprop="dateModified" content="2020-09-14T01:37:04+00:00" />
+<meta itemprop="wordCount" content="3352">
 <meta itemprop="keywords" content="MySQL,MySQL数据类型," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="MySQL数据类型与优化"/>
 <meta name="twitter:description" content="选择优化的数据类型 MySQL 支持多种数据类型，但是每个类型都有自己适合的场景，选对类型对性能的提高至关重要。以下原则仅供参考： 更小的通常更好 一般情况"/>
@@ -134,7 +134,7 @@
             <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
             <a href="/categories/mysql/"> MySQL </a>
             </div>
-          <span class="more-meta"> 约 3491 字 </span>
+          <span class="more-meta"> 约 3352 字 </span>
           <span class="more-meta"> 预计阅读 7 分钟 </span>
         
       </div>
@@ -189,7 +189,7 @@
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -204,20 +204,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql">    <span class="n">mysql</span><span class="o">&gt;</span> <span class="k">select</span> <span class="nf">INET_ATON</span><span class="p">(</span><span class="s2">&#34;172.16.11.102&#34;</span><span class="p">);</span>
-    <span class="o">+----------------------------+</span>
-    <span class="o">|</span> <span class="nf">INET_ATON</span><span class="p">(</span><span class="s2">&#34;172.16.11.102&#34;</span><span class="p">)</span> <span class="o">|</span>
-    <span class="o">+----------------------------+</span>
-    <span class="o">|</span>                 <span class="mi">2886732646</span> <span class="o">|</span>
-    <span class="o">+----------------------------+</span>
-
-    <span class="n">mysql</span><span class="o">&gt;</span> <span class="k">select</span> <span class="nf">INET_NTOA</span><span class="p">(</span><span class="mi">2886732646</span><span class="p">);</span>
-    <span class="o">+-----------------------+</span>
-    <span class="o">|</span> <span class="nf">INET_NTOA</span><span class="p">(</span><span class="mi">2886732646</span><span class="p">)</span> <span class="o">|</span>
-    <span class="o">+-----------------------+</span>
-    <span class="o">|</span> <span class="mi">172</span><span class="p">.</span><span class="mi">16</span><span class="p">.</span><span class="mi">11</span><span class="p">.</span><span class="mi">102</span>         <span class="o">|</span>
-    <span class="o">+-----------------------+</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="w">    </span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="nf">INET_ATON</span><span class="p">(</span><span class="s2">&#34;172.16.11.102&#34;</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="o">+----------------------------+</span><span class="w">
+</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="nf">INET_ATON</span><span class="p">(</span><span class="s2">&#34;172.16.11.102&#34;</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w">    </span><span class="o">+----------------------------+</span><span class="w">
+</span><span class="w">    </span><span class="o">|</span><span class="w">                 </span><span class="mi">2886732646</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w">    </span><span class="o">+----------------------------+</span><span class="w">
+</span><span class="w">
+</span><span class="w">    </span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="nf">INET_NTOA</span><span class="p">(</span><span class="mi">2886732646</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="o">+-----------------------+</span><span class="w">
+</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="nf">INET_NTOA</span><span class="p">(</span><span class="mi">2886732646</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w">    </span><span class="o">+-----------------------+</span><span class="w">
+</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="mi">172</span><span class="p">.</span><span class="mi">16</span><span class="p">.</span><span class="mi">11</span><span class="p">.</span><span class="mi">102</span><span class="w">         </span><span class="o">|</span><span class="w">
+</span><span class="w">    </span><span class="o">+-----------------------+</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>
@@ -291,7 +291,7 @@
 </blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -323,7 +323,7 @@
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">&gt;   mysql&gt; CREATE TABLE t1 (cl CHAR(10));
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">&gt;   mysql&gt; CREATE TABLE t1 (cl CHAR(10));
 &gt;   mysql&gt; INSERT INTO t1(cl) VALUES(&#39;string1&#39;),(&#39;   string2&#39;),(&#39;string3  &#39;);
 &gt;   # 执行查询
 &gt;   mysql&gt; SELECT CONCAT(&#34;&#39;&#34;,cl,&#34;&#39;&#34;) FROM t1;
@@ -369,7 +369,7 @@
 <p><strong>MySQL 在存储枚举值时非常紧凑，在内部保存时，会将每个值在列表中的位置保存为整数(从 1 开始编号)，并在表的.frm 文件中保存“数字-字符串”映射关系的“查找表”；数据保存在两个字节中，因此枚举中可以有 $2^{16} - 1 = 65535$个</strong>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -393,35 +393,35 @@
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nf">t2</span><span class="p">(</span><span class="n">e</span> <span class="kt">ENUM</span><span class="p">(</span><span class="s1">&#39;fish&#39;</span><span class="p">,</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span><span class="s1">&#39;dog&#39;</span><span class="p">));</span>
-<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">t2</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">&#39;fish&#39;</span><span class="p">),(</span><span class="s1">&#39;dog&#39;</span><span class="p">),(</span><span class="s1">&#39;apple&#39;</span><span class="p">),(</span><span class="mi">1</span><span class="p">);</span> <span class="c1"># 注意，这里也可以世界使用枚举值对应的位置，如1对应&#39;apple&#39;
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nf">t2</span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="kt">ENUM</span><span class="p">(</span><span class="s1">&#39;fish&#39;</span><span class="p">,</span><span class="s1">&#39;apple&#39;</span><span class="p">,</span><span class="s1">&#39;dog&#39;</span><span class="p">));</span><span class="w">
+</span><span class="w"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t2</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="p">(</span><span class="s1">&#39;fish&#39;</span><span class="p">),(</span><span class="s1">&#39;dog&#39;</span><span class="p">),(</span><span class="s1">&#39;apple&#39;</span><span class="p">),(</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1"># 注意，这里也可以世界使用枚举值对应的位置，如1对应&#39;apple&#39;
 </span><span class="c1"># 查询枚举值，默认字符串表示
-</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t2</span><span class="p">;</span>
-<span class="o">+-------+</span>
-<span class="o">|</span> <span class="n">e</span>     <span class="o">|</span>
-<span class="o">+-------+</span>
-<span class="o">|</span> <span class="n">fish</span>  <span class="o">|</span>
-<span class="o">|</span> <span class="n">dog</span>   <span class="o">|</span>
-<span class="o">|</span> <span class="n">apple</span> <span class="o">|</span>
-<span class="o">|</span> <span class="n">fish</span>  <span class="o">|</span>
-<span class="o">+-------+</span>
-<span class="c1"># 使用数字形式表示枚举值
-</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="n">e</span><span class="o">+</span><span class="mi">0</span> <span class="k">FROM</span> <span class="n">t2</span><span class="p">;</span>
-<span class="o">+------+</span>
-<span class="o">|</span> <span class="n">e</span><span class="o">+</span><span class="mi">0</span>  <span class="o">|</span>
-<span class="o">+------+</span>
-<span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
-<span class="o">|</span>    <span class="mi">3</span> <span class="o">|</span>
-<span class="o">|</span>    <span class="mi">2</span> <span class="o">|</span>
-<span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
-<span class="o">+------+</span>
-</code></pre></td></tr></table>
+</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t2</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="o">+-------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">e</span><span class="w">     </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+-------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">fish</span><span class="w">  </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">dog</span><span class="w">   </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">apple</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">fish</span><span class="w">  </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+-------+</span><span class="w">
+</span><span class="w"></span><span class="c1"># 使用数字形式表示枚举值
+</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">e</span><span class="o">+</span><span class="mi">0</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t2</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="o">+------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">e</span><span class="o">+</span><span class="mi">0</span><span class="w">  </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w">    </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w">    </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w">    </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w">    </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------+</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p><strong>尽量不要使用数字作为 ENUM 枚举常量，这种双重性很容易导致混乱，例如 <code>ENUM('1','2','3')</code> 。</strong></p>
 <p>**注意：枚举字段是按照内部存储的整数而不是字符串顺序进行排序的。**一种绕过这种限制的方式是 <strong>刚开始就按照字典顺序来定义枚举值</strong>，另一中方式是使用 <code>FIELD(列名，'arg1','arg2',…)</code> 函数：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -432,7 +432,7 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">mysql&gt; SELECT e FROM t2 ORDER BY FIELD(e,&#39;apple&#39;,&#39;dog&#39;,&#39;fish&#39;);
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">mysql&gt; SELECT e FROM t2 ORDER BY FIELD(e,&#39;apple&#39;,&#39;dog&#39;,&#39;fish&#39;);
 +-------+
 | e     |
 +-------+
@@ -448,22 +448,22 @@
 <p>设定 set 的格式：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="err">字段名称</span> <span class="kt">SET</span><span class="p">(</span><span class="s2">&#34;选项1&#34;</span><span class="p">,</span><span class="s2">&#34;选项2&#34;</span><span class="p">,...,</span><span class="s1">&#39;选项n&#39;</span><span class="p">)</span>
-<span class="err">如</span>
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span> <span class="kt">SET</span><span class="p">(</span><span class="s1">&#39;swim&#39;</span><span class="p">,</span><span class="s1">&#39;music&#39;</span><span class="p">,</span><span class="s1">&#39;movie&#39;</span><span class="p">,</span><span class="s1">&#39;football&#39;</span><span class="p">));</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="err">字段名称</span><span class="w"> </span><span class="kt">SET</span><span class="p">(</span><span class="s2">&#34;选项1&#34;</span><span class="p">,</span><span class="s2">&#34;选项2&#34;</span><span class="p">,...,</span><span class="s1">&#39;选项n&#39;</span><span class="p">)</span><span class="w">
+</span><span class="w"></span><span class="err">如</span><span class="w">
+</span><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="w"> </span><span class="kt">SET</span><span class="p">(</span><span class="s1">&#39;swim&#39;</span><span class="p">,</span><span class="s1">&#39;music&#39;</span><span class="p">,</span><span class="s1">&#39;movie&#39;</span><span class="p">,</span><span class="s1">&#39;football&#39;</span><span class="p">));</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>同样的， <code>SET</code> 的每个选项值也对应一个数字，依次是 <code>1，2，4，8，16...，</code> 最多有 64 个选项。</p>
 <p>使用的时候，可以使用 set 选项的字符串本身（多个选项用逗号分隔），也可以使用多个选项的数字之和（比如：1+2+4=7）。</p>
 <p>通过实例来说明：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -514,62 +514,62 @@
 </span><span class="lnt">49
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="c1"># 建表
-</span><span class="c1"></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span> <span class="kt">SET</span><span class="p">(</span><span class="s1">&#39;swim&#39;</span><span class="p">,</span><span class="s1">&#39;music&#39;</span><span class="p">,</span><span class="s1">&#39;movie&#39;</span><span class="p">,</span><span class="s1">&#39;football&#39;</span><span class="p">));</span>
-<span class="c1"># 插入一个选项，字符串格式
-</span><span class="c1"></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">&#39;swim&#39;</span><span class="p">);</span>
-<span class="c1"># 插入多个选项，字符串格式，通过英文逗号分隔
-</span><span class="c1"></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">&#39;swim,movie&#39;</span><span class="p">);</span>
-<span class="c1"># 插入一个选项，数字格式
-</span><span class="c1"></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1"># 等同于&#39;swim&#39;
-</span><span class="c1"></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span> <span class="c1"># 等同于&#39;movie&#39;
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="c1"># 建表
+</span><span class="c1"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="w"> </span><span class="kt">SET</span><span class="p">(</span><span class="s1">&#39;swim&#39;</span><span class="p">,</span><span class="s1">&#39;music&#39;</span><span class="p">,</span><span class="s1">&#39;movie&#39;</span><span class="p">,</span><span class="s1">&#39;football&#39;</span><span class="p">));</span><span class="w">
+</span><span class="w"></span><span class="c1"># 插入一个选项，字符串格式
+</span><span class="c1"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="p">(</span><span class="s1">&#39;swim&#39;</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="c1"># 插入多个选项，字符串格式，通过英文逗号分隔
+</span><span class="c1"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="p">(</span><span class="s1">&#39;swim,movie&#39;</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="c1"># 插入一个选项，数字格式
+</span><span class="c1"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1"># 等同于&#39;swim&#39;
+</span><span class="c1"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span><span class="w"> </span><span class="c1"># 等同于&#39;movie&#39;
 </span><span class="c1"># 插入多个选项，数字格式
-</span><span class="c1"></span><span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span> <span class="c1"># 等同于&#39;swim,music,movie&#39;，因为&#39;swim&#39;,&#39;music&#39;,&#39;movie&#39;,&#39;football&#39;分别为“1,2,4,8”，7=1+2+4.
-</span><span class="c1"></span>
-<span class="c1"># 显示全部
-</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t3</span><span class="p">;</span>
-<span class="o">+------------------+</span>
-<span class="o">|</span> <span class="n">hobby</span>            <span class="o">|</span>
-<span class="o">+------------------+</span>
-<span class="o">|</span> <span class="n">swim</span>             <span class="o">|</span>
-<span class="o">|</span> <span class="n">swim</span><span class="p">,</span><span class="n">movie</span>       <span class="o">|</span>
-<span class="o">|</span> <span class="n">swim</span>             <span class="o">|</span>
-<span class="o">|</span> <span class="n">movie</span>            <span class="o">|</span>
-<span class="o">|</span> <span class="n">swim</span><span class="p">,</span><span class="n">music</span><span class="p">,</span><span class="n">movie</span> <span class="o">|</span>
-<span class="o">+------------------+</span>
-
-<span class="c1"># 查找包含movie的行
-</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t3</span> <span class="k">WHERE</span> <span class="nf">FIND_IN_SET</span><span class="p">(</span><span class="s1">&#39;movie&#39;</span><span class="p">,</span><span class="n">hobby</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
-<span class="o">+------------------+</span>
-<span class="o">|</span> <span class="n">hobby</span>            <span class="o">|</span>
-<span class="o">+------------------+</span>
-<span class="o">|</span> <span class="n">swim</span><span class="p">,</span><span class="n">movie</span>       <span class="o">|</span>
-<span class="o">|</span> <span class="n">movie</span>            <span class="o">|</span>
-<span class="o">|</span> <span class="n">swim</span><span class="p">,</span><span class="n">music</span><span class="p">,</span><span class="n">movie</span> <span class="o">|</span>
-<span class="o">+------------------+</span>
-<span class="c1"># 寻找包含排号为4的成员的行
-</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t3</span> <span class="k">WHERE</span> <span class="n">hobby</span> <span class="o">&amp;</span> <span class="mi">4</span><span class="p">;</span>
-<span class="o">+------------------+</span>
-<span class="o">|</span> <span class="n">hobby</span>            <span class="o">|</span>
-<span class="o">+------------------+</span>
-<span class="o">|</span> <span class="n">swim</span><span class="p">,</span><span class="n">movie</span>       <span class="o">|</span>
-<span class="o">|</span> <span class="n">movie</span>            <span class="o">|</span>
-<span class="o">|</span> <span class="n">swim</span><span class="p">,</span><span class="n">music</span><span class="p">,</span><span class="n">movie</span> <span class="o">|</span>
-<span class="o">+------------------+</span>
-<span class="c1"># 直接使用字符串匹配
-</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">t3</span> <span class="k">WHERE</span> <span class="n">hobby</span> <span class="o">=</span> <span class="s1">&#39;swim,movie&#39;</span><span class="p">;</span>
-<span class="o">+------------+</span>
-<span class="o">|</span> <span class="n">hobby</span>      <span class="o">|</span>
-<span class="o">+------------+</span>
-<span class="o">|</span> <span class="n">swim</span><span class="p">,</span><span class="n">movie</span> <span class="o">|</span>
-<span class="o">+------------+</span>
-</code></pre></td></tr></table>
+</span><span class="c1"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t3</span><span class="p">(</span><span class="n">hobby</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span><span class="w"> </span><span class="c1"># 等同于&#39;swim,music,movie&#39;，因为&#39;swim&#39;,&#39;music&#39;,&#39;movie&#39;,&#39;football&#39;分别为“1,2,4,8”，7=1+2+4.
+</span><span class="c1"></span><span class="w">
+</span><span class="w"></span><span class="c1"># 显示全部
+</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t3</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">hobby</span><span class="w">            </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="w">             </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="p">,</span><span class="n">movie</span><span class="w">       </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="w">             </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">movie</span><span class="w">            </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="p">,</span><span class="n">music</span><span class="p">,</span><span class="n">movie</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="c1"># 查找包含movie的行
+</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t3</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="nf">FIND_IN_SET</span><span class="p">(</span><span class="s1">&#39;movie&#39;</span><span class="p">,</span><span class="n">hobby</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">hobby</span><span class="w">            </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="p">,</span><span class="n">movie</span><span class="w">       </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">movie</span><span class="w">            </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="p">,</span><span class="n">music</span><span class="p">,</span><span class="n">movie</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w"></span><span class="c1"># 寻找包含排号为4的成员的行
+</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t3</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">hobby</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">hobby</span><span class="w">            </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="p">,</span><span class="n">movie</span><span class="w">       </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">movie</span><span class="w">            </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="p">,</span><span class="n">music</span><span class="p">,</span><span class="n">movie</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------------------+</span><span class="w">
+</span><span class="w"></span><span class="c1"># 直接使用字符串匹配
+</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t3</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">hobby</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;swim,movie&#39;</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="o">+------------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">hobby</span><span class="w">      </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">swim</span><span class="p">,</span><span class="n">movie</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------------+</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><h3 id="33-位bit">3.3 位(BIT)</h3>
 <p><code>NySQL</code> 把 <code>BIT</code> 当成字符串类型而不是数字类型来存储。但是它的存储结果根据上下文会出现不同：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -579,15 +579,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nf">t4</span><span class="p">(</span><span class="n">a</span> <span class="kt">BIT</span><span class="p">(</span><span class="mi">8</span><span class="p">));</span>
-<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">t4</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">VALUES</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;00111001&#39;</span><span class="p">);</span>
-<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="o">+</span><span class="mi">0</span> <span class="p">,</span><span class="nf">BIN</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">t4</span><span class="p">;</span> <span class="c1"># bin()表示整数类型对应的二进制
-</span><span class="c1"></span><span class="o">+------+------+--------+</span>
-<span class="o">|</span> <span class="n">a</span>    <span class="o">|</span> <span class="n">a</span><span class="o">+</span><span class="mi">0</span>  <span class="o">|</span> <span class="nf">BIN</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">|</span>
-<span class="o">+------+------+--------+</span>
-<span class="o">|</span> <span class="mi">9</span>    <span class="o">|</span>   <span class="mi">57</span> <span class="o">|</span> <span class="mi">111001</span> <span class="o">|</span>
-<span class="o">+------+------+--------+</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="nf">t4</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="kt">BIT</span><span class="p">(</span><span class="mi">8</span><span class="p">));</span><span class="w">
+</span><span class="w"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="nf">t4</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;00111001&#39;</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="mi">0</span><span class="w"> </span><span class="p">,</span><span class="nf">BIN</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t4</span><span class="p">;</span><span class="w"> </span><span class="c1"># bin()表示整数类型对应的二进制
+</span><span class="c1"></span><span class="o">+------+------+--------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="mi">0</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="nf">BIN</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------+------+--------+</span><span class="w">
+</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="mi">9</span><span class="w">    </span><span class="o">|</span><span class="w">   </span><span class="mi">57</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">111001</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span><span class="w"></span><span class="o">+------+------+--------+</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>默认显示数字代表的 <code>ASCII</code> 码字符。</p>
 
@@ -662,25 +662,35 @@
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">

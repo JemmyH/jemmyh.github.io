@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/post/%E8%B7%B3%E8%A1%A8/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,12 +43,12 @@
 <meta property="og:description" content="一、前言 大家应该对 二分查找算法 不陌生，二分查找之所以能达到 O(logN) 的时间复杂度，一个重要原因在于它所依赖的数据结构是数组，数组支持随机访问，可通过" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/%E8%B7%B3%E8%A1%A8/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2020-10-05T05:32:24&#43;00:00" />
-<meta property="article:modified_time" content="2020-10-05T05:32:24&#43;00:00" />
+<meta property="article:published_time" content="2020-10-05T05:32:24+00:00" />
+<meta property="article:modified_time" content="2020-10-05T05:32:24+00:00" />
 
 <meta itemprop="name" content="跳表原理以及Golang实现">
-<meta itemprop="description" content="一、前言 大家应该对 二分查找算法 不陌生，二分查找之所以能达到 O(logN) 的时间复杂度，一个重要原因在于它所依赖的数据结构是数组，数组支持随机访问，可通过"><meta itemprop="datePublished" content="2020-10-05T05:32:24&#43;00:00" />
-<meta itemprop="dateModified" content="2020-10-05T05:32:24&#43;00:00" />
+<meta itemprop="description" content="一、前言 大家应该对 二分查找算法 不陌生，二分查找之所以能达到 O(logN) 的时间复杂度，一个重要原因在于它所依赖的数据结构是数组，数组支持随机访问，可通过"><meta itemprop="datePublished" content="2020-10-05T05:32:24+00:00" />
+<meta itemprop="dateModified" content="2020-10-05T05:32:24+00:00" />
 <meta itemprop="wordCount" content="3914">
 <meta itemprop="keywords" content="跳表," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="跳表原理以及Golang实现"/>
@@ -201,7 +201,7 @@
 <p>首先定义需要的结构体：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -214,7 +214,7 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Node</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Node</span> <span class="kd">struct</span> <span class="p">{</span>
     <span class="nx">Value</span> <span class="kt">int</span>            <span class="c1">// 某个结点的值，为了方便理解，这里暂时使用 int
 </span><span class="c1"></span>    <span class="nx">forward</span>  <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span>     <span class="c1">// 存储该节点所有层的下一个节点的信息，纵向观察，数组的长度是固定的，为 maxLevel。
 </span><span class="c1"></span>    <span class="nx">curLevel</span> <span class="kt">int</span>         <span class="c1">// 本节点最高层
@@ -232,7 +232,7 @@
 <p>接下来我们还要有一个初始化 <code>SkipList</code> 的操作：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -248,7 +248,7 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// CreateSkipList 初始化一个 SkipList
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// CreateSkipList 初始化一个 SkipList
 </span><span class="c1"></span><span class="kd">func</span> <span class="nf">CreateSkipList</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span><span class="nx">maxLevel</span> <span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="nx">SkipList</span> <span class="p">{</span>
     <span class="nx">s</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">SkipList</span><span class="p">)</span>
     <span class="nx">s</span><span class="p">.</span><span class="nx">head</span> <span class="p">=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">Node</span><span class="p">)</span>
@@ -270,7 +270,7 @@
 <p>参考之前的性质：<strong>如果一个元素出现在第 <code>k</code> 层，那么它一定出现在第 <code>1 ~ (k-1)</code> 层；同时会按照一定的概率 <code>p</code> 出现在第 <code>k+1</code> 层</strong>。这个概率我们可以通过一个函数来解决：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -286,7 +286,7 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">//
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">//
 </span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SkipList</span><span class="p">)</span> <span class="nf">getNodeLevel</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">level</span> <span class="kt">int</span> <span class="p">=</span> <span class="mi">0</span>  <span class="c1">// 根据性质 第1层包含所有的元素，所以第一层肯定包含这个新元素，所以默认在第一层
 </span><span class="c1"></span>
@@ -305,7 +305,7 @@
 </div><p>接下来我们看插入的过程：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -347,7 +347,7 @@
 </span><span class="lnt">40
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SkipList</span><span class="p">)</span> <span class="nf">Insert</span><span class="p">(</span><span class="nx">value</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SkipList</span><span class="p">)</span> <span class="nf">Insert</span><span class="p">(</span><span class="nx">value</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">v</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">checkSkipListValid</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
     <span class="k">if</span> <span class="nx">v</span> <span class="o">==</span> <span class="kc">false</span> <span class="p">{</span>
         <span class="k">return</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">err</span>
@@ -408,7 +408,7 @@
 <p>还是固定的遍历策略，先看代码：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -436,7 +436,7 @@
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">//try to find the first node which not match the user defined IsLess() condition
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">//try to find the first node which not match the user defined IsLess() condition
 </span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SkipList</span><span class="p">)</span> <span class="nf">Search</span><span class="p">(</span><span class="nx">value</span> <span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="nx">Node</span> <span class="p">{</span>
     <span class="nx">p</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">head</span>
 
@@ -470,7 +470,7 @@
 <p>代码如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -502,7 +502,7 @@
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SkipList</span><span class="p">)</span> <span class="nf">RemoveNode</span><span class="p">(</span><span class="nx">obj</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SkipList</span><span class="p">)</span> <span class="nf">RemoveNode</span><span class="p">(</span><span class="nx">obj</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
 
     <span class="kd">var</span> <span class="nx">update</span> <span class="p">[]</span><span class="o">*</span><span class="nx">Node</span> <span class="p">=</span> <span class="nb">make</span><span class="p">([]</span><span class="o">*</span><span class="nx">Node</span><span class="p">,</span> <span class="nx">s</span><span class="p">.</span><span class="nx">maxLevel</span><span class="p">)</span>  <span class="c1">// 用来存储被删除结点每一层的前缀
 </span><span class="c1"></span>    <span class="nx">p</span> <span class="o">:=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">head</span>
@@ -539,7 +539,7 @@
 <p>直接看代码：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -561,7 +561,7 @@
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SkipList</span><span class="p">)</span> <span class="nf">Traverse</span><span class="p">()</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SkipList</span><span class="p">)</span> <span class="nf">Traverse</span><span class="p">()</span> <span class="p">{</span>
 
 	<span class="kd">var</span> <span class="nx">p</span> <span class="o">*</span><span class="nx">Node</span> <span class="p">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">head</span>
 
@@ -683,25 +683,35 @@
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">

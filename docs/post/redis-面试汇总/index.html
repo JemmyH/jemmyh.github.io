@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/post/redis-%E9%9D%A2%E8%AF%95%E6%B1%87%E6%80%BB/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,12 +43,12 @@
 <meta property="og:description" content="当我们谈论 Redis 时，应该谈论什么？ Redis 基本数据类型有哪些？以及他们各自的使用场景是什么？ 常见的有五种：字符串、哈希、列表、集合、有序集合。5.0 版" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/redis-%E9%9D%A2%E8%AF%95%E6%B1%87%E6%80%BB/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2021-04-15T12:11:24&#43;08:00" />
-<meta property="article:modified_time" content="2021-04-15T12:11:24&#43;08:00" />
+<meta property="article:published_time" content="2021-04-15T12:11:24+08:00" />
+<meta property="article:modified_time" content="2021-04-15T12:11:24+08:00" />
 
 <meta itemprop="name" content="Redis 面试汇总">
-<meta itemprop="description" content="当我们谈论 Redis 时，应该谈论什么？ Redis 基本数据类型有哪些？以及他们各自的使用场景是什么？ 常见的有五种：字符串、哈希、列表、集合、有序集合。5.0 版"><meta itemprop="datePublished" content="2021-04-15T12:11:24&#43;08:00" />
-<meta itemprop="dateModified" content="2021-04-15T12:11:24&#43;08:00" />
+<meta itemprop="description" content="当我们谈论 Redis 时，应该谈论什么？ Redis 基本数据类型有哪些？以及他们各自的使用场景是什么？ 常见的有五种：字符串、哈希、列表、集合、有序集合。5.0 版"><meta itemprop="datePublished" content="2021-04-15T12:11:24+08:00" />
+<meta itemprop="dateModified" content="2021-04-15T12:11:24+08:00" />
 <meta itemprop="wordCount" content="7035">
 <meta itemprop="keywords" content="Redis,基础数据结构," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Redis 面试汇总"/>
@@ -375,13 +375,13 @@
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">hash： 使用 hscan + hdel
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">hash： 使用 hscan + hdel
 <span class="nb">set</span> ： 使用 sscan + srem
 zset ： 使用 zremrangebyrank
 list ： 使用 scan + ltrim
@@ -489,25 +489,35 @@ list ： 使用 scan + ltrim
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">

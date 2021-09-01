@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>epoll on Jemmy&#39;s blog</title>
+    <link>http://localhost:1313/tags/epoll/</link>
+    <description>Recent content in epoll on Jemmy&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Mon, 10 May 2021 20:57:47 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/epoll/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>I/O多路复用之 epoll</title>
+      <link>http://localhost:1313/post/io%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E4%B9%8B-epoll/</link>
+      <pubDate>Mon, 10 May 2021 20:57:47 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/io%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E4%B9%8B-epoll/</guid>
+      <description>select 的缺陷 目前对于高并发的解决方案是 一个线程处理所有连接，在这一点上 select 和 epoll 是一样的。但 当大量的并发连接存在、但短时间内只有少数活跃的连接时，s</description>
+    </item>
+    
+  </channel>
+</rss>

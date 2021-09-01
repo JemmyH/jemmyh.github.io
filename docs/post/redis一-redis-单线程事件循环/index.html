@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/post/redis%E4%B8%80-redis-%E5%8D%95%E7%BA%BF%E7%A8%8B%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,12 +43,12 @@
 <meta property="og:description" content="一、前言 在关注 redis 单线程/多线程 时，有几个重要的时间节点： Before Redis v4.0，真正的单线程； Redis v4.0，引入多线程处理 AOF 等任务，但核心的网络模型中依" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/redis%E4%B8%80-redis-%E5%8D%95%E7%BA%BF%E7%A8%8B%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2021-04-05T23:08:37&#43;08:00" />
-<meta property="article:modified_time" content="2021-04-05T23:08:37&#43;08:00" />
+<meta property="article:published_time" content="2021-04-05T23:08:37+08:00" />
+<meta property="article:modified_time" content="2021-04-05T23:08:37+08:00" />
 
 <meta itemprop="name" content="Redis系列(一): Redis 单线程事件循环">
-<meta itemprop="description" content="一、前言 在关注 redis 单线程/多线程 时，有几个重要的时间节点： Before Redis v4.0，真正的单线程； Redis v4.0，引入多线程处理 AOF 等任务，但核心的网络模型中依"><meta itemprop="datePublished" content="2021-04-05T23:08:37&#43;08:00" />
-<meta itemprop="dateModified" content="2021-04-05T23:08:37&#43;08:00" />
+<meta itemprop="description" content="一、前言 在关注 redis 单线程/多线程 时，有几个重要的时间节点： Before Redis v4.0，真正的单线程； Redis v4.0，引入多线程处理 AOF 等任务，但核心的网络模型中依"><meta itemprop="datePublished" content="2021-04-05T23:08:37+08:00" />
+<meta itemprop="dateModified" content="2021-04-05T23:08:37+08:00" />
 <meta itemprop="wordCount" content="7529">
 <meta itemprop="keywords" content="redis源码,事件循环," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Redis系列(一): Redis 单线程事件循环"/>
@@ -211,7 +211,7 @@
 <p>先来看核心数据结构：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -252,7 +252,7 @@
 </span><span class="lnt">39
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* State of an event based program */</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* State of an event based program */</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeEventLoop</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">maxfd</span><span class="p">;</span>   <span class="c1">// 当前已经注册在此的最大文件描述符
 </span><span class="c1"></span>    <span class="kt">int</span> <span class="n">setsize</span><span class="p">;</span>  <span class="c1">// 可“关心”的文件描述符数量
@@ -300,7 +300,7 @@
 <h3 id="1-aeeventloop-aecreateeventloopint-setsize-创建一个-aeeventloop-实例">1. <code>aeEventLoop *aeCreateEventLoop(int setsize)</code> 创建一个 <code>aeEventLoop</code> 实例</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -333,7 +333,7 @@
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="n">aeEventLoop</span> <span class="o">*</span><span class="nf">aeCreateEventLoop</span><span class="p">(</span><span class="kt">int</span> <span class="n">setsize</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">aeEventLoop</span> <span class="o">*</span><span class="nf">aeCreateEventLoop</span><span class="p">(</span><span class="kt">int</span> <span class="n">setsize</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
 
@@ -369,7 +369,7 @@
 </div><p>这个方法的实现很简单，就是一些成员变量的初始化。需要注意的是 <code>aeApiCreate</code>，在 <code>src/ae.c</code> 的最开始，有下面的代码：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -386,7 +386,7 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* Include the best multiplexing layer supported by this system.
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* Include the best multiplexing layer supported by this system.
 </span><span class="cm"> * The following should be ordered by performances, descending. */</span>
 <span class="cp">#ifdef HAVE_EVPORT
 </span><span class="cp">#include</span> <span class="cpf">&#34;ae_evport.c&#34;</span><span class="cp">
@@ -406,7 +406,7 @@
 </div><p>这段代码的意思是，根据当前的系统类型，选择性能最好的 <code>I/O多路复用</code> 库，比如当前系统是 Linux，那么应该使用 <code>ae_epoll</code>，Mac 下使用 <code>ae_kqueue</code>等，<code>ae_select</code> 是保底方案。而 <code>ae_xxx</code> 是对不同系统下的 <code>I/O多路复用</code> 的封装，将底层的不同系统调用都通过统一的 <code>API接口</code> 和 数据结构 <code>aeApiStates</code> 暴露出去，供上层调用。我们看下 Linux 系统中 <code>aeApiCreate</code> 的实现：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -432,7 +432,7 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeApiState</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeApiState</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">epfd</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">epoll_event</span> <span class="o">*</span><span class="n">events</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">aeApiState</span><span class="p">;</span>
@@ -461,7 +461,7 @@
 </div><p>而 Mac 下的实现又是这样的：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -486,7 +486,7 @@
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeApiState</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeApiState</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">kqfd</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">kevent</span> <span class="o">*</span><span class="n">events</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">aeApiState</span><span class="p">;</span>
@@ -514,7 +514,7 @@
 </div><h3 id="2-aecreatefileeventaeeventloop-eventloop-int-fd-int-mask-aefileproc-proc-void-clientdata-监听文件事件">2. <code>aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask, aeFileProc *proc, void *clientData)</code> 监听文件事件</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -534,7 +534,7 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">aeCreateFileEvent</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">,</span> <span class="n">aeFileProc</span> <span class="o">*</span><span class="n">proc</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">aeCreateFileEvent</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">,</span> <span class="n">aeFileProc</span> <span class="o">*</span><span class="n">proc</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&gt;=</span> <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">setsize</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">errno</span> <span class="o">=</span> <span class="n">ERANGE</span><span class="p">;</span>
@@ -558,7 +558,7 @@
 <h3 id="3-aeprocesseventsaeeventloop-eventloop-int-flags-事件轮训处理的核心逻辑">3. <code>aeProcessEvents(aeEventLoop *eventLoop, int flags)</code> 事件轮训处理的核心逻辑</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -608,7 +608,7 @@
 </span><span class="lnt">48
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
 <span class="cm">/* The function returns the number of events processed. */</span>
 <span class="kt">int</span> <span class="nf">aeProcessEvents</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
 <span class="p">{</span>
@@ -665,7 +665,7 @@
 <p>在 <code>src/server.c</code> 中的 <code>main</code> 方法中，当服务器启动时，会调用 <code>initServer</code>方法，在这个方法中，Redis 会创建全局唯一的 <code>aeEventLoop</code> 实例，并注册 <code>Server socket</code> 到对应的多路复用组件上，同时指定回调函数为 <code>acceptTcpHandler</code>，意思是服务器接收到新的连接时，应该调用 <code>acceptTcpHandler</code> 这个回调函数。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -695,7 +695,7 @@
 </span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">initServer</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">initServer</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="p">...</span>
 
@@ -729,7 +729,7 @@
 <p>在前面我们将 server 对应的 socket 添加到 epoll 的监听队列，当有新的连接到来时，会触发读事件就绪，此时回调函数 <code>acceptTcpHandler</code> 就会被调用：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -807,7 +807,7 @@
 </span><span class="lnt">76
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">acceptTcpHandler</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">el</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">acceptTcpHandler</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">el</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
         <span class="c1">// 创建 connect fd，代表 Redis Server 和客户端的一个连接(socket)
 </span><span class="c1"></span>        <span class="n">cfd</span> <span class="o">=</span> <span class="n">anetTcpAccept</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">neterr</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">cip</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">cip</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">cport</span><span class="p">);</span>
@@ -875,7 +875,7 @@
 
     <span class="c1">// 5. 默认使用 0 号 db
 </span><span class="c1"></span>    <span class="n">selectDb</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-    <span class="n">uint64_t</span> <span class="n">client_id</span><span class="p">;</span>
+    <span class="kt">uint64_t</span> <span class="n">client_id</span><span class="p">;</span>
     <span class="c1">// 6. 设置 client 其他默认属性
 </span><span class="c1"></span>    <span class="n">atomicGetIncr</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">next_client_id</span><span class="p">,</span> <span class="n">client_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
     <span class="n">c</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="n">client_id</span><span class="p">;</span>
@@ -894,7 +894,7 @@
 <p>在 <code>createClient</code> 中我们知道对应客户端的 <code>socket</code> 上有事件发生时，回调函数是 <code>readQueryFromClient</code>。这个方法主要做一件事：将客户端的请求读取到 <code>client</code> 对象的 <code>querybuf</code> 中。之后再调用 <code>processInputBufferAndReplicate</code> 进一步处理请求。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -920,7 +920,7 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">readQueryFromClient</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">el</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">readQueryFromClient</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">el</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
 
     <span class="c1">// 调用 read 从 socket 中读取客户端请求数据到 client-&gt;querybuf
@@ -949,7 +949,7 @@
 </div><p>再来看 <code>processInputBufferAndReplicate</code> 的实现，它其实是 <code>processInputBuffer</code> 的封装，多加了一层判断：如果是普通的 server，则直接调用 <code>processInputBuffer</code> ；如果是主从客户端，还需要将命令同步到自己的从服务器中。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -965,7 +965,7 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">processInputBufferAndReplicate</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">processInputBufferAndReplicate</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MASTER</span><span class="p">))</span> <span class="p">{</span>
         <span class="n">processInputBuffer</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -984,7 +984,7 @@
 </div><p><code>processInputBuffer</code> 会试着先从缓冲区中解析命令类型，判断类型，之后调用 <code>processCommand</code> 执行：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1033,7 +1033,7 @@
 </span><span class="lnt">47
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">processInputBuffer</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">processInputBuffer</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// 设置 server 的当前处理 client 为c，可以理解为获得了 server 这把锁
 </span><span class="c1"></span>    <span class="n">server</span><span class="p">.</span><span class="n">current_client</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
 
@@ -1085,7 +1085,7 @@
 </div><p>我们再来看 <code>processCommand</code>，在真正执行命令之前，会进行非常多的校验，校验通过后才会真正执行对应的命令。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">  1
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
 </span><span class="lnt">  2
 </span><span class="lnt">  3
 </span><span class="lnt">  4
@@ -1210,7 +1210,7 @@
 </span><span class="lnt">123
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">processCommand</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">processCommand</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// 1. 如果命令是 quit，则直接退出
 </span><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strcasecmp</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">ptr</span><span class="p">,</span> <span class="s">&#34;quit&#34;</span><span class="p">))</span> <span class="p">{</span>
         <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">ok</span><span class="p">);</span>
@@ -1345,7 +1345,7 @@
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1355,7 +1355,7 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">call</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">call</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="p">....</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">ustime</span><span class="p">();</span>
@@ -1370,7 +1370,7 @@
 <p>这个过程在主事件循环之前的钩子函数 <code>beforeSleep</code> 中，这个函数在 <code>main</code> 中指定，在 <code>aeMain</code> 中执行：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1390,7 +1390,7 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="p">...</span>
     <span class="n">aeSetBeforeSleepProc</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span><span class="p">,</span> <span class="n">beforeSleep</span><span class="p">);</span>
@@ -1413,7 +1413,7 @@
 </div><p>再具体的实现中，我们只关注如何将写缓冲区的数据写回给客户端：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1467,7 +1467,7 @@
 </span><span class="lnt">52
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">beforeSleep</span><span class="p">(</span><span class="k">struct</span> <span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">)</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">beforeSleep</span><span class="p">(</span><span class="k">struct</span> <span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">...</span>
 
     <span class="cm">/* Handle writes with pending output buffers. */</span>
@@ -1524,7 +1524,7 @@
 </div><p>对 <code>client-&gt;buf</code> 和 <code>client-&gt;reply</code> 的处理在 <code>writeToClient</code> 方法中：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1610,7 +1610,7 @@
 </span><span class="lnt">84
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* Write data in output buffers to client. Return C_OK if the client
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* Write data in output buffers to client. Return C_OK if the client
 </span><span class="cm"> * is still valid after the call, C_ERR if it was freed. */</span>
 <span class="kt">int</span> <span class="nf">writeToClient</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">handler_installed</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">ssize_t</span> <span class="n">nwritten</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">totwritten</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -1768,25 +1768,35 @@
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">

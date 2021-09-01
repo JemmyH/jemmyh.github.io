@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/post/golang-%E6%95%B0%E7%BB%84-%E5%88%87%E7%89%87%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/" />
@@ -35,7 +35,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,12 +43,12 @@
 <meta property="og:description" content="在主流的编程语言中数组及其相关的数据结构是使用得最为频繁的，只有在它(们)不能满足时才会考虑链表、hash 表（hash 表可以看作是数组和链表" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/golang-%E6%95%B0%E7%BB%84-%E5%88%87%E7%89%87%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2020-09-16T02:15:54&#43;00:00" />
-<meta property="article:modified_time" content="2020-09-16T02:15:54&#43;00:00" />
+<meta property="article:published_time" content="2020-09-16T02:15:54+00:00" />
+<meta property="article:modified_time" content="2020-09-16T02:15:54+00:00" />
 
 <meta itemprop="name" content="Golang-数组,切片和字符串">
-<meta itemprop="description" content="在主流的编程语言中数组及其相关的数据结构是使用得最为频繁的，只有在它(们)不能满足时才会考虑链表、hash 表（hash 表可以看作是数组和链表"><meta itemprop="datePublished" content="2020-09-16T02:15:54&#43;00:00" />
-<meta itemprop="dateModified" content="2020-09-16T02:15:54&#43;00:00" />
+<meta itemprop="description" content="在主流的编程语言中数组及其相关的数据结构是使用得最为频繁的，只有在它(们)不能满足时才会考虑链表、hash 表（hash 表可以看作是数组和链表"><meta itemprop="datePublished" content="2020-09-16T02:15:54+00:00" />
+<meta itemprop="dateModified" content="2020-09-16T02:15:54+00:00" />
 <meta itemprop="wordCount" content="5765">
 <meta itemprop="keywords" content="Golang,数组,切片,字符串," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Golang-数组,切片和字符串"/>
@@ -180,7 +180,7 @@
 <p>数组作为一种基本的数据类型，我们通常都会从两个维度描述数组：类型 和 大小(能够存储的最大元素个数)：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -199,7 +199,7 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 源码位于 /usr/local/go/src/cmd/compile/internal/types/type.go
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// 源码位于 /usr/local/go/src/cmd/compile/internal/types/type.go
 </span><span class="c1">// Array contains Type fields specific to array types.
 </span><span class="c1"></span><span class="kd">type</span> <span class="nx">Array</span> <span class="kd">struct</span> <span class="p">{</span>
  <span class="nx">Elem</span>  <span class="o">*</span><span class="nx">Type</span> <span class="c1">// element type 元素类型
@@ -223,11 +223,11 @@
 <p>有两种初始化方式：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">array1</span> <span class="p">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">}</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">array1</span> <span class="p">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">}</span>
 <span class="nx">array2</span> <span class="p">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -236,7 +236,7 @@
 <p>对第二种方式，在第一步会创建一个<code>Array{Elem: elem, Bound: -1}</code>，即其大小会是<code>-1</code>，不过这里的<code>-1</code>只是一个占位符，编译器会在后面的 <code>/usr/local/go/src/cmd/compile/internal/gc/typecheck.go</code> 中对数组大小进行推导，并更新其 <code>Bound</code> 值：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -262,7 +262,7 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// The result of typecheckcomplit MUST be assigned back to n, e.g.
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// The result of typecheckcomplit MUST be assigned back to n, e.g.
 </span><span class="c1">//  n.Left = typecheckcomplit(n.Left)
 </span><span class="c1"></span><span class="kd">func</span> <span class="nf">typecheckcomplit</span><span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="p">(</span><span class="nx">res</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="p">{</span>
     <span class="o">...</span>
@@ -295,7 +295,7 @@
 <p>Go 语言中数组是值语义。一个数组变量即表示整个数组，它并不是隐式的指向第一个元素的指针（比如 C 语言的数组），而是一个完整的值。当一个数组变量被赋值或者被传递的时候，实际上会复制整个数组。如果数组较大的话，数组的赋值也会有较大的开销。为了避免复制数组带来的开销，可以传递一个指向数组的指针，但是数组指针并不是数组。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -306,7 +306,7 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">a</span> <span class="p">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span> <span class="c1">// a 是一个数组
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">a</span> <span class="p">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">}</span> <span class="c1">// a 是一个数组
 </span><span class="c1"></span><span class="kd">var</span> <span class="nx">b</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">a</span>                <span class="c1">// b 是指向数组的指针
 </span><span class="c1"></span>
 <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1">// 打印数组的前2个元素
@@ -320,7 +320,7 @@
 </div><p>我们可以用<code>for</code>循环来迭代数组。下面常见的几种方式都可以用来遍历数组：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -348,7 +348,7 @@
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;方式一：&#34;</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;方式一：&#34;</span><span class="p">)</span>
 <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">a</span> <span class="p">{</span>
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;a[%d]: %d\n&#34;</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
 <span class="p">}</span>
@@ -380,7 +380,7 @@
 <p>需要注意的是 <strong>长度为 0 的数组</strong>。<strong>长度为 0 的数组在内存中并不占用空间</strong>，有时候可以用于强调某种特有类型的操作时避免分配额外的内存空间，比如用于管道的同步操作：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -388,7 +388,7 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">c1</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">c1</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span>
 <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;c1&#34;</span><span class="p">)</span>
     <span class="nx">c1</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="kt">int</span><span class="p">{}</span>
@@ -399,7 +399,7 @@
 </div><p>在此场景下我们并不关心管道中的具体数据以及类型，我们需要的只是管道的接收和发送操作用于消息的同步，此时，空数组作为管道类型可以减少管道元素赋值时的开销。当然一般更倾向于用无类型的匿名结构体代替：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -407,7 +407,7 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">c2</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">c2</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span>
 <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;c2&#34;</span><span class="p">)</span>
     <span class="nx">c2</span> <span class="o">&lt;-</span> <span class="kd">struct</span><span class="p">{}{}</span> <span class="c1">// struct{}部分是类型, {}表示对应的结构体值
@@ -422,14 +422,14 @@
 <p>源代码位于： /usr/local/go/src/runtime/slice.go</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">slice</span> <span class="kd">struct</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">slice</span> <span class="kd">struct</span> <span class="p">{</span>
  <span class="nx">array</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>  <span class="c1">// 指向底层数组的指针
 </span><span class="c1"></span>    <span class="nx">len</span>   <span class="kt">int</span>             <span class="c1">// 长度(已经存放了多少个元素)
 </span><span class="c1"></span>    <span class="nx">cap</span>   <span class="kt">int</span>             <span class="c1">// 容量(底层数组的元素个数)，其中 cap&gt;=len
@@ -485,18 +485,18 @@
 <p>当<strong>要创建的切片非常小并且不会发生逃逸</strong>时，这部分操作会在编译期完成，并且创建在栈上或者静态存储区。如 <code>n := make([]int,3,4)</code> 会被直接转化成如下所示的代码：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">arr</span> <span class="p">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">int</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">arr</span> <span class="p">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">int</span>
 <span class="nx">n</span> <span class="o">:=</span> <span class="nx">arr</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>当发生逃逸或者比较大时，会在运行时调用 <code>runtime.makeslice</code> 函数在堆上初始化。而<code>runtime.makeslice</code>函数非常简单：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -517,7 +517,7 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// et是元素类型
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// et是元素类型
 </span><span class="c1"></span><span class="kd">func</span> <span class="nf">makeslice</span><span class="p">(</span><span class="nx">et</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">len</span><span class="p">,</span> <span class="nx">cap</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span> <span class="p">{</span>
  <span class="nx">mem</span><span class="p">,</span> <span class="nx">overflow</span> <span class="o">:=</span> <span class="nx">math</span><span class="p">.</span><span class="nf">MulUintptr</span><span class="p">(</span><span class="nx">et</span><span class="p">.</span><span class="nx">size</span><span class="p">,</span> <span class="nb">uintptr</span><span class="p">(</span><span class="nx">cap</span><span class="p">))</span>
     <span class="c1">// 判断len cap参数是否合法
@@ -541,10 +541,10 @@
 </div><p>这个函数的主要作用就是 计算当前切片所占用的内存空间并在堆上申请一段连续的内存，所需的内存空间采用以下的方式计算：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">内存空间</span> <span class="o">=</span> 元素类型大小 * 切片容量cap
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">内存空间</span> <span class="o">=</span> 元素类型大小 * 切片容量cap
 </code></pre></td></tr></table>
 </div>
 </div><p>而元素类型的大小参照如下：</p>
@@ -595,7 +595,7 @@
 <p>我们通过一个例子来说明，该例子来自于<a href="https://github.com/qyuhen/book/blob/master/Go%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%20%E7%AC%AC%E5%9B%9B%E7%89%88.pdf">雨痕 Go 学习笔记 P43</a>，做了一些改造：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -620,7 +620,7 @@
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
 <span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
 
@@ -649,14 +649,14 @@
 <p>首先，创建 <code>slice</code>、<code>s1</code> 和 <code>s2</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">slice</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">slice</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span>
 <span class="nx">s1</span> <span class="o">:=</span> <span class="nx">slice</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>  <span class="c1">// len为3，cap默认到底层数组的结尾
 </span><span class="c1"></span><span class="nx">s2</span> <span class="o">:=</span> <span class="nx">s1</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">6</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>   <span class="c1">// len为4，cap为5
 </span><span class="c1"></span>
@@ -667,10 +667,10 @@
 <p>之后，向 <code>s2</code> 尾部追加一个元素：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">s2</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s2</span><span class="p">,</span> <span class="mi">55</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">s2</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s2</span><span class="p">,</span> <span class="mi">55</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p><code>s2</code>的容量刚好还剩一个，直接追加，不会扩容。因为这三者此时还都共用同一个底层数组，所以这一改动，<code>slice</code>和<code>s1</code>都会受到影响：</p>
@@ -678,10 +678,10 @@
 <p>再次向 <code>s2</code> 追加一个元素：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">s2</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s2</span><span class="p">,</span> <span class="mi">77</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">s2</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">s2</span><span class="p">,</span> <span class="mi">77</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>此时，<code>s2</code> 的容量不够用，需要扩容。简单来说，扩容是新申请一块更大(具体多大，后面会说到，假设为原来的 2 倍)的内存块，将原来的数据 copy 过去，<code>s2</code> 的<code>array</code>指针指向新申请的那块内存。再次 <code>append</code> 之后：</p>
@@ -689,10 +689,10 @@
 <p>最后，修改 <code>s1</code> 索引为 2 处的元素：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">s1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">=</span> <span class="mi">66</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">s1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">=</span> <span class="mi">66</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>此时 <code>s2</code> 已经使用了新开辟的内存空间，不再指向<code>slice</code>和<code>s1</code>指向的那个数组，因此 <code>s2</code> 不会受影响：</p>
@@ -703,11 +703,11 @@
 <p><strong>第一步，预估扩容后的容量 newCap：</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">data</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">}</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">data</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">}</span>
 <span class="nx">data</span> <span class="p">=</span> <span class="nf">appand</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
@@ -728,7 +728,7 @@
 <p>这段规则的源码位于 <code>/usr/local/go/src/runtime/slice.go</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -754,7 +754,7 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">growslice</span><span class="p">(</span><span class="nx">et</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">old</span> <span class="nx">slice</span><span class="p">,</span> <span class="nx">cap</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">slice</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">growslice</span><span class="p">(</span><span class="nx">et</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">old</span> <span class="nx">slice</span><span class="p">,</span> <span class="nx">cap</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">slice</span> <span class="p">{</span>
  <span class="o">...</span>
     <span class="nx">newcap</span> <span class="o">:=</span> <span class="nx">old</span><span class="p">.</span><span class="nx">cap</span>
  <span class="nx">doublecap</span> <span class="o">:=</span> <span class="nx">newcap</span> <span class="o">+</span> <span class="nx">newcap</span>
@@ -786,7 +786,7 @@
 <p>首先元素类型大小已在 “一.3”中说明过，此处 int 类型的大小是 8bit(1 个字节)。接着看<code>growslice</code>函数：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -811,7 +811,7 @@
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">growslice</span><span class="p">(</span><span class="nx">et</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">old</span> <span class="nx">slice</span><span class="p">,</span> <span class="nx">cap</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">slice</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">growslice</span><span class="p">(</span><span class="nx">et</span> <span class="o">*</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">old</span> <span class="nx">slice</span><span class="p">,</span> <span class="nx">cap</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">slice</span> <span class="p">{</span>
     <span class="o">...</span>
     <span class="kd">var</span> <span class="nx">overflow</span> <span class="kt">bool</span>
  <span class="kd">var</span> <span class="nx">lenmem</span><span class="p">,</span> <span class="nx">newlenmem</span><span class="p">,</span> <span class="nx">capmem</span> <span class="kt">uintptr</span>
@@ -839,7 +839,7 @@
 </div><p>在这里，<code>sys.PtrSize = 8</code>，<code>et</code>类型是 <code>int</code>，所以 <code>et.size == sys.PtrSize</code>为 <code>true</code>，则 <code>newcap * sys.PtrSize = 5 * 8 = 40</code>。我们看看 <code>roundupsize</code>这个函数，位于 <code>/usr/local/go/src/runtime/msize.go</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -852,7 +852,7 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Returns size of the memory block that mallocgc will allocate if you ask for the size.
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Returns size of the memory block that mallocgc will allocate if you ask for the size.
 </span><span class="c1"></span><span class="kd">func</span> <span class="nf">roundupsize</span><span class="p">(</span><span class="nx">size</span> <span class="kt">uintptr</span><span class="p">)</span> <span class="kt">uintptr</span> <span class="p">{</span>
  <span class="k">if</span> <span class="nx">size</span> <span class="p">&lt;</span> <span class="nx">_MaxSmallSize</span> <span class="p">{</span>
   <span class="k">if</span> <span class="nx">size</span> <span class="o">&lt;=</span> <span class="nx">smallSizeMax</span><span class="o">-</span><span class="mi">8</span> <span class="p">{</span>
@@ -868,21 +868,21 @@
 </div><p>其中，<code>_MaxSmallSize = 32768</code>，<code>smallSizeMax = 1024</code>，<code>smallSizeDiv = 8</code>，而传进来的 <code>size = 40</code>。而：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">class_to_size</span> <span class="p">=</span> <span class="p">[</span><span class="nx">_NumSizeClasses</span><span class="p">]</span><span class="kt">uint16</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">144</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">176</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">208</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">288</span><span class="p">,</span> <span class="mi">320</span><span class="p">,</span> <span class="mi">352</span><span class="p">,</span> <span class="mi">384</span><span class="p">,</span> <span class="mi">416</span><span class="p">,</span> <span class="mi">448</span><span class="p">,</span> <span class="mi">480</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">576</span><span class="p">,</span> <span class="mi">640</span><span class="p">,</span> <span class="mi">704</span><span class="p">,</span> <span class="mi">768</span><span class="p">,</span> <span class="mi">896</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">1152</span><span class="p">,</span> <span class="mi">1280</span><span class="p">,</span> <span class="mi">1408</span><span class="p">,</span> <span class="mi">1536</span><span class="p">,</span> <span class="mi">1792</span><span class="p">,</span> <span class="mi">2048</span><span class="p">,</span> <span class="mi">2304</span><span class="p">,</span> <span class="mi">2688</span><span class="p">,</span> <span class="mi">3072</span><span class="p">,</span> <span class="mi">3200</span><span class="p">,</span> <span class="mi">3456</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="mi">4864</span><span class="p">,</span> <span class="mi">5376</span><span class="p">,</span> <span class="mi">6144</span><span class="p">,</span> <span class="mi">6528</span><span class="p">,</span> <span class="mi">6784</span><span class="p">,</span> <span class="mi">6912</span><span class="p">,</span> <span class="mi">8192</span><span class="p">,</span> <span class="mi">9472</span><span class="p">,</span> <span class="mi">9728</span><span class="p">,</span> <span class="mi">10240</span><span class="p">,</span> <span class="mi">10880</span><span class="p">,</span> <span class="mi">12288</span><span class="p">,</span> <span class="mi">13568</span><span class="p">,</span> <span class="mi">14336</span><span class="p">,</span> <span class="mi">16384</span><span class="p">,</span> <span class="mi">18432</span><span class="p">,</span> <span class="mi">19072</span><span class="p">,</span> <span class="mi">20480</span><span class="p">,</span> <span class="mi">21760</span><span class="p">,</span> <span class="mi">24576</span><span class="p">,</span> <span class="mi">27264</span><span class="p">,</span> <span class="mi">28672</span><span class="p">,</span> <span class="mi">32768</span><span class="p">}</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">class_to_size</span> <span class="p">=</span> <span class="p">[</span><span class="nx">_NumSizeClasses</span><span class="p">]</span><span class="kt">uint16</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">144</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">176</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">208</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">288</span><span class="p">,</span> <span class="mi">320</span><span class="p">,</span> <span class="mi">352</span><span class="p">,</span> <span class="mi">384</span><span class="p">,</span> <span class="mi">416</span><span class="p">,</span> <span class="mi">448</span><span class="p">,</span> <span class="mi">480</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">576</span><span class="p">,</span> <span class="mi">640</span><span class="p">,</span> <span class="mi">704</span><span class="p">,</span> <span class="mi">768</span><span class="p">,</span> <span class="mi">896</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">1152</span><span class="p">,</span> <span class="mi">1280</span><span class="p">,</span> <span class="mi">1408</span><span class="p">,</span> <span class="mi">1536</span><span class="p">,</span> <span class="mi">1792</span><span class="p">,</span> <span class="mi">2048</span><span class="p">,</span> <span class="mi">2304</span><span class="p">,</span> <span class="mi">2688</span><span class="p">,</span> <span class="mi">3072</span><span class="p">,</span> <span class="mi">3200</span><span class="p">,</span> <span class="mi">3456</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="mi">4864</span><span class="p">,</span> <span class="mi">5376</span><span class="p">,</span> <span class="mi">6144</span><span class="p">,</span> <span class="mi">6528</span><span class="p">,</span> <span class="mi">6784</span><span class="p">,</span> <span class="mi">6912</span><span class="p">,</span> <span class="mi">8192</span><span class="p">,</span> <span class="mi">9472</span><span class="p">,</span> <span class="mi">9728</span><span class="p">,</span> <span class="mi">10240</span><span class="p">,</span> <span class="mi">10880</span><span class="p">,</span> <span class="mi">12288</span><span class="p">,</span> <span class="mi">13568</span><span class="p">,</span> <span class="mi">14336</span><span class="p">,</span> <span class="mi">16384</span><span class="p">,</span> <span class="mi">18432</span><span class="p">,</span> <span class="mi">19072</span><span class="p">,</span> <span class="mi">20480</span><span class="p">,</span> <span class="mi">21760</span><span class="p">,</span> <span class="mi">24576</span><span class="p">,</span> <span class="mi">27264</span><span class="p">,</span> <span class="mi">28672</span><span class="p">,</span> <span class="mi">32768</span><span class="p">}</span>
 <span class="kd">var</span> <span class="nx">size_to_class8</span> <span class="p">=</span> <span class="p">[</span><span class="nx">smallSizeMax</span><span class="o">/</span><span class="nx">smallSizeDiv</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="kt">uint8</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>所以上面<code>roundupsize</code>会返回：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">class_to_size</span><span class="p">[</span><span class="nx">size_to_class8</span><span class="p">[(</span><span class="nx">size</span><span class="o">+</span><span class="nx">smallSizeDiv</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="nx">smallSizeDiv</span><span class="p">]]</span> <span class="p">=</span> <span class="mi">48</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="nx">class_to_size</span><span class="p">[</span><span class="nx">size_to_class8</span><span class="p">[(</span><span class="nx">size</span><span class="o">+</span><span class="nx">smallSizeDiv</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="nx">smallSizeDiv</span><span class="p">]]</span> <span class="p">=</span> <span class="mi">48</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>在<code>growslice</code>中，<code>capmem = 48</code>，则最后计算得到的 <code>newcap = int(capmem / sys.PtrSize) = int(48 / 8) = 6</code>，即最终扩容后的容量为 <code>6</code>。而不是之前预估的 <code>5</code>。</p>
@@ -892,7 +892,7 @@
 <p><strong>当函数中没有出现扩容时：</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -904,7 +904,7 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">a</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">}</span>
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>  <span class="c1">// 输出 [1,2,3,4,5,6]
 </span><span class="c1"></span>    <span class="nf">t1</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
@@ -919,7 +919,7 @@
 </div><p><strong>当函数中出现扩容时：</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -931,7 +931,7 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">a</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">}</span>
     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>  <span class="c1">// 输出 [1,2,3,4,5,6]
 </span><span class="c1"></span>    <span class="nf">t1</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
@@ -950,14 +950,14 @@
 <p><code>string</code>的底层结构如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// /usr/local/go/src/runtime/string.go
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="c1">// /usr/local/go/src/runtime/string.go
 </span><span class="c1"></span><span class="kd">type</span> <span class="nx">stringStruct</span> <span class="kd">struct</span> <span class="p">{</span>
  <span class="nx">str</span> <span class="nx">unsafe</span><span class="p">.</span><span class="nx">Pointer</span>
  <span class="nx">len</span> <span class="kt">int</span>
@@ -969,7 +969,7 @@
 <p>在说<code>unsafe</code> 那篇文章里，提到了 <strong>实现<code>string</code>和<code>[]byte</code> 的零拷贝转换</strong>：这里再复习一下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -978,7 +978,7 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">stringToBytes</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)[]</span><span class="kt">byte</span><span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">stringToBytes</span><span class="p">(</span><span class="nx">s</span> <span class="kt">string</span><span class="p">)[]</span><span class="kt">byte</span><span class="p">{</span>
     <span class="k">return</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="p">[]</span><span class="kt">byte</span><span class="p">)(</span><span class="nx">unsafe</span><span class="p">.</span><span class="nf">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">s</span><span class="p">))</span>
 <span class="p">}</span>
 
@@ -1061,25 +1061,35 @@
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">

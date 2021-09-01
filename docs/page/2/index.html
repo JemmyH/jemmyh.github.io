@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.82.0 with theme even" />
+<meta name="generator" content="Hugo 0.87.0 with theme even" />
 
 
 <link rel="canonical" href="http://localhost:1313/" />
@@ -37,7 +37,7 @@
 
 
 
-<link href="/sass/main.min.39a3e01cac9473be1356f3572fcfe34b2e363efabad244a99a40f28a812c837e.css" rel="stylesheet">
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -120,6 +120,56 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/redis%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-1-%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1/">Redis源码阅读--1.基础数据结构与对象</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2020-10-02 </span>
+      <div class="post-category">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
+          <a href="/categories/redis/"> Redis </a>
+          </div>
+        <span class="more-meta"> 约 18448 字 </span>
+        <span class="more-meta"> 预计阅读 37 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      首先明确，Redis 是一个使用 C 语言编写的键值对存储系统。Redis 是众所周知的 “快”，一方面，它是一个内存数据库，所有的操作都是在内存中完
+    </div>
+    <div class="read-more">
+      <a href="/post/redis%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-1-%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/mysql%E5%85%B3%E4%BA%8E%E7%B4%A2%E5%BC%95/">MySQL关于索引</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2020-09-29 </span>
+      <div class="post-category">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
+          <a href="/categories/mysql/"> MySQL </a>
+          </div>
+        <span class="more-meta"> 约 4545 字 </span>
+        <span class="more-meta"> 预计阅读 10 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      一、常见的索引类型 1. 哈希索引 哈希索引(Hash Index) 基于哈希表实现，只适合精确匹配，不适合范围查找。对于每一行数据，存储引擎都会使用一个哈希函数
+    </div>
+    <div class="read-more">
+      <a href="/post/mysql%E5%85%B3%E4%BA%8E%E7%B4%A2%E5%BC%95/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">排序算法</a></h1>
@@ -355,7 +405,7 @@
           <a href="/categories/%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82/"> 技术细节 </a>
           <a href="/categories/mysql/"> MySQL </a>
           </div>
-        <span class="more-meta"> 约 3491 字 </span>
+        <span class="more-meta"> 约 3352 字 </span>
         <span class="more-meta"> 预计阅读 7 分钟 </span>
     </div>
   </header>
@@ -417,25 +467,35 @@
 </div>
 
 <div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
   
 
   
 
   <span class="copyright-year">
-  	
-  	<footer class="footer" style="text-align:center">
-  		<div class="powered_by badge-subject">
-    		<a target="_black" class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
-  		</div>
-  		<div class="footer_slogan" style="width:300px;margin:0 auto; padding:5px 0;">
-    		<a target="_black" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030502007929" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-			<img src="https://image.hujm.net/blog%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" style="float:left;">
-			<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44030502007929 号</p>
-			</a>
-  		</div>
-		</footer>
+    &copy; 
+    2020 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
 </div>
 
+
+<footer class="footer" style="text-align:center">
+  <div class="powered_by badge-subject">
+    <a class="theme-link" href="https://beian.miit.gov.cn/">粤ICP备2021117806号-1</a>
+  </div>
+
+  <div class="footer_slogan">
+    <span></span>
+  </div>
+</footer>
     </footer>
 
     <div class="back-to-top" id="back-to-top">
