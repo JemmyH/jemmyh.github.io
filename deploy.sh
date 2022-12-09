@@ -5,4 +5,4 @@ mv public docs
 git add .
 time=$(date "+%Y-%m-%d %H:%M:%S")
 git commit -m "$time"
-git push origin even_source
+git push -f origin even_source
