@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Redis系列(一): Redis 单线程事件循环 - 个人技术资料总结与归档</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="JemmyHu(hujm20151021@gmail.com)" /><meta name="description" content="一、前言 在关注 redis 单线程/多线程 时，有几个重要的时间节点： Before Redis v4.0，真正的单线程； Redis v4.0，引入多线程处理 AOF 等任务，但核心的网络模型中依" /><meta name="keywords" content="Jemmy, blog" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.104.2 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/redis%E4%B8%80-redis-%E5%8D%95%E7%BA%BF%E7%A8%8B%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.8bdba1a933175fdaa9a7eea5e37444e03801f52d06c7b968e76b0e98149125d9.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Redis系列(一): Redis 单线程事件循环" />
+<meta property="og:description" content="一、前言 在关注 redis 单线程/多线程 时，有几个重要的时间节点： Before Redis v4.0，真正的单线程； Redis v4.0，引入多线程处理 AOF 等任务，但核心的网络模型中依" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/redis%E4%B8%80-redis-%E5%8D%95%E7%BA%BF%E7%A8%8B%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-04-05T23:08:37+08:00" />
+<meta property="article:modified_time" content="2021-04-05T23:08:37+08:00" />
+
+<meta itemprop="name" content="Redis系列(一): Redis 单线程事件循环">
+<meta itemprop="description" content="一、前言 在关注 redis 单线程/多线程 时，有几个重要的时间节点： Before Redis v4.0，真正的单线程； Redis v4.0，引入多线程处理 AOF 等任务，但核心的网络模型中依"><meta itemprop="datePublished" content="2021-04-05T23:08:37+08:00" />
+<meta itemprop="dateModified" content="2021-04-05T23:08:37+08:00" />
+<meta itemprop="wordCount" content="7530">
+<meta itemprop="keywords" content="redis源码,事件循环," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis系列(一): Redis 单线程事件循环"/>
+<meta name="twitter:description" content="一、前言 在关注 redis 单线程/多线程 时，有几个重要的时间节点： Before Redis v4.0，真正的单线程； Redis v4.0，引入多线程处理 AOF 等任务，但核心的网络模型中依"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">个人技术资料总结与归档</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">时间线</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">个人技术资料总结与归档</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">时间线</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Redis系列(一): Redis 单线程事件循环</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-04-05 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/"> 技术博客 </a>
+            <a href="/categories/redis/"> redis </a>
+            <a href="/categories/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"> 源码解析 </a>
+            </div>
+          <span class="more-meta"> 约 7530 字 </span>
+          <span class="more-meta"> 预计阅读 16 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#一前言">一、前言</a></li>
+        <li><a href="#二概览">二、概览</a></li>
+        <li><a href="#三事件库-aeeventloop-实现细节">三、事件库 aeEventLoop 实现细节</a>
+          <ul>
+            <li><a href="#1-aeeventloop-aecreateeventloopint-setsize-创建一个-aeeventloop-实例">1. <code>aeEventLoop *aeCreateEventLoop(int setsize)</code> 创建一个 <code>aeEventLoop</code> 实例</a></li>
+            <li><a href="#2-aecreatefileeventaeeventloop-eventloop-int-fd-int-mask-aefileproc-proc-void-clientdata-监听文件事件">2. <code>aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask, aeFileProc *proc, void *clientData)</code> 监听文件事件</a></li>
+            <li><a href="#3-aeprocesseventsaeeventloop-eventloop-int-flags-事件轮训处理的核心逻辑">3. <code>aeProcessEvents(aeEventLoop *eventLoop, int flags)</code> 事件轮训处理的核心逻辑</a></li>
+          </ul>
+        </li>
+        <li><a href="#四redis-单线程流程详解">四、Redis 单线程流程详解</a>
+          <ul>
+            <li><a href="#1-server-启动创建-eventloop">1. server 启动，创建 EventLoop</a></li>
+            <li><a href="#2-新连接到来时创建连接以及-client-实例">2. 新连接到来时创建连接以及 client 实例</a></li>
+            <li><a href="#3-客户端请求到来执行具体的-handler">3. 客户端请求到来，执行具体的 handler</a></li>
+            <li><a href="#4-在下一次事件循环之前将写缓冲区中的数据发送给客户端">4. 在下一次事件循环之前，将写缓冲区中的数据发送给客户端</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h2 id="一前言">一、前言</h2>
+<p>在关注 <strong>redis 单线程/多线程</strong> 时，有几个重要的时间节点：</p>
+<ol>
+<li>Before <code>Redis v4.0</code>，真正的单线程；</li>
+<li><code>Redis v4.0</code>，引入多线程处理 <code>AOF</code> 等任务，但<strong>核心的网络模型中依旧使用单线程</strong>；</li>
+<li><code>Redis v6.0</code>，正式在网络模型中实现 <code>I/O多线程</code>。</li>
+</ol>
+<p>从 <code>Redis v1.0</code> 到 <code>Redis v6.0以前</code>，Redis 的核心网络模型一直都是一个典型的 <strong>单Reactor模型</strong>，所有的事件都在这个线程内处理完成。本 issue 旨在解释清楚这个 <strong>单Reactor模型</strong> 的所有运作细节，为以后更好地理解新的 <strong>Multi-Reactors/Master-Workers</strong> 模型做准备。</p>
+<p><strong>注：本文基于 <code>Redis v5.0.0</code> 版本分析</strong>。</p>
+<h2 id="二概览">二、概览</h2>
+<p><code>Reactor</code> 模式本质上指的是使用 <code>I/O多路复用(I/O multiplexing)</code> + <code>非阻塞 I/O(non-blocking I/O)</code> 的模式。传统的 <code>单Reactor</code> 模型中有三种角色：
+<img src="https://user-images.githubusercontent.com/38834787/124265326-1c21f000-db68-11eb-8240-91a697daf8d2.jpg" alt="单 Reactor 模型"></p>
+<ul>
+<li><strong>Reactor</strong>：主线程，模型核心，通过事件循环不断处理事件，如果是新的连接事件，则交给 <code>Acceptor</code>，如果是已经连接的 I/O 事件，则交给 <code>Handler</code>；</li>
+<li><strong>Acceptor</strong>：负责 server 和 client 的连接。<code>Reactor</code> 模式一条最重要的原则就是：<strong>I/O 操作不能阻塞主线程循环</strong>，所以对于阻塞的网络 I/O，一般都是通过 <code>I/O 多路复用</code>实现的，如 Linux 上的<code>epoll</code>，这样可以最大程度地满足“一个线程非阻塞地监听多个 I/O 事件”。当有新的连接到来是，<code>Acceptor</code> 创建一个新的 <code>socket</code>，并将这个 <code>socket</code>添加到 <code>epoll</code> 的监听队列中，指定事件类型(读事件 或 写事件)，指定对应事件发生时的回调函数，这样当此客户端的请求到来时，<code>epoll</code> 会调用设定好的回调函数(可以理解成 Handler)；</li>
+<li><strong>Handler</strong>：真正的业务处理逻辑。已经建立连接的客户端请求到来后，触发 <code>epoll</code> 的读事件，调用 <code>Handler</code> 执行具体的业务逻辑。</li>
+</ul>
+<p><code>Redis v6.0</code> 之前的网络模型就是一个典型的 <code>单Reactor</code> 模型：
+<img src="https://user-images.githubusercontent.com/38834787/124294816-b561fe00-db8a-11eb-8562-7b26dfd4332d.jpg" alt="Redis Reactor 模型">
+我们先逐一认识一下对应的角色概念：</p>
+<ul>
+<li><code>aeEventLoop</code>：这是 <code>Redis</code> 自己实现的一个高性能事件库，里面封装了适配各个系统的 <code>I/O多路复用(I/O multiplexing)</code>，除了 socket 上面的事件以外，还要处理一些定时任务。服务启动时就一直循环，调用 <code>aeProcessEvent</code> 处理事件；</li>
+<li><code>client</code> ：代表一个客户端连接。<code>Redis</code> 是典型的 <code>CS 架构（Client &lt;---&gt; Server）</code>，客户端通过 <code>socket</code> 与服务端建立网络通道然后发送请求命令，服务端执行请求的命令并回复。<code>Redis</code> 使用结构体 <code>client</code> 存储客户端的所有相关信息，包括但不限于封装的套接字连接 &ndash; <code>*conn</code>，当前选择的数据库指针 &ndash;<code>*db</code>，读入缓冲区 &ndash; <code>querybuf</code>，写出缓冲区 &ndash; <code>buf</code>，写出数据链表 &ndash; <code>reply</code>等；</li>
+<li><code>acceptTcpHandler</code>：角色 <code>Acceptor</code> 的实现，当有新的客户端连接时会调用这个方法，它会调用系统 <code>accept</code> 创建一个 <code>socket</code> 对象，同时创建 <code>client</code> 对象，并将 socket 添加到 <code>EventLoop</code> 的监听列表中，并注册当对应的读事件发生时的回调函数 <code>readQueryFromClient</code>，即绑定 <code>Handler</code>，这样当该客户端发起请求时，就会调用对应的回调函数处理请求；</li>
+<li><code>readQueryFromClient</code>：角色 <code>Handler</code> 的实现，主要负责解析并执行客户端的命令请求，并将结果写到对应的 <code>client-&gt;buf</code> 或者 <code>client-&gt;reply</code> 中；</li>
+<li><code>beforeSleep</code>：事件循环之前的操作，主要执行一些常规任务，比如将 <code>client</code> 中的数据写会给客户端、进行一些持久化任务等。</li>
+</ul>
+<p>有了这写概念，我们可以试着描绘一下 <code>客户端client</code> 与 <code>Redis server</code> 建立连接、发起请求到接收到返回的整个过程：</p>
+<ol>
+<li><code>Redis</code> 服务器启动，开启主线程事件循环 <code>aeMain</code>，注册 <code>acceptTcpHandler</code> 连接应答处理器到用户配置的监听端口对应的文件描述符，等待新连接到来；</li>
+<li>客户端和服务端建立网络连接，<code>acceptTcpHandler</code> 被调用，主线程将 readQueryFromClient 命令读取处理器绑定到新连接对应的文件描述符上作为对应事件发生时的回调函数，并初始化一个 <code>client</code> 绑定这个客户端连接；</li>
+<li>客户端发送请求命令，触发读就绪事件，主线程调用 <code>readQueryFromClient</code> 通过 <code>socket</code> 读取客户端发送过来的命令存入 <code>client-&gt;querybuf</code> 读入缓冲区；</li>
+<li>接着调用 <code>processInputBuffer</code>，在其中使用 <code>processInlineBuffer</code> 或者 <code>processMultibulkBuffer</code> 根据 <code>Redis</code> 协议解析命令，最后调用 <code>processCommand</code> 执行命令；</li>
+<li>根据请求命令的类型（<code>SET</code>, <code>GET</code>, <code>DEL</code>, <code>EXEC</code> 等），分配相应的命令执行器去执行，最后调用 <code>addReply</code> 函数族的一系列函数将响应数据写入到对应 <code>client</code> 的写出缓冲区：<code>client-&gt;buf</code> 或者 <code>client-&gt;reply</code> ，<code>client-&gt;buf</code> 是首选的写出缓冲区，固定大小 <code>16KB</code>，一般来说可以缓冲足够多的响应数据，但是如果客户端在时间窗口内需要响应的数据非常大，那么则会自动切换到 <code>client-&gt;reply</code>链表上去，使用链表理论上能够保存无限大的数据（受限于机器的物理内存），最后把 <code>client</code> 添加进一个 <code>LIFO</code> 队列 <code>clients_pending_write</code>；</li>
+<li>在事件循环 <code>aeMain</code> 中，主线程执行 <code>beforeSleep --&gt; handleClientsWithPendingWrites</code>，遍历 <code>clients_pending_write</code> 队列，调用 <code>writeToClient</code> 把 <code>client</code> 的写出缓冲区里的数据回写到客户端，如果写出缓冲区还有数据遗留，则注册 <code>sendReplyToClient</code> 命令回复处理器到该连接的写就绪事件，等待客户端可写时在事件循环中再继续回写残余的响应数据。</li>
+</ol>
+<h2 id="三事件库-aeeventloop-实现细节">三、事件库 aeEventLoop 实现细节</h2>
+<p>先来看核心数据结构：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* State of an event based program */</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeEventLoop</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">maxfd</span><span class="p">;</span>   <span class="c1">// 当前已经注册在此的最大文件描述符
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">setsize</span><span class="p">;</span>  <span class="c1">// 可“关心”的文件描述符数量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">long</span> <span class="kt">long</span> <span class="n">timeEventNextId</span><span class="p">;</span>  <span class="c1">// 下一个 timer 的id
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">time_t</span> <span class="n">lastTime</span><span class="p">;</span>     <span class="c1">// 上一轮事件循环时的系统事件，用来诊断系统时间偏差
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">aeFileEvent</span> <span class="o">*</span><span class="n">events</span><span class="p">;</span> <span class="c1">// 注册的文件事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">aeTimeEvent</span> <span class="o">*</span><span class="n">timeEventHead</span><span class="p">;</span> <span class="c1">// 注册的时间事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">aeFiredEvent</span> <span class="o">*</span><span class="n">fired</span><span class="p">;</span>  <span class="c1">// 就绪的事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">stop</span><span class="p">;</span>    <span class="c1">// 事件轮询是否停止
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">void</span> <span class="o">*</span><span class="n">apidata</span><span class="p">;</span> <span class="cm">/* This is used for polling API specific data */</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeBeforeSleepProc</span> <span class="o">*</span><span class="n">beforesleep</span><span class="p">;</span>  <span class="c1">// 下一次事件轮训之前的钩子函数 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">aeBeforeSleepProc</span> <span class="o">*</span><span class="n">aftersleep</span><span class="p">;</span>   <span class="c1">// 事件轮询结束后的钩子函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="n">aeEventLoop</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* File event structure */</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeFileEvent</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">mask</span><span class="p">;</span> <span class="cm">/* one of AE_(READABLE|WRITABLE) */</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeFileProc</span> <span class="o">*</span><span class="n">rfileProc</span><span class="p">;</span>  <span class="c1">// 读事件就绪时的回调函数 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">aeFileProc</span> <span class="o">*</span><span class="n">wfileProc</span><span class="p">;</span>  <span class="c1">// 写事件就绪时的回调函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">;</span>      <span class="c1">// fd 对应的 client 实例
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="n">aeFileEvent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* Time event structure */</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeTimeEvent</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">long</span> <span class="kt">long</span> <span class="n">id</span><span class="p">;</span> <span class="cm">/* time event identifier. */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">long</span> <span class="n">when_sec</span><span class="p">;</span> <span class="cm">/* seconds */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">long</span> <span class="n">when_ms</span><span class="p">;</span> <span class="cm">/* milliseconds */</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeTimeProc</span> <span class="o">*</span><span class="n">timeProc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeEventFinalizerProc</span> <span class="o">*</span><span class="n">finalizerProc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">aeTimeEvent</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">aeTimeEvent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* A fired event */</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeFiredEvent</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">aeFiredEvent</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>关于 <strong>时间事件</strong> 和 <strong>文件事件</strong>，可参考：<a href="https://github.com/JemmyH/gogoredis/issues/2">redis 中的事件(时间事件和文件事件)到底是什么？</a></p>
+</blockquote>
+<p><code>aeEventLoop</code> 的 <code>Prototypes</code> 有很多，我们关注几个重要的：</p>
+<h3 id="1-aeeventloop-aecreateeventloopint-setsize-创建一个-aeeventloop-实例">1. <code>aeEventLoop *aeCreateEventLoop(int setsize)</code> 创建一个 <code>aeEventLoop</code> 实例</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">aeEventLoop</span> <span class="o">*</span><span class="nf">aeCreateEventLoop</span><span class="p">(</span><span class="kt">int</span> <span class="n">setsize</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">((</span><span class="n">eventLoop</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">eventLoop</span><span class="p">)))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">goto</span> <span class="n">err</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">aeFileEvent</span><span class="p">)</span><span class="o">*</span><span class="n">setsize</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">fired</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">aeFiredEvent</span><span class="p">)</span><span class="o">*</span><span class="n">setsize</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">fired</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">goto</span> <span class="n">err</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">setsize</span> <span class="o">=</span> <span class="n">setsize</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">lastTime</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">timeEventHead</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">timeEventNextId</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">stop</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">maxfd</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">beforesleep</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">aftersleep</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">aeApiCreate</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">goto</span> <span class="n">err</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* Events with mask == AE_NONE are not set. So let&#39;s initialize the
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * vector with it. */</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">setsize</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">mask</span> <span class="o">=</span> <span class="n">AE_NONE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">eventLoop</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nl">err</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">eventLoop</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">fired</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个方法的实现很简单，就是一些成员变量的初始化。需要注意的是 <code>aeApiCreate</code>，在 <code>src/ae.c</code> 的最开始，有下面的代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* Include the best multiplexing layer supported by this system.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * The following should be ordered by performances, descending. */</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef HAVE_EVPORT
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;ae_evport.c&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#else
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="cp">#ifdef HAVE_EPOLL
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="cp">#include</span> <span class="cpf">&#34;ae_epoll.c&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="cp">#else
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>        <span class="cp">#ifdef HAVE_KQUEUE
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>        <span class="cp">#include</span> <span class="cpf">&#34;ae_kqueue.c&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>        <span class="cp">#else
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>        <span class="cp">#include</span> <span class="cpf">&#34;ae_select.c&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>        <span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这段代码的意思是，根据当前的系统类型，选择性能最好的 <code>I/O多路复用</code> 库，比如当前系统是 Linux，那么应该使用 <code>ae_epoll</code>，Mac 下使用 <code>ae_kqueue</code>等，<code>ae_select</code> 是保底方案。而 <code>ae_xxx</code> 是对不同系统下的 <code>I/O多路复用</code> 的封装，将底层的不同系统调用都通过统一的 <code>API接口</code> 和 数据结构 <code>aeApiStates</code> 暴露出去，供上层调用。我们看下 Linux 系统中 <code>aeApiCreate</code> 的实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeApiState</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">epfd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">epoll_event</span> <span class="o">*</span><span class="n">events</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">aeApiState</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">aeApiCreate</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeApiState</span> <span class="o">*</span><span class="n">state</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">aeApiState</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">state</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">state</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">epoll_event</span><span class="p">)</span><span class="o">*</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">setsize</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 创建 epoll 实例
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">state</span><span class="o">-&gt;</span><span class="n">epfd</span> <span class="o">=</span> <span class="n">epoll_create</span><span class="p">(</span><span class="mi">1024</span><span class="p">);</span> <span class="cm">/* 1024 is just a hint for the kernel */</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">epfd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">apidata</span> <span class="o">=</span> <span class="n">state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>而 Mac 下的实现又是这样的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">aeApiState</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">kqfd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">kevent</span> <span class="o">*</span><span class="n">events</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">aeApiState</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">aeApiCreate</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeApiState</span> <span class="o">*</span><span class="n">state</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">aeApiState</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">state</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">state</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">kevent</span><span class="p">)</span><span class="o">*</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">setsize</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">state</span><span class="o">-&gt;</span><span class="n">kqfd</span> <span class="o">=</span> <span class="n">kqueue</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">kqfd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">apidata</span> <span class="o">=</span> <span class="n">state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="2-aecreatefileeventaeeventloop-eventloop-int-fd-int-mask-aefileproc-proc-void-clientdata-监听文件事件">2. <code>aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask, aeFileProc *proc, void *clientData)</code> 监听文件事件</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">aeCreateFileEvent</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">,</span> <span class="n">aeFileProc</span> <span class="o">*</span><span class="n">proc</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&gt;=</span> <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">setsize</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">errno</span> <span class="o">=</span> <span class="n">ERANGE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">AE_ERR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeFileEvent</span> <span class="o">*</span><span class="n">fe</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">fd</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">aeApiAddEvent</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">AE_ERR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fe</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">|=</span> <span class="n">mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">AE_READABLE</span><span class="p">)</span> <span class="n">fe</span><span class="o">-&gt;</span><span class="n">rfileProc</span> <span class="o">=</span> <span class="n">proc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">AE_WRITABLE</span><span class="p">)</span> <span class="n">fe</span><span class="o">-&gt;</span><span class="n">wfileProc</span> <span class="o">=</span> <span class="n">proc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fe</span><span class="o">-&gt;</span><span class="n">clientData</span> <span class="o">=</span> <span class="n">clientData</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&gt;</span> <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">maxfd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">maxfd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">AE_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同样，<code>aeApiAddEvent</code> 在不同系统下有不同的实现，在 Linux 系统中，会调用 <code>epoll_ctl</code> ，将 <code>fd</code> 添加到 <code>epoll</code> 实例的监听列表中，同时指定对应事件触发时的回调函数为 <code>*proc</code>。</p>
+<h3 id="3-aeprocesseventsaeeventloop-eventloop-int-flags-事件轮训处理的核心逻辑">3. <code>aeProcessEvents(aeEventLoop *eventLoop, int flags)</code> 事件轮训处理的核心逻辑</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/* The function returns the number of events processed. */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">aeProcessEvents</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">processed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">numevents</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 只处理时间事件和文件事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">AE_TIME_EVENTS</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">AE_FILE_EVENTS</span><span class="p">))</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 先处理文件事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">maxfd</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">||</span> <span class="p">((</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">AE_TIME_EVENTS</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">AE_DONT_WAIT</span><span class="p">)))</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="c1">// 计算下一次时间事件到来之前应该阻塞等待的时长
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 调用底层的 poll 函数，获取已经就绪的事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">numevents</span> <span class="o">=</span> <span class="n">aeApiPoll</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">,</span> <span class="n">tvp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 如果设置了 aftersleep 钩子函数，那应该在 poll 之后调用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">aftersleep</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="n">AE_CALL_AFTER_SLEEP</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">aftersleep</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 调用对应事件的回调函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">numevents</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">aeFileEvent</span> <span class="o">*</span><span class="n">fe</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">fired</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">fd</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">fired</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">mask</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">fired</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">fd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">rfired</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// 读事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">fe</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="n">AE_READABLE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rfired</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fe</span><span class="o">-&gt;</span><span class="n">rfileProc</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">,</span><span class="n">fd</span><span class="p">,</span><span class="n">fe</span><span class="o">-&gt;</span><span class="n">clientData</span><span class="p">,</span><span class="n">mask</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 写事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">fe</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="n">AE_WRITABLE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rfired</span> <span class="o">||</span> <span class="n">fe</span><span class="o">-&gt;</span><span class="n">wfileProc</span> <span class="o">!=</span> <span class="n">fe</span><span class="o">-&gt;</span><span class="n">rfileProc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">fe</span><span class="o">-&gt;</span><span class="n">wfileProc</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">,</span><span class="n">fd</span><span class="p">,</span><span class="n">fe</span><span class="o">-&gt;</span><span class="n">clientData</span><span class="p">,</span><span class="n">mask</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">processed</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 最后再处理时间事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">AE_TIME_EVENTS</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">processed</span> <span class="o">+=</span> <span class="n">processTimeEvents</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">processed</span><span class="p">;</span> <span class="cm">/* return the number of processed file/time events */</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="四redis-单线程流程详解">四、Redis 单线程流程详解</h2>
+<p>在这个 <code>section</code>，我们将通过源码的角度，看看 <code>section 1</code> 中的 Redis 的 <code>单Reactor</code> 网络模型中的实现细节，我们对照这张图开始：
+<img src="https://user-images.githubusercontent.com/38834787/124294816-b561fe00-db8a-11eb-8562-7b26dfd4332d.jpg" alt=""></p>
+<h3 id="1-server-启动创建-eventloop">1. server 启动，创建 EventLoop</h3>
+<p>在 <code>src/server.c</code> 中的 <code>main</code> 方法中，当服务器启动时，会调用 <code>initServer</code>方法，在这个方法中，Redis 会创建全局唯一的 <code>aeEventLoop</code> 实例，并注册 <code>Server socket</code> 到对应的多路复用组件上，同时指定回调函数为 <code>acceptTcpHandler</code>，意思是服务器接收到新的连接时，应该调用 <code>acceptTcpHandler</code> 这个回调函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">initServer</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 创建全局唯一的 EventLoop 实例
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">server</span><span class="p">.</span><span class="n">el</span> <span class="o">=</span> <span class="n">aeCreateEventLoop</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">maxclients</span><span class="o">+</span><span class="n">CONFIG_FDSET_INCR</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">serverLog</span><span class="p">(</span><span class="n">LL_WARNING</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;Failed creating the event loop. Error message: &#39;%s&#39;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>   
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* Create an event handler for accepting new connections in TCP and Unix
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * domain sockets. */</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ipfd 表示服务启动是监听的 socket 对应的 fd，epoll 监听此 fd，有读事件发生(新连接到来)时调用回调函数 acceptTcpHandler
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">server</span><span class="p">.</span><span class="n">ipfd_count</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">aeCreateFileEvent</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span><span class="p">,</span> <span class="n">server</span><span class="p">.</span><span class="n">ipfd</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">AE_READABLE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">acceptTcpHandler</span><span class="p">,</span><span class="nb">NULL</span><span class="p">)</span> <span class="o">==</span> <span class="n">AE_ERR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">serverPanic</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#34;Unrecoverable error creating server.ipfd file event.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">....</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="2-新连接到来时创建连接以及-client-实例">2. 新连接到来时创建连接以及 client 实例</h3>
+<p>在前面我们将 server 对应的 socket 添加到 epoll 的监听队列，当有新的连接到来时，会触发读事件就绪，此时回调函数 <code>acceptTcpHandler</code> 就会被调用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">acceptTcpHandler</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">el</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 创建 connect fd，代表 Redis Server 和客户端的一个连接(socket)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">cfd</span> <span class="o">=</span> <span class="n">anetTcpAccept</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">neterr</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">cip</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">cip</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">cport</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">cfd</span> <span class="o">==</span> <span class="n">ANET_ERR</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EWOULDBLOCK</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">serverLog</span><span class="p">(</span><span class="n">LL_WARNING</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                          <span class="s">&#34;Accepting client connection: %s&#34;</span><span class="p">,</span> <span class="n">server</span><span class="p">.</span><span class="n">neterr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">serverLog</span><span class="p">(</span><span class="n">LL_VERBOSE</span><span class="p">,</span> <span class="s">&#34;Accepted %s:%d&#34;</span><span class="p">,</span> <span class="n">cip</span><span class="p">,</span> <span class="n">cport</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">acceptCommonHandler</span><span class="p">(</span><span class="n">cfd</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">cip</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">acceptCommonHandler</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">ip</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 1. 为 connect fd 创建一个 Client 对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">((</span><span class="n">c</span> <span class="o">=</span> <span class="n">createClient</span><span class="p">(</span><span class="n">fd</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">serverLog</span><span class="p">(</span><span class="n">LL_WARNING</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="s">&#34;Error registering fd event for the new client: %s (fd=%d)&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">),</span> <span class="n">fd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span> <span class="cm">/* May be already closed, just ignore errors */</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 2. 检查是否超过了最大连接数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">listLength</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">clients</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">server</span><span class="p">.</span><span class="n">maxclients</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">char</span> <span class="o">*</span><span class="n">err</span> <span class="o">=</span> <span class="s">&#34;-ERR max number of clients reached</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="cm">/* That&#39;s a best effort error message, don&#39;t check write errors */</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">write</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">err</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="cm">/* Nothing to do, Just to avoid the warning... */</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">server</span><span class="p">.</span><span class="n">stat_rejected_conn</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">freeClient</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 3. 检查 protect mode 是否开启，如果开启，不允许远程登录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">protected_mode</span> <span class="o">&amp;&amp;</span> <span class="n">server</span><span class="p">.</span><span class="n">bindaddr_count</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">server</span><span class="p">.</span><span class="n">requirepass</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_UNIX_SOCKET</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">ip</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">server</span><span class="p">.</span><span class="n">stat_numconnections</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">|=</span> <span class="n">flags</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">client</span> <span class="o">*</span><span class="nf">createClient</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">client</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">client</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 1. 标记 fd  为非阻塞
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">anetNonBlock</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">fd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 2. 设置不开启 Nagle 算法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">anetEnableTcpNoDelay</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">fd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 3. 设置 KeepAlive
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">tcpkeepalive</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">anetKeepAlive</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">server</span><span class="p">.</span><span class="n">tcpkeepalive</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 4. 为 fd 创建对应的文件事件监听对应 socket 的读事件，并指定对应事件发生之后的回调函数为 readQueryFromClient
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">aeCreateFileEvent</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">AE_READABLE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                          <span class="n">readQueryFromClient</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="n">AE_ERR</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">zfree</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 5. 默认使用 0 号 db
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">selectDb</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">client_id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 6. 设置 client 其他默认属性
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">atomicGetIncr</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">next_client_id</span><span class="p">,</span> <span class="n">client_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="n">client_id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">-&gt;</span><span class="n">fd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在这个方法中，主要做了以下几件事：</p>
+<ol>
+<li>为新连接创建一个 socket，并将这个 socket 添加到 epoll 的监听队列中，注册读事件，并指定对应读事件触发后的回调函数为 <code>readQueryFromClient</code>；</li>
+<li>创建一个 <code>client</code> 对象，将 <code>client</code>、<code>socket</code> 等互相绑定，建立联系。</li>
+</ol>
+<h3 id="3-客户端请求到来执行具体的-handler">3. 客户端请求到来，执行具体的 handler</h3>
+<p>在 <code>createClient</code> 中我们知道对应客户端的 <code>socket</code> 上有事件发生时，回调函数是 <code>readQueryFromClient</code>。这个方法主要做一件事：将客户端的请求读取到 <code>client</code> 对象的 <code>querybuf</code> 中。之后再调用 <code>processInputBufferAndReplicate</code> 进一步处理请求。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">readQueryFromClient</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">el</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 调用 read 从 socket 中读取客户端请求数据到 client-&gt;querybuf
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">querybuf</span> <span class="o">=</span> <span class="n">sdsMakeRoomFor</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">querybuf</span><span class="p">,</span> <span class="n">readlen</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">nread</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">querybuf</span><span class="o">+</span><span class="n">qblen</span><span class="p">,</span> <span class="n">readlen</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 如果 client-&gt;querybuf 的大小超过 client_max_querybuf_len，直接返回错误，并关闭连接
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">sdslen</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">querybuf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">server</span><span class="p">.</span><span class="n">client_max_querybuf_len</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sds</span> <span class="n">ci</span> <span class="o">=</span> <span class="n">catClientInfoString</span><span class="p">(</span><span class="n">sdsempty</span><span class="p">(),</span><span class="n">c</span><span class="p">),</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">sdsempty</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">bytes</span> <span class="o">=</span> <span class="n">sdscatrepr</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">querybuf</span><span class="p">,</span><span class="mi">64</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">serverLog</span><span class="p">(</span><span class="n">LL_WARNING</span><span class="p">,</span><span class="s">&#34;Closing client that reached max query buffer length: %s (qbuf initial bytes: %s)&#34;</span><span class="p">,</span> <span class="n">ci</span><span class="p">,</span> <span class="n">bytes</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sdsfree</span><span class="p">(</span><span class="n">ci</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sdsfree</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">freeClient</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 处理客户端请求
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">processInputBufferAndReplicate</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>再来看 <code>processInputBufferAndReplicate</code> 的实现，它其实是 <code>processInputBuffer</code> 的封装，多加了一层判断：如果是普通的 server，则直接调用 <code>processInputBuffer</code> ；如果是主从客户端，还需要将命令同步到自己的从服务器中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">processInputBufferAndReplicate</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MASTER</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">processInputBuffer</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">size_t</span> <span class="n">prev_offset</span> <span class="o">=</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">reploff</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">processInputBuffer</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">size_t</span> <span class="n">applied</span> <span class="o">=</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">reploff</span> <span class="o">-</span> <span class="n">prev_offset</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">applied</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">replicationFeedSlavesFromMasterStream</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">slaves</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">c</span><span class="o">-&gt;</span><span class="n">pending_querybuf</span><span class="p">,</span> <span class="n">applied</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sdsrange</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">pending_querybuf</span><span class="p">,</span><span class="n">applied</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>processInputBuffer</code> 会试着先从缓冲区中解析命令类型，判断类型，之后调用 <code>processCommand</code> 执行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">processInputBuffer</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 设置 server 的当前处理 client 为c，可以理解为获得了 server 这把锁
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">server</span><span class="p">.</span><span class="n">current_client</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 不断从 querybuf 中取出数据解析成成对的命令，直到 querybuf 为空
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">while</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">qb_pos</span> <span class="o">&lt;</span> <span class="n">sdslen</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">querybuf</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 进行一些 flags 的判断
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 根据命令类型判断是 单条指令 还是 多条指令一起执行
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reqtype</span> <span class="o">==</span> <span class="n">PROTO_REQ_INLINE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">processInlineBuffer</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">!=</span> <span class="n">C_OK</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reqtype</span> <span class="o">==</span> <span class="n">PROTO_REQ_MULTIBULK</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">processMultibulkBuffer</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">!=</span> <span class="n">C_OK</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">serverPanic</span><span class="p">(</span><span class="s">&#34;Unknown request type&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 参数个数为 0 时重置客户端，可以接收下一个命令 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">argc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">resetClient</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 执行命令 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">processCommand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="n">C_OK</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// 集群信息同步
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MASTER</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MULTI</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="cm">/* Update the applied replication offset of our master. */</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">c</span><span class="o">-&gt;</span><span class="n">reploff</span> <span class="o">=</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">read_reploff</span> <span class="o">-</span> <span class="n">sdslen</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">querybuf</span><span class="p">)</span> <span class="o">+</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">qb_pos</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// 如果不是阻塞状态，则重置client，可以接受下一个命令
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_BLOCKED</span><span class="p">)</span> <span class="o">||</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">btype</span> <span class="o">!=</span> <span class="n">BLOCKED_MODULE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">resetClient</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 释放“锁”
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">current_client</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 重置 querybuf
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">qb_pos</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sdsrange</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">querybuf</span><span class="p">,</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">qb_pos</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">qb_pos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">server</span><span class="p">.</span><span class="n">current_client</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们再来看 <code>processCommand</code>，在真正执行命令之前，会进行非常多的校验，校验通过后才会真正执行对应的命令。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">processCommand</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 1. 如果命令是 quit，则直接退出
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strcasecmp</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">ptr</span><span class="p">,</span> <span class="s">&#34;quit&#34;</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">ok</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">|=</span> <span class="n">CLIENT_CLOSE_AFTER_REPLY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_ERR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 2. 在 command table 寻找对应命令的处理函数，
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span> <span class="o">=</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">lastcmd</span> <span class="o">=</span> <span class="n">lookupCommand</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">ptr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 3. 用户权限校验
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">requirepass</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">authenticated</span> <span class="o">&amp;&amp;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">authCommand</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">flagTransaction</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">noautherr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 4. 如果是集群模式，还需要处理集群 node 重定向
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">cluster_enabled</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MASTER</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_LUA</span> <span class="o">&amp;&amp;</span> <span class="n">server</span><span class="p">.</span><span class="n">lua_caller</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MASTER</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getkeys_proc</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">firstkey</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">execCommand</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 5. 处理 maxmemory 情形
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">maxmemory</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">server</span><span class="p">.</span><span class="n">lua_timedout</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 6. 非 master 或者 磁盘有问题是，不要进行 AOF 等持久化操作
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">deny_write_type</span> <span class="o">=</span> <span class="n">writeCommandsDeniedByDiskError</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">deny_write_type</span> <span class="o">!=</span> <span class="n">DISK_ERROR_TYPE_NONE</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">server</span><span class="p">.</span><span class="n">masterhost</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CMD_WRITE</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">         <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">==</span> <span class="n">pingCommand</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">flagTransaction</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">deny_write_type</span> <span class="o">==</span> <span class="n">DISK_ERROR_TYPE_RDB</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">bgsaveerr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">addReplySds</span><span class="p">(</span><span class="n">c</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">sdscatprintf</span><span class="p">(</span><span class="n">sdsempty</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                     <span class="s">&#34;-MISCONF Errors writing to the AOF file: %s</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                     <span class="n">strerror</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">aof_last_write_errno</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 7. 当此服务器时master时：如果配置了 repl_min_slaves_to_write，当slave数目小于时，禁止执行写命令
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">masterhost</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">server</span><span class="p">.</span><span class="n">repl_min_slaves_to_write</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">server</span><span class="p">.</span><span class="n">repl_min_slaves_max_lag</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CMD_WRITE</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">server</span><span class="p">.</span><span class="n">repl_good_slaves_count</span> <span class="o">&lt;</span> <span class="n">server</span><span class="p">.</span><span class="n">repl_min_slaves_to_write</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">flagTransaction</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">noreplicaserr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 8. 当只读时，除了 master 的命令，不执行任何其他指令
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">masterhost</span> <span class="o">&amp;&amp;</span> <span class="n">server</span><span class="p">.</span><span class="n">repl_slave_ro</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MASTER</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CMD_WRITE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">roslaveerr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 9. 当客户端处于 Pub/Sub 时，只处理部分命令
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_PUBSUB</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">pingCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">subscribeCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">unsubscribeCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">psubscribeCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">punsubscribeCommand</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReplyError</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s">&#34;only (P)SUBSCRIBE / (P)UNSUBSCRIBE / PING / QUIT allowed in this context&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 10. 服务器为slave，但是没有连接 master 时，只会执行带有 CMD_STALE 标志的命令，如 info 等
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">masterhost</span> <span class="o">&amp;&amp;</span> <span class="n">server</span><span class="p">.</span><span class="n">repl_state</span> <span class="o">!=</span> <span class="n">REPL_STATE_CONNECTED</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">server</span><span class="p">.</span><span class="n">repl_serve_stale_data</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CMD_STALE</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">flagTransaction</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">masterdownerr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 11. 正在加载数据库时，只会执行带有 CMD_LOADING 标志的命令，其余都会被拒绝
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">loading</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CMD_LOADING</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">loadingerr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 12. 当服务器因为执行lua脚本阻塞时，只会执行部分命令，其余都会拒绝
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">lua_timedout</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">authCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">replconfCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">==</span> <span class="n">shutdownCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="n">c</span><span class="o">-&gt;</span><span class="n">argc</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="n">tolower</span><span class="p">(((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">ptr</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="sc">&#39;n&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">==</span> <span class="n">scriptCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="n">c</span><span class="o">-&gt;</span><span class="n">argc</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="n">tolower</span><span class="p">(((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">ptr</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="sc">&#39;k&#39;</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">flagTransaction</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">slowscripterr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 13. 真正执行命令 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MULTI</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">execCommand</span> <span class="o">&amp;&amp;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">discardCommand</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">multiCommand</span> <span class="o">&amp;&amp;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">!=</span> <span class="n">watchCommand</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 如果是事务命令，则开启事务，命令进入等待队列
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">queueMultiCommand</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">shared</span><span class="p">.</span><span class="n">queued</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 否则调用 call 直接执行
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">call</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">CMD_CALL_FULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">woff</span> <span class="o">=</span> <span class="n">server</span><span class="p">.</span><span class="n">master_repl_offset</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">listLength</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">ready_keys</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">handleClientsBlockedOnKeys</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后就是 <code>call</code> 函数，这是 Redis 执行命令的核心函数，它会处理通用的执行命令的前置和后续操作：</p>
+<ul>
+<li>如果有监视器 <code>monitor</code>，则需要将命令发送给监视器；</li>
+<li>调用 <code>redisCommand</code> 的 <code>proc</code> 方法，执行对应具体的命令逻辑；</li>
+<li>如果开启了 <code>CMD_CALL_SLOWLOG</code>，则需要记录慢查询日志；</li>
+<li>如果开启了 <code>CMD_CALL_STATS</code>，则需要记录一些统计信息；</li>
+<li>如果开启了 <code>CMD_CALL_PROPAGATE</code>，则当 <code>dirty</code> 大于0时，需要调用 <code>propagate</code> 方法来进行命令传播(命令传播就是将命令写入 <code>repl-backlog-buffer</code> 缓冲中，并发送给各个从服务器中。)。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">call</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">....</span>
+</span></span><span class="line"><span class="cl">    <span class="n">start</span> <span class="o">=</span> <span class="n">ustime</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">-&gt;</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">proc</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">duration</span> <span class="o">=</span> <span class="n">ustime</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">....</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>经过上面的过程，命令执行结束，对应的结果已经写在了 <code>client-&gt;buf</code>缓冲区 或者 <code>client-&gt;reply</code>链表中：<code>client-&gt;buf</code> 是首选的写出缓冲区，固定大小 <code>16KB</code>，一般来说可以缓冲足够多的响应数据，但是如果客户端在时间窗口内需要响应的数据非常大，那么则会自动切换到 <code>client-&gt;reply</code> 链表上去，使用链表理论上能够保存无限大的数据（受限于机器的物理内存），最后把 <code>client</code>添加进一个 <code>LIFO</code> 队列 <code>server.clients_pending_write</code>。</p>
+<h3 id="4-在下一次事件循环之前将写缓冲区中的数据发送给客户端">4. 在下一次事件循环之前，将写缓冲区中的数据发送给客户端</h3>
+<p>这个过程在主事件循环之前的钩子函数 <code>beforeSleep</code> 中，这个函数在 <code>main</code> 中指定，在 <code>aeMain</code> 中执行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeSetBeforeSleepProc</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span><span class="p">,</span> <span class="n">beforeSleep</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeSetAfterSleepProc</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span><span class="p">,</span> <span class="n">afterSleep</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">aeMain</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span><span class="p">);</span>  <span class="c1">// 启动单线程网络模型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">....</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">aeMain</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">stop</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 这是一个死循环，一直到 redis-server 停止
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">beforesleep</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">beforesleep</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">aeProcessEvents</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">,</span> <span class="n">AE_ALL_EVENTS</span><span class="o">|</span><span class="n">AE_CALL_AFTER_SLEEP</span><span class="p">);</span>  <span class="c1">// 处理三个事件：time file call_after_sleep
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>再具体的实现中，我们只关注如何将写缓冲区的数据写回给客户端：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">beforeSleep</span><span class="p">(</span><span class="k">struct</span> <span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* Handle writes with pending output buffers. */</span>
+</span></span><span class="line"><span class="cl">    <span class="n">handleClientsWithPendingWrites</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="p">....</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">handleClientsWithPendingWrites</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">listIter</span> <span class="n">li</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">listNode</span> <span class="o">*</span><span class="n">ln</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">processed</span> <span class="o">=</span> <span class="n">listLength</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">clients_pending_write</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// clients_pending_write 是一个 client 队列，listRewind 获取一个用于迭代的游标
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">listRewind</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">clients_pending_write</span><span class="p">,</span><span class="o">&amp;</span><span class="n">li</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 当队列不为空时，持续进行下面的逻辑处理
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">while</span><span class="p">((</span><span class="n">ln</span> <span class="o">=</span> <span class="n">listNext</span><span class="p">(</span><span class="o">&amp;</span><span class="n">li</span><span class="p">)))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">client</span> <span class="o">*</span><span class="n">c</span> <span class="o">=</span> <span class="n">listNodeValue</span><span class="p">(</span><span class="n">ln</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">CLIENT_PENDING_WRITE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 将遍历过 client 从队列中删除 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">listDelNode</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">clients_pending_write</span><span class="p">,</span><span class="n">ln</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="cm">/* If a client is protected, don&#39;t do anything,
+</span></span></span><span class="line"><span class="cl"><span class="cm">         * that may trigger write error or recreate handler. */</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_PROTECTED</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 将 client 的数据写回 client 对应的s ocket
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">writeToClient</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="n">C_ERR</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 这次一次性没发完，那就给对应 socket 创建额外的写事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">clientHasPendingReplies</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">int</span> <span class="n">ae_flags</span> <span class="o">=</span> <span class="n">AE_WRITABLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="cm">/* For the fsync=always policy, we want that a given FD is never
+</span></span></span><span class="line"><span class="cl"><span class="cm">             * served for reading and writing in the same event loop iteration,
+</span></span></span><span class="line"><span class="cl"><span class="cm">             * so that in the middle of receiving the query, and serving it
+</span></span></span><span class="line"><span class="cl"><span class="cm">             * to the client, we&#39;ll call beforeSleep() that will do the
+</span></span></span><span class="line"><span class="cl"><span class="cm">             * actual fsync of AOF to disk. AE_BARRIER ensures that. */</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">aof_state</span> <span class="o">==</span> <span class="n">AOF_ON</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">server</span><span class="p">.</span><span class="n">aof_fsync</span> <span class="o">==</span> <span class="n">AOF_FSYNC_ALWAYS</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ae_flags</span> <span class="o">|=</span> <span class="n">AE_BARRIER</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">aeCreateFileEvent</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span><span class="p">,</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span> <span class="n">ae_flags</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">sendReplyToClient</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="n">AE_ERR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">freeClientAsync</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">processed</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对 <code>client-&gt;buf</code> 和 <code>client-&gt;reply</code> 的处理在 <code>writeToClient</code> 方法中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* Write data in output buffers to client. Return C_OK if the client
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * is still valid after the call, C_ERR if it was freed. */</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">writeToClient</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">handler_installed</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ssize_t</span> <span class="n">nwritten</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">totwritten</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">size_t</span> <span class="n">objlen</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">clientReplyBlock</span> <span class="o">*</span><span class="n">o</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="n">clientHasPendingReplies</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 优先处理 buf，先发送一批。在执行之前会判断如果 client-&gt;buf 中有数据，则发送 client-&gt;buf 中的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">bufpos</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nwritten</span> <span class="o">=</span> <span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">buf</span><span class="o">+</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span><span class="p">,</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">bufpos</span><span class="o">-</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">nwritten</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span> <span class="o">+=</span> <span class="n">nwritten</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">totwritten</span> <span class="o">+=</span> <span class="n">nwritten</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="cm">/* If the buffer was sent, set bufpos to zero to continue with
+</span></span></span><span class="line"><span class="cl"><span class="cm">             * the remainder of the reply. */</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span> <span class="o">==</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">bufpos</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">c</span><span class="o">-&gt;</span><span class="n">bufpos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// client-&gt;buf 中没数据了，则处理 client-&gt;reply 链表中剩下的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">o</span> <span class="o">=</span> <span class="n">listNodeValue</span><span class="p">(</span><span class="n">listFirst</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reply</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">            <span class="n">objlen</span> <span class="o">=</span> <span class="n">o</span><span class="o">-&gt;</span><span class="n">used</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">objlen</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">c</span><span class="o">-&gt;</span><span class="n">reply_bytes</span> <span class="o">-=</span> <span class="n">o</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">listDelNode</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reply</span><span class="p">,</span><span class="n">listFirst</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reply</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">nwritten</span> <span class="o">=</span> <span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">o</span><span class="o">-&gt;</span><span class="n">buf</span> <span class="o">+</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span><span class="p">,</span> <span class="n">objlen</span> <span class="o">-</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">nwritten</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span> <span class="o">+=</span> <span class="n">nwritten</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">totwritten</span> <span class="o">+=</span> <span class="n">nwritten</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="cm">/* If we fully sent the object on head go to the next one */</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span> <span class="o">==</span> <span class="n">objlen</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">c</span><span class="o">-&gt;</span><span class="n">reply_bytes</span> <span class="o">-=</span> <span class="n">o</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">listDelNode</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reply</span><span class="p">,</span><span class="n">listFirst</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reply</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">                <span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="cm">/* If there are no longer objects in the list, we expect
+</span></span></span><span class="line"><span class="cl"><span class="cm">                 * the count of reply bytes to be exactly zero. */</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="n">listLength</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reply</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">serverAssert</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">reply_bytes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">totwritten</span> <span class="o">&gt;</span> <span class="n">NET_MAX_WRITES_PER_EVENT</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">maxmemory</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">             <span class="n">zmalloc_used_memory</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">server</span><span class="p">.</span><span class="n">maxmemory</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_SLAVE</span><span class="p">))</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">server</span><span class="p">.</span><span class="n">stat_net_output_bytes</span> <span class="o">+=</span> <span class="n">totwritten</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">nwritten</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="n">EAGAIN</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nwritten</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">serverLog</span><span class="p">(</span><span class="n">LL_VERBOSE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;Error writing to client: %s&#34;</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">            <span class="n">freeClient</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">C_ERR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">totwritten</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="cm">/* For clients representing masters we don&#39;t count sending data
+</span></span></span><span class="line"><span class="cl"><span class="cm">         * as an interaction, since we always send REPLCONF ACK commands
+</span></span></span><span class="line"><span class="cl"><span class="cm">         * that take some time to just fill the socket output buffer.
+</span></span></span><span class="line"><span class="cl"><span class="cm">         * We just rely on data / pings received for timeout detection. */</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_MASTER</span><span class="p">))</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">lastinteraction</span> <span class="o">=</span> <span class="n">server</span><span class="p">.</span><span class="n">unixtime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 数据全部发送完毕了，那么前一步因为没发完而创建的文件监听事件可以从 EventLoop 中删除了
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">clientHasPendingReplies</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">-&gt;</span><span class="n">sentlen</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">handler_installed</span><span class="p">)</span> <span class="n">aeDeleteFileEvent</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">el</span><span class="p">,</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span><span class="n">AE_WRITABLE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="cm">/* Close connection after entire reply has been sent. */</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">CLIENT_CLOSE_AFTER_REPLY</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">freeClient</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">C_ERR</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">JemmyHu(hujm20151021@gmail.com)</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2021-04-05
+        
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/redis%E6%BA%90%E7%A0%81/">redis源码</a>
+          <a href="/tags/%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF/">事件循环</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/redis%E4%BA%8C-%E4%BB%80%E4%B9%88%E6%98%AF-redis-%E4%B8%AD%E7%9A%84%E4%BA%8B%E4%BB%B6/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Redis(二): 什么是 Redis 中的事件</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/%E9%9D%A2%E8%AF%95%E9%A2%98%E4%BA%A4%E6%9B%BF%E6%89%93%E5%8D%B0%E6%95%B0%E5%AD%97%E5%92%8C%E5%AD%97%E7%AC%A6%E4%B8%B2/">
+            <span class="next-text nav-default">面试题:交替打印数字和字符串</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+        el: '#vcomments' ,
+        appId: 'LjkR3NaCog7bTVOnJNMmJjcM-gzGzoHsz',
+        appKey: 'UQMdKbH71EeHJppAbtDwb5Rg',
+        notify:  true ,
+        verify:  false ,
+        avatar:'monsterid',
+        placeholder: '欢迎留言~',
+        visitor:  false 
+    });
+  </script>
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/JemmyH" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2020 - 
+    2022<span class="heart"><i class="iconfont icon-heart"></i></span><span>Jemmy</span>
+  </span>
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+
+
+
+<script type="text/javascript" src="/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
