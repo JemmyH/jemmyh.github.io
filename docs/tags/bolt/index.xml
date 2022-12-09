@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>bolt on Jemmy&#39;s blog</title>
+    <title>bolt on 个人技术资料总结与归档</title>
     <link>http://localhost:1313/tags/bolt/</link>
-    <description>Recent content in bolt on Jemmy&#39;s blog</description>
+    <description>Recent content in bolt on 个人技术资料总结与归档</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
     <lastBuildDate>Tue, 05 Jan 2021 16:28:43 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/bolt/index.xml" rel="self" type="application/rss+xml" />

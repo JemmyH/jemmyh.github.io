@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>redis源码 on Jemmy&#39;s blog</title>
+    <title>redis源码 on 个人技术资料总结与归档</title>
     <link>http://localhost:1313/tags/redis%E6%BA%90%E7%A0%81/</link>
-    <description>Recent content in redis源码 on Jemmy&#39;s blog</description>
+    <description>Recent content in redis源码 on 个人技术资料总结与归档</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
     <lastBuildDate>Thu, 08 Apr 2021 22:31:17 +0800</lastBuildDate><atom:link href="http://localhost:1313/tags/redis%E6%BA%90%E7%A0%81/index.xml" rel="self" type="application/rss+xml" />
