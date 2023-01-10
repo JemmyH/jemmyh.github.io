@@ -1,1 +1,1 @@
-please visit: <https://blog.hujm.net>
+please visit: <https://jemmyh.github.io>
