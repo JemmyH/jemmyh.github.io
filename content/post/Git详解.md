@@ -12,7 +12,7 @@ tags: [Git]
 
 接下来我们详细了解一下 `git` 的四种不同对象：`blob` 、 `tree` 、 `commit` 和 `tag` 对象。
 
-`Git` 以一种类似于 `UNIX` 文件系统的方式存储内容，但作了些许简化。 所有内容均以`tree 对象` 和 `blob对象` 的形式存储，其中 `tree 对象` 对应了 `UNIX` 中的 **目录项**，数据对象则大致上对应了 **文件**。 
+`Git` 以一种类似于 `UNIX` 文件系统的方式存储内容，但作了些许简化。 所有内容均以`tree 对象` 和 `blob对象` 的形式存储，其中 `tree 对象` 对应了 `UNIX` 中的 **目录项**，数据对象则大致上对应了 **文件**。
 
 首先，使用 `git init learn_git` 创建一个项目，我们后面的操作都会在这个目录中。
 
@@ -23,7 +23,7 @@ Initialized empty Git repository in /Users/hujiaming/Downloads/learn_git/.git/
 
 在学习之前，我们先看两条 `git` 底层的命令：
 
--   **`git hash-object`：向 `Git` 数据库中写入数据**
+- **`git hash-object`：向 `Git` 数据库中写入数据**
 
 先看操作：
 
@@ -32,7 +32,7 @@ $ echo 'test content' | git hash-object --stdin -w
 d670460b4b4aece5915caf5c68d12f560a9fe3e4
 ```
 
->   `git hash-object` 会接受你传给它的东西，而它只会返回可以存储在  `Git` 仓库中的唯一键。 `-w` 选项会指示该命令不要只返回键，还要将该对象写入数据库中。 最后，`--stdin` 选项则指示该命令从标准输入读取内容；若不指定此选项，则须在命令尾部给出待存储文件的路径。
+> `git hash-object` 会接受你传给它的东西，而它只会返回可以存储在  `Git` 仓库中的唯一键。 `-w` 选项会指示该命令不要只返回键，还要将该对象写入数据库中。 最后，`--stdin` 选项则指示该命令从标准输入读取内容；若不指定此选项，则须在命令尾部给出待存储文件的路径。
 
 此时，会在 `.git/objects/` 目录下生成对应的 `Key(目录+文件)`：
 
@@ -46,9 +46,9 @@ $ tree -a
     ...
 ```
 
->   对内容 `test content` 生成的唯一哈希为 `d670460b4b4aece5915caf5c68d12f560a9fe3e4`，存储时，取前两位 `d6` 作为文件夹名，剩余位表示文件名。
+> 对内容 `test content` 生成的唯一哈希为 `d670460b4b4aece5915caf5c68d12f560a9fe3e4`，存储时，取前两位 `d6` 作为文件夹名，剩余位表示文件名。
 
--   **`git cat-file`：查看 `Git` 数据库中的内容(或类型)**
+- **`git cat-file`：查看 `Git` 数据库中的内容(或类型)**
 
 一旦你将内容存储在了对象数据库中，那么可以通过 `cat-file` 命令从 `Git` 那里取回数据。
 
@@ -59,9 +59,9 @@ $ git cat-file -t d670460b4b4aece5915caf5c68d12f560a9fe3e4
 blob
 ```
 
->   `-t` 选项用于查看键值对应数据的类型，`-p` 选项用于查看键值对应的数据内容。
+> `-t` 选项用于查看键值对应数据的类型，`-p` 选项用于查看键值对应的数据内容。
 >
->   这里的 `blob` 即是 `git` 的基础对象之一，后面会详细介绍。
+> 这里的 `blob` 即是 `git` 的基础对象之一，后面会详细介绍。
 
 这两个命令正好对应键值对系统最常见的两个操作：`Set` 和 `Get`。接下来我们详细了解。
 
@@ -145,15 +145,15 @@ $ find .git/objects -type f
 
 ```bash
 $ git cat-file -p 813f4c65403ed4403ef06727b3a38dbc29dc7f24 
-100644 blob d00491fd7e5bb6fa28c517a0bb32b8b506539d4d	1.txt
-100644 blob 0cfbf08886fca9a91cb753ec8734c84fcbe52c9f	2.txt
-100644 blob 9daeafb9864cf43055ae93beb0afd6c7d144bfa4	demo.txt
-040000 tree 272db0863401c3077815f256051ea1d80b942a9e	folder
+100644 blob d00491fd7e5bb6fa28c517a0bb32b8b506539d4d 1.txt
+100644 blob 0cfbf08886fca9a91cb753ec8734c84fcbe52c9f 2.txt
+100644 blob 9daeafb9864cf43055ae93beb0afd6c7d144bfa4 demo.txt
+040000 tree 272db0863401c3077815f256051ea1d80b942a9e folder
 
 # 同样，你也可以使用 git ls-tree 来查看一个 tree 对象的内容，如下：
 $ git ls-tree 272db0863401c3077815f256051ea1d80b942a9e 
-100644 blob 00750edc07d6415dcc07ae0351e9397b0222b7ba	3.txt
-100644 blob b8626c4cff2849624fb67f87cd0ad72b163671ad	4.txt
+100644 blob 00750edc07d6415dcc07ae0351e9397b0222b7ba 3.txt
+100644 blob b8626c4cff2849624fb67f87cd0ad72b163671ad 4.txt
 ```
 
 这个结构我们可以这样表示：![test_folder tree 对象](https://tva1.sinaimg.cn/large/0081Kckwgy1gjzdog0dhfj31or0u04bn.jpg)
@@ -267,7 +267,7 @@ Date:   Thu Oct 22 20:34:13 2020 +0800
 我们对第四次提交打一个 `tag`：
 
 ```bash
-$ git tag -a v1.0.0 -m "version 1.0.0"
+git tag -a v1.0.0 -m "version 1.0.0"
 ```
 
 在 `.git` 目录下，我们也能看到这样的一个文件：
@@ -296,9 +296,9 @@ version 1.0.0
 我们先看一个场景。首先，我们新建一个文件，然后提交：
 
 ```bash
-$ echo "t1" > myfile.txt
-$ git add .
-$ git commit -m "new myfile"
+echo "t1" > myfile.txt
+git add .
+git commit -m "new myfile"
 ```
 
 此时查看 `./git/objects` 目录下的内容，会发现生成了一个 `blob` 对象：
@@ -320,9 +320,9 @@ t1
 然后，我们更新 `myfile.txt`，再提交：
 
 ```bash
-$ echo "t2" >> myfile.txt
-$ git add .
-$ git commit -m "update myfile"
+echo "t2" >> myfile.txt
+git add .
+git commit -m "update myfile"
 ```
 
 再去查看 `.git/objects` 下的内容，会发现有两个版本：
@@ -370,7 +370,7 @@ find .git/objects -type f
 
 我们发现大部分文件都不见了，取而代之的是一些 `pack` 目录下的两个文件——包文件 和 索引。包文件包含了刚才从文件系统中移除的所有对象的内容，索引文件包含了包文件的偏移信息(`deltas`)，我们通过索引文件就可以快速定位任意一个指定对象。
 
->   仍然还有 `d67046` 文件，是因为这是我们刚开始执行 `echo 'test content' | git hash-object --stdin -w` 结果。因为它不属于任何提交记录，所以 `git` 认为它是 **悬空(`dangling`)** 的，不会将它打包进新生成的包文件中。
+> 仍然还有 `d67046` 文件，是因为这是我们刚开始执行 `echo 'test content' | git hash-object --stdin -w` 结果。因为它不属于任何提交记录，所以 `git` 认为它是 **悬空(`dangling`)** 的，不会将它打包进新生成的包文件中。
 
 我们使用 `git verify-pack -v` 这个命令来查看已打包的内容：
 
@@ -481,8 +481,8 @@ $ git status
 On branch dev
 Changes to be committed:
   (use "git restore --staged <file>..." to unstage)
-	new file:   dev.txt
-	modified:   test_folder/1.txt
+ new file:   dev.txt
+ modified:   test_folder/1.txt
 ```
 
 可以发现，我们**后面的两次提交信息不见了，但是两次提交的修改还在**，不过还未加入到缓冲区。我们执行下面的操作：
@@ -522,24 +522,20 @@ ref: refs/heads/dev
 没错，当前分支正是 `dev`。我们发现，`.git/HEAD` 中的内容不是 40 位哈希值，而是文本，内容是第一种 `HEAD` 的位置。我们手动去修改一下看看：
 
 ```bash
-$ echo "ref: refs/heads/master" > .git/HEAD
+echo "ref: refs/heads/master" > .git/HEAD
 ```
 
 会发现同步切换到了 `master` 分支！其实有专门的命令来操作 `.git/HEAD` 对象：
 
 ```bash
-$ git symbolic-ref HEAD refs/heads/dev
+git symbolic-ref HEAD refs/heads/dev
 ```
 
 会发现又切换回了 `dev` 分支。这就是 `git checkout xxx` 的底层原理。
 
 #### 3.2 标签引用
 
-
-
 ### 4. `.git` 目录结构
-
-
 
 ## 二、一些技巧
 
@@ -560,8 +556,6 @@ git rebase —continue
 # 强制推送到远端(有风险，如果此时别人有一个 commit，将会被你的提交所覆盖)
 git push --force
 ```
-
-
 
 ## 参考资料
 
